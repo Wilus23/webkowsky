@@ -73,7 +73,7 @@ export default defineConfig({
         mainDocuments: defineDocuments([
           {
             route: '/',
-            filter: `_type == "settings" && _id == "siteSettings"`,
+            filter: `_type == "homepage" && _id == "homepage"`,
           },
           {
             route: '/:slug',

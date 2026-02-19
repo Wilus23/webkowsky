@@ -27,6 +27,78 @@ const linkFields = /* groq */ `
       }
 `
 
+export const homepageQuery = defineQuery(`
+  *[_type == "homepage" && _id == "homepage"][0]{
+    _id,
+    _type,
+    title,
+    locale,
+    seo{
+      title,
+      description,
+      ogImage,
+    },
+    "sections": sections[]{
+      ...,
+      _type == "homeHeroSection" => {
+        ...,
+        primaryButton{
+          buttonText,
+          ${linkFields}
+        },
+        secondaryButton{
+          buttonText,
+          ${linkFields}
+        }
+      },
+      _type == "homeCaseStudiesSection" => {
+        ...,
+        items[]{
+          ...,
+          button{
+            buttonText,
+            ${linkFields}
+          }
+        }
+      },
+      _type == "homeOfferSection" => {
+        ...,
+        offers[]{
+          ...,
+          button{
+            buttonText,
+            ${linkFields}
+          }
+        }
+      },
+      _type == "homeUseCasesSection" => {
+        ...,
+        useCases[]{
+          ...,
+          button{
+            buttonText,
+            ${linkFields}
+          }
+        }
+      },
+      _type == "homeRoiSection" => {
+        ...,
+        button{
+          buttonText,
+          ${linkFields}
+        }
+      },
+      _type == "homeContactSection" => {
+        ...,
+        button{
+          buttonText,
+          ${linkFields}
+        }
+      }
+    },
+  }
+`)
+
 export const getPageQuery = defineQuery(`
   *[_type == 'page' && slug.current == $slug][0]{
     _id,

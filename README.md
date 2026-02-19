@@ -72,6 +72,10 @@ git push -u origin main
    - `SANITY_API_READ_TOKEN`
 5. Deploy.
 
+For homepage implementation workflow (Figma -> Next.js -> Sanity), see:
+
+- `docs/homepage-workflow.md`
+
 ## Sanity Studio Deployment (separate from Vercel)
 
 Vercel deploys the website frontend.  
