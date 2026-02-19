@@ -39,6 +39,51 @@ npm run dev
 - `studio/.env` is for local Studio runtime values.
 - Local env files are git-ignored; never commit secrets.
 
+## GitHub (this repository)
+
+Yes, **both** folders go to GitHub:
+
+- `frontend/` (Next.js app)
+- `studio/` (Sanity Studio source code)
+
+What does **not** go to GitHub:
+
+- local secret files like `frontend/.env.local` and `studio/.env`
+- build/cache folders
+
+Push commands:
+
+```bash
+git remote add origin https://github.com/Wilus23/webkowsky.git
+git branch -M main
+git push -u origin main
+```
+
+## Vercel Deployment (Next.js frontend)
+
+1. Import this GitHub repository in Vercel.
+2. Set **Root Directory** to `frontend`.
+3. Keep framework as Next.js (auto-detected).
+4. Add frontend environment variables in Vercel (Project Settings -> Environment Variables):
+   - `NEXT_PUBLIC_SANITY_PROJECT_ID`
+   - `NEXT_PUBLIC_SANITY_DATASET`
+   - `NEXT_PUBLIC_SANITY_API_VERSION`
+   - `NEXT_PUBLIC_SANITY_STUDIO_URL`
+   - `SANITY_API_READ_TOKEN`
+5. Deploy.
+
+## Sanity Studio Deployment (separate from Vercel)
+
+Vercel deploys the website frontend.  
+Sanity Studio should be deployed with Sanity hosting:
+
+```bash
+cd studio
+npx sanity deploy
+```
+
+After deploy, keep `NEXT_PUBLIC_SANITY_STUDIO_URL` in Vercel pointed at your deployed Studio URL.
+
 ## Template Reference
 
 This project was bootstrapped from Sanity's official **Clean Next.js + Sanity app** template.

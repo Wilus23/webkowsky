@@ -1,6 +1,12 @@
 {
   "name": "webkowsky-site",
+  "version": "0.1.0",
+  "private": true,
   "description": "Next.js + Sanity: A Powerful Website Starter with Real-time Visual Editing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Wilus23/webkowsky.git"
+  },
   "keywords": [
     "Sanity",
     "Next.js",
