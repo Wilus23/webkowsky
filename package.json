@@ -26,6 +26,10 @@
     "lint": "npm run lint --workspace=frontend",
     "type-check": "npm run type-check --workspaces"
   },
+  "engines": {
+    "node": ">=20.19.0 <21 || >=22.12.0",
+    "npm": ">=10"
+  },
   "prettier": "@sanity/prettier-config",
   "devDependencies": {
     "@sanity/prettier-config": "^2.0.2",
