@@ -1,38 +1,43 @@
-import type {Metadata} from 'next'
 import Link from 'next/link'
 
-import Header from '@/app/components/Header'
-import LogoBar from '@/app/components/home/LogoBar'
-
-export const metadata: Metadata = {
-  title: 'Webkowsky — We create Fortune 500 websites',
-  description:
-    'Webkowsky is a leading UX design agency based in Poland and US. We help startups & Fortune 500 companies delight humans on the other side of the screen.',
-}
+/* ------------------------------------------------------------------ */
+/*  Figma asset URLs — replace with Sanity CDN in production           */
+/* ------------------------------------------------------------------ */
+const AVATAR_A =
+  'https://www.figma.com/api/mcp/asset/53818a82-a374-4992-af61-f408ae4c8cb0'
+const AVATAR_B =
+  'https://www.figma.com/api/mcp/asset/90b41a63-314f-40f2-bf03-9a58d5a5755b'
+const COMPANY_VIDEO =
+  'https://www.figma.com/api/mcp/asset/71a8867d-916c-4735-9171-ce643d6b9ffd'
 
 /* ================================================================
-   Avatar stack — small overlapping profile photos next to the CTA
+   AvatarStack — overlapping profile photos next to the CTA
    ================================================================ */
 function AvatarStack() {
   return (
-    <div className="flex items-center -space-x-2">
-      {[1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className="relative size-[21px] rounded-full border-2 border-primary bg-gray-300 overflow-hidden"
-        >
-          {/* Placeholder avatar — replace with real images later */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-400 to-gray-500" />
-        </div>
-      ))}
+    <div className="flex items-center gap-1.5">
+      <div className="flex -space-x-[7px]">
+        {[AVATAR_B, AVATAR_A, AVATAR_A].map((src, i) => (
+          <div
+            key={i}
+            className="relative size-[21px] rounded-full border-2 border-primary overflow-hidden shrink-0"
+          >
+            <img
+              src={src}
+              alt=""
+              className="absolute inset-0 object-cover size-full"
+            />
+          </div>
+        ))}
+      </div>
       {/* Online indicator */}
-      <div className="relative ml-1.5 size-3 rounded-full bg-green-400 border-2 border-primary" />
+      <div className="size-3 rounded-full bg-green-400 border-2 border-primary shrink-0" />
     </div>
   )
 }
 
 /* ================================================================
-   Info Card — the three bottom cards in the hero section
+   InfoCard — the three bottom cards in the hero section
    ================================================================ */
 function InfoCard({
   label,
@@ -48,8 +53,11 @@ function InfoCard({
       </p>
       {variant === 'image' ? (
         <div className="relative h-[120px] sm:h-[147px] w-full rounded-[14px] overflow-hidden bg-gray-200">
-          {/* Replace with actual company image from Sanity */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400" />
+          <img
+            src={COMPANY_VIDEO}
+            alt=""
+            className="absolute inset-0 object-cover size-full"
+          />
           {/* Play button overlay */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="size-10 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
@@ -73,9 +81,9 @@ function InfoCard({
 }
 
 /* ================================================================
-   Hero Section — the main white card
+   HeroSection — the main white card
    ================================================================ */
-function HeroSection() {
+export default function HeroSection() {
   return (
     <section className="bg-white rounded-[20px] sm:rounded-[30px] px-6 py-12 sm:px-12 sm:py-16 md:px-16 md:py-[79px] lg:px-[120px] xl:px-[228px]">
       <div className="flex flex-col gap-16 sm:gap-20 md:gap-[140px]">
@@ -118,26 +126,5 @@ function HeroSection() {
         </div>
       </div>
     </section>
-  )
-}
-
-/* ================================================================
-   Homepage — root page component
-   ================================================================ */
-export default function HomePage() {
-  return (
-    <>
-      <Header />
-
-      {/* Hero area */}
-      <div className="container pb-8 sm:pb-10">
-        <div className="flex flex-col gap-8 sm:gap-10">
-          <HeroSection />
-        </div>
-      </div>
-
-      {/* Logo bar */}
-      <LogoBar />
-    </>
   )
 }
