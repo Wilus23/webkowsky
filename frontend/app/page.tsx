@@ -1,143 +1,195 @@
 import type {Metadata} from 'next'
-import Link from 'next/link'
+import {toPlainText} from 'next-sanity'
 
+import Footer from '@/app/components/Footer'
 import Header from '@/app/components/Header'
+import FeaturesSection from '@/app/components/home/FeaturesSection'
+import HeroSection from '@/app/components/home/HeroSection'
+import HomePageRenderer from '@/app/components/home/HomePageRenderer'
 import LogoBar from '@/app/components/home/LogoBar'
+import OurWorkSection from '@/app/components/home/OurWorkSection'
+import PricingSection from '@/app/components/home/PricingSection'
+import TestimonialSection from '@/app/components/home/TestimonialSection'
+import HeroSanitySection from '@/app/components/home/sanity/HeroSanitySection'
+import FeaturesSanitySection from '@/app/components/home/sanity/FeaturesSanitySection'
+import LogoBarSanitySection from '@/app/components/home/sanity/LogoBarSanitySection'
+import OurWorkSanitySection from '@/app/components/home/sanity/OurWorkSanitySection'
+import PricingSanitySection from '@/app/components/home/sanity/PricingSanitySection'
+import TestimonialSanitySection from '@/app/components/home/sanity/TestimonialSanitySection'
+import * as demo from '@/sanity/lib/demo'
+import {sanityFetch} from '@/sanity/lib/live'
+import {homepageQuery, homepageSeoQuery, settingsQuery} from '@/sanity/lib/queries'
+import {HomepageDocument} from '@/sanity/lib/types'
+import {dataAttr, resolveOpenGraphImage} from '@/sanity/lib/utils'
 
-export const metadata: Metadata = {
-  title: 'Webkowsky — We create Fortune 500 websites',
-  description:
-    'Webkowsky is a leading UX design agency based in Poland and US. We help startups & Fortune 500 companies delight humans on the other side of the screen.',
+const HOMEPAGE_SECTION_TYPES = new Set([
+  'homeHeroSection',
+  'homeLogosSection',
+  'homeCaseStudiesSection',
+  'homeProblemSection',
+  'homeOfferSection',
+  'homeUseCasesSection',
+  'homeRoiSection',
+  'homeFaqSection',
+  'homeContactSection',
+])
+
+type HomepageSection = NonNullable<HomepageDocument['sections']>[number]
+type LegacyHeroSection = Extract<HomepageSection, {_type: 'homeLegacyHeroSection'}>
+type LegacyLogoBarSection = Extract<HomepageSection, {_type: 'homeLegacyLogoBarSection'}>
+type LegacyTestimonialSection = Extract<HomepageSection, {_type: 'homeLegacyTestimonialSection'}>
+type LegacyWorkSection = Extract<HomepageSection, {_type: 'homeLegacyWorkSection'}>
+type LegacyOfferSection = Extract<HomepageSection, {_type: 'homeLegacyOfferSection'}>
+type LegacyPricingSection = Extract<HomepageSection, {_type: 'homeLegacyPricingSection'}>
+
+function sectionPath(sectionKey: string) {
+  return `sections[_key=="${sectionKey}"]`
 }
 
-/* ================================================================
-   Avatar stack — small overlapping profile photos next to the CTA
-   ================================================================ */
-function AvatarStack() {
-  return (
-    <div className="flex items-center -space-x-2">
-      {[1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className="relative size-[21px] rounded-full border-2 border-primary bg-gray-300 overflow-hidden"
-        >
-          {/* Placeholder avatar — replace with real images later */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-400 to-gray-500" />
-        </div>
-      ))}
-      {/* Online indicator */}
-      <div className="relative ml-1.5 size-3 rounded-full bg-green-400 border-2 border-primary" />
-    </div>
-  )
+export async function generateMetadata(): Promise<Metadata> {
+  const [{data: homepageSeoData}, {data: settings}] = await Promise.all([
+    sanityFetch({
+      query: homepageSeoQuery,
+      stega: false,
+    }),
+    sanityFetch({
+      query: settingsQuery,
+      stega: false,
+    }),
+  ])
+
+  const title = homepageSeoData?.seo?.title || settings?.title || demo.title
+  const description = homepageSeoData?.seo?.description || toPlainText(settings?.description || demo.description)
+  const ogImage = resolveOpenGraphImage(homepageSeoData?.seo?.ogImage)
+
+  return {
+    title,
+    description,
+    openGraph: {
+      images: ogImage ? [ogImage] : [],
+    },
+  }
 }
 
-/* ================================================================
-   Info Card — the three bottom cards in the hero section
-   ================================================================ */
-function InfoCard({
-  label,
-  variant = 'placeholder',
-}: {
-  label: string
-  variant?: 'placeholder' | 'image'
-}) {
+function LegacyHomeSections({homepage}: {homepage: HomepageDocument | null}) {
+  const sections = (homepage?.sections || []) as Array<HomepageSection | null>
+  const heroSection =
+    sections.find(
+      (section): section is LegacyHeroSection => section?._type === 'homeLegacyHeroSection',
+    ) || null
+  const logoBarSection =
+    sections.find(
+      (section): section is LegacyLogoBarSection => section?._type === 'homeLegacyLogoBarSection',
+    ) || null
+  const testimonialSection =
+    sections.find(
+      (section): section is LegacyTestimonialSection => section?._type === 'homeLegacyTestimonialSection',
+    ) || null
+  const workSection =
+    sections.find(
+      (section): section is LegacyWorkSection => section?._type === 'homeLegacyWorkSection',
+    ) || null
+  const offerSection =
+    sections.find(
+      (section): section is LegacyOfferSection => section?._type === 'homeLegacyOfferSection',
+    ) || null
+  const pricingSection =
+    sections.find(
+      (section): section is LegacyPricingSection => section?._type === 'homeLegacyPricingSection',
+    ) || null
+
+  const getSectionDataAttribute = (section: {_key?: string | null} | null) => {
+    if (!homepage?._id || !section?._key) return undefined
+
+    return dataAttr({
+      id: homepage._id,
+      type: homepage._type,
+      path: sectionPath(section._key),
+    }).toString()
+  }
+
   return (
-    <div className="flex flex-col gap-5 sm:gap-6 min-w-0 flex-1">
-      <p className="font-display text-sm text-black/90 leading-[1.3]">
-        {label}
-      </p>
-      {variant === 'image' ? (
-        <div className="relative h-[120px] sm:h-[147px] w-full rounded-[14px] overflow-hidden bg-gray-200">
-          {/* Replace with actual company image from Sanity */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400" />
-          {/* Play button overlay */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="size-10 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-              <svg
-                className="text-black ml-0.5"
-                width="14"
-                height="16"
-                viewBox="0 0 14 16"
-                fill="currentColor"
-              >
-                <path d="M0 0L14 8L0 16V0Z" />
-              </svg>
-            </div>
+    <>
+      <section
+        id="hero"
+        className="bg-surface pb-6 pt-0 text-white sm:pb-8"
+        data-sanity={getSectionDataAttribute(heroSection)}
+      >
+        <div className="container">
+          <div className="flex flex-col gap-6 sm:gap-8">
+            {heroSection ? <HeroSanitySection section={heroSection} /> : <HeroSection />}
           </div>
         </div>
-      ) : (
-        <div className="h-[120px] sm:h-[147px] w-full rounded-[14px] bg-black/20 backdrop-blur-sm" />
-      )}
-    </div>
-  )
-}
+      </section>
 
-/* ================================================================
-   Hero Section — the main white card
-   ================================================================ */
-function HeroSection() {
-  return (
-    <section className="bg-white rounded-[20px] sm:rounded-[30px] px-6 py-12 sm:px-12 sm:py-16 md:px-16 md:py-[79px] lg:px-[120px] xl:px-[228px]">
-      <div className="flex flex-col gap-16 sm:gap-20 md:gap-[140px]">
-        {/* ---- Top area: headline + description ---- */}
-        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between md:gap-12 lg:gap-[173px]">
-          {/* Headline */}
-          <h1 className="font-display font-bold text-[40px] sm:text-[52px] md:text-[56px] lg:text-[64px] leading-[1.16] tracking-[-0.96px] shrink-0">
-            <span className="text-primary">We create</span>
-            <br />
-            <span className="text-black">Fortune 500</span>
-            <br />
-            <span className="text-black">websites</span>
-          </h1>
+      <section
+        id="logos"
+        className="bg-surface text-white"
+        data-sanity={getSectionDataAttribute(logoBarSection)}
+      >
+        {logoBarSection ? <LogoBarSanitySection section={logoBarSection} /> : <LogoBar />}
+      </section>
 
-          {/* Description + CTA */}
-          <div className="flex flex-col gap-3 md:max-w-[378px] md:pt-2">
-            <p className="font-sans font-medium text-base sm:text-[20px] leading-[1.2] text-black">
-              Webkowsky is a leading UX design agency based in Poland and US. We
-              help startups &amp; Fortune 500 companies delight humans on the
-              other side of the screen.
-            </p>
+      <section
+        id="work"
+        className="bg-surface text-white"
+        data-sanity={getSectionDataAttribute(workSection)}
+      >
+        {workSection ? <OurWorkSanitySection section={workSection} /> : <OurWorkSection />}
+      </section>
 
-            <div className="mt-3">
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 rounded-[12px] bg-primary px-4 py-3 font-sans font-bold text-base text-white tracking-[-0.24px] hover:bg-primary-hover transition-colors"
-              >
-                <AvatarStack />
-                <span>Book a call</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* ---- Bottom area: three info cards ---- */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-[13px]">
-          <InfoCard label="How do you want to build?" />
-          <InfoCard label="Watch how we build your brand." variant="image" />
-          <InfoCard label="How do you want to build?" />
-        </div>
+      <div data-sanity={getSectionDataAttribute(testimonialSection)}>
+        {testimonialSection ? (
+          <TestimonialSanitySection section={testimonialSection} />
+        ) : (
+          <TestimonialSection />
+        )}
       </div>
-    </section>
+
+      <section
+        id="offer"
+        className="bg-surface text-white"
+        data-sanity={getSectionDataAttribute(offerSection)}
+      >
+        {offerSection ? <FeaturesSanitySection section={offerSection} /> : <FeaturesSection />}
+      </section>
+
+      <section
+        id="pricing"
+        className="bg-white text-black"
+        data-sanity={getSectionDataAttribute(pricingSection)}
+      >
+        {pricingSection ? <PricingSanitySection section={pricingSection} /> : <PricingSection />}
+      </section>
+    </>
   )
 }
 
-/* ================================================================
-   Homepage — root page component
-   ================================================================ */
-export default function HomePage() {
+export default async function HomePage() {
+  const {data} = await sanityFetch({
+    query: homepageQuery,
+  })
+
+  const homepage = data as HomepageDocument | null
+  const sections = (homepage?.sections || []) as Array<{_type?: string} | null>
+  const hasHomepageDocument = Boolean(homepage?._id)
+  const hasRenderableSanitySection = sections.some(
+    (section) => !!section?._type && HOMEPAGE_SECTION_TYPES.has(section._type),
+  )
+
+  // Render CMS homepage only when the document has at least one modern section
+  // supported by HomePageRenderer.
+  const shouldRenderSanityHomepage = hasHomepageDocument && hasRenderableSanitySection
+
   return (
     <>
       <Header />
-
-      {/* Hero area */}
-      <div className="container pb-8 sm:pb-10">
-        <div className="flex flex-col gap-8 sm:gap-10">
-          <HeroSection />
-        </div>
-      </div>
-
-      {/* Logo bar */}
-      <LogoBar />
+      {shouldRenderSanityHomepage && homepage ? (
+        <HomePageRenderer page={homepage} />
+      ) : (
+        <LegacyHomeSections homepage={homepage} />
+      )}
+      <Footer />
     </>
   )
 }

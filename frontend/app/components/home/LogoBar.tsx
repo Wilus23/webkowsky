@@ -1,9 +1,13 @@
 /* ================================================================
-   LogoBar — Client/partner logo strip below the hero
-   Matching Figma: row of icon+text pairs, fading at the edge
+   LogoBar — infinite, responsive carousel matching Figma strip
    ================================================================ */
 
-const LOGOS = [
+type LogoItem = {
+  name: string
+  icon: ({className}: {className?: string}) => React.JSX.Element
+}
+
+const LOGOS: LogoItem[] = [
   {name: 'Apple', icon: AppleIcon},
   {name: 'Apple', icon: AppleIcon},
   {name: 'Apple', icon: AppleIcon},
@@ -30,30 +34,35 @@ function AppleIcon({className}: {className?: string}) {
 }
 
 export default function LogoBar() {
+  const carouselItems = [...LOGOS, ...LOGOS]
+
   return (
-    <section className="py-8 sm:py-10 overflow-hidden">
+    <section className="overflow-hidden pt-8 pb-12 sm:pt-10 sm:pb-14">
       <div className="container">
-        {/* Desktop: centered row, Mobile: scrollable */}
-        <div className="flex items-center justify-center gap-8 sm:gap-10 md:gap-12 overflow-x-auto scrollbar-hide pb-2 sm:pb-0">
-          {LOGOS.map((logo, index) => {
-            // Last logo fades out (matching the Figma gradient effect)
-            const isLast = index === LOGOS.length - 1
-            return (
-              <div
-                key={`${logo.name}-${index}`}
-                className={`flex items-center gap-2 shrink-0 transition-opacity ${
-                  isLast
-                    ? 'opacity-30'
-                    : ''
-                }`}
-              >
-                <logo.icon className="text-white size-8" />
-                <span className="font-sans font-medium text-[20px] text-white leading-[1.2]">
-                  {logo.name}
-                </span>
-              </div>
-            )
-          })}
+        <div className="logo-carousel-viewport">
+          <ul
+            className="logo-carousel-track"
+            role="list"
+            aria-label="Brands trusted by Webkowsky"
+          >
+            {carouselItems.map((logo, index) => {
+              const isDuplicate = index >= LOGOS.length
+
+              return (
+                <li
+                  key={`${logo.name}-${index}`}
+                  className="logo-carousel-item"
+                  data-duplicate={isDuplicate ? 'true' : undefined}
+                  aria-hidden={isDuplicate ? true : undefined}
+                >
+                  <logo.icon className="size-8 text-white" />
+                  <span className="font-sans text-[20px] font-medium leading-[1.2] text-white">
+                    {logo.name}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
         </div>
       </div>
     </section>

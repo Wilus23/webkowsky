@@ -4,6 +4,12 @@ import {
   HomeContactSection,
   HomeFaqSection,
   HomeHeroSection,
+  HomeLegacyOfferSection,
+  HomeLegacyPricingSection,
+  HomeLegacyHeroSection,
+  HomeLegacyLogoBarSection,
+  HomeLegacyTestimonialSection,
+  HomeLegacyWorkSection,
   HomeLogosSection,
   HomeOfferSection,
   HomeProblemSection,
@@ -14,6 +20,12 @@ import {
 } from '@/sanity/lib/types'
 import Image from '@/app/components/SanityImage'
 import ResolvedLink from '@/app/components/ResolvedLink'
+import FeaturesSanitySection from '@/app/components/home/sanity/FeaturesSanitySection'
+import HeroSanitySection from '@/app/components/home/sanity/HeroSanitySection'
+import LogoBarSanitySection from '@/app/components/home/sanity/LogoBarSanitySection'
+import OurWorkSanitySection from '@/app/components/home/sanity/OurWorkSanitySection'
+import PricingSanitySection from '@/app/components/home/sanity/PricingSanitySection'
+import TestimonialSanitySection from '@/app/components/home/sanity/TestimonialSanitySection'
 
 function imageRef(value: unknown): string | undefined {
   if (!value || typeof value !== 'object') return undefined
@@ -99,9 +111,28 @@ function LogosSection({page, block}: {page: HomepageDocument; block: HomeLogosSe
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 items-center">
           {block.logos?.map((logo, index) => {
             const id = imageRef(logo.logo)
+            const logoContent = id ? (
+              <Image
+                id={id}
+                alt={logo.name || 'Logo'}
+                width={220}
+                height={64}
+                mode="contain"
+                sizes="(min-width: 1024px) 180px, (min-width: 768px) 20vw, 40vw"
+              />
+            ) : (
+              <span>{logo.name}</span>
+            )
+
             return (
               <div key={`${logo.name || 'logo'}-${index}`} className="opacity-80 hover:opacity-100 transition-opacity">
-                {id ? <Image id={id} alt={logo.name || 'Logo'} width={220} height={64} mode="contain" /> : <span>{logo.name}</span>}
+                {logo.link ? (
+                  <a href={logo.link} target="_blank" rel="noopener noreferrer" className="inline-flex">
+                    {logoContent}
+                  </a>
+                ) : (
+                  logoContent
+                )}
               </div>
             )
           })}
@@ -124,7 +155,17 @@ function CaseStudiesSection({page, block}: {page: HomepageDocument; block: HomeC
             const id = imageRef(item.image)
             return (
               <article key={`${item.title || 'case'}-${index}`} className="border border-gray-200 rounded-xl p-5 space-y-4">
-                {id ? <Image id={id} alt={item.title || 'Case study'} width={720} height={420} mode="cover" className="rounded-md" /> : null}
+                {id ? (
+                  <Image
+                    id={id}
+                    alt={item.title || 'Case study'}
+                    width={720}
+                    height={420}
+                    mode="cover"
+                    className="rounded-md"
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                  />
+                ) : null}
                 <h3 className="text-xl font-medium">{item.title}</h3>
                 {item.summary ? <p className="text-gray-600">{item.summary}</p> : null}
                 {item.button?.buttonText && item.button.link ? (
@@ -288,6 +329,60 @@ function ContactSection({page, block}: {page: HomepageDocument; block: HomeConta
   )
 }
 
+function LegacyHeroSection({page, block}: {page: HomepageDocument; block: HomeLegacyHeroSection}) {
+  return (
+    <SectionWrapper page={page} block={block}>
+      <HeroSanitySection section={block} />
+    </SectionWrapper>
+  )
+}
+
+function LegacyLogoBarSection({page, block}: {page: HomepageDocument; block: HomeLegacyLogoBarSection}) {
+  return (
+    <SectionWrapper page={page} block={block}>
+      <LogoBarSanitySection section={block} />
+    </SectionWrapper>
+  )
+}
+
+function LegacyTestimonialSection({
+  page,
+  block,
+}: {
+  page: HomepageDocument
+  block: HomeLegacyTestimonialSection
+}) {
+  return (
+    <SectionWrapper page={page} block={block}>
+      <TestimonialSanitySection section={block} />
+    </SectionWrapper>
+  )
+}
+
+function LegacyWorkSection({page, block}: {page: HomepageDocument; block: HomeLegacyWorkSection}) {
+  return (
+    <SectionWrapper page={page} block={block}>
+      <OurWorkSanitySection section={block} />
+    </SectionWrapper>
+  )
+}
+
+function LegacyOfferSection({page, block}: {page: HomepageDocument; block: HomeLegacyOfferSection}) {
+  return (
+    <SectionWrapper page={page} block={block}>
+      <FeaturesSanitySection section={block} />
+    </SectionWrapper>
+  )
+}
+
+function LegacyPricingSection({page, block}: {page: HomepageDocument; block: HomeLegacyPricingSection}) {
+  return (
+    <SectionWrapper page={page} block={block}>
+      <PricingSanitySection section={block} />
+    </SectionWrapper>
+  )
+}
+
 function UnknownSection({page, block}: {page: HomepageDocument; block: HomeSection}) {
   console.warn('Unknown homepage section type:', block._type)
 
@@ -303,10 +398,16 @@ function UnknownSection({page, block}: {page: HomepageDocument; block: HomeSecti
 }
 
 export default function HomePageRenderer({page}: {page: HomepageDocument}) {
-  const sections = page.sections || []
+  const sections = (page.sections || []) as HomeSection[]
 
   return (
-    <>
+    <div
+      data-sanity={dataAttr({
+        id: page._id,
+        type: page._type,
+        path: 'title',
+      }).toString()}
+    >
       {sections.map((section) => {
         switch (section._type) {
           case 'homeHeroSection':
@@ -329,10 +430,28 @@ export default function HomePageRenderer({page}: {page: HomepageDocument}) {
             return <FaqSection key={section._key} page={page} block={section as HomeFaqSection} />
           case 'homeContactSection':
             return <ContactSection key={section._key} page={page} block={section as HomeContactSection} />
+          case 'homeLegacyHeroSection':
+            return <LegacyHeroSection key={section._key} page={page} block={section as HomeLegacyHeroSection} />
+          case 'homeLegacyLogoBarSection':
+            return (
+              <LegacyLogoBarSection key={section._key} page={page} block={section as HomeLegacyLogoBarSection} />
+            )
+          case 'homeLegacyTestimonialSection':
+            return (
+              <LegacyTestimonialSection key={section._key} page={page} block={section as HomeLegacyTestimonialSection} />
+            )
+          case 'homeLegacyWorkSection':
+            return <LegacyWorkSection key={section._key} page={page} block={section as HomeLegacyWorkSection} />
+          case 'homeLegacyOfferSection':
+            return <LegacyOfferSection key={section._key} page={page} block={section as HomeLegacyOfferSection} />
+          case 'homeLegacyPricingSection':
+            return (
+              <LegacyPricingSection key={section._key} page={page} block={section as HomeLegacyPricingSection} />
+            )
           default:
             return <UnknownSection key={section._key} page={page} block={section} />
         }
       })}
-    </>
+    </div>
   )
 }

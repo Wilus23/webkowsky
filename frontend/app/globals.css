@@ -95,12 +95,11 @@
   --color-green-950: #14211a;
 
   /* --- Typography ---------------------------------------
-     --font-sans and --font-mono use next/font CSS variables
-     set on <html> by layout.tsx so the optimized fonts load.
-     --font-display adds Satoshi (loaded via CDN @import).
+     Base and display both use Satoshi (loaded via CDN @import).
+     Mono keeps IBM Plex Mono from next/font.
      -------------------------------------------------------- */
-  --font-sans: var(--font-inter, 'Inter'), ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Satoshi', var(--font-inter, 'Inter'), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-ibm-plex-mono, 'IBM Plex Mono'), ui-monospace, monospace;
 
   /* --- Type scale (from Figma variables) ----------------
@@ -128,6 +127,11 @@
 
   /* --- Transitions -------------------------------------- */
   --default-transition-duration: 200ms;
+  --motion-duration-micro: 160ms;
+  --motion-duration-switch: 240ms;
+  --motion-duration-content: 300ms;
+  --motion-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ============================================================
@@ -165,6 +169,29 @@
 }
 
 /* ============================================================
+   Motion utilities
+   ============================================================ */
+
+@layer components {
+  .ux-cta {
+    transition-property: transform, background-color, color, border-color, opacity, box-shadow;
+    transition-duration: var(--motion-duration-micro);
+    transition-timing-function: var(--motion-ease-standard);
+    will-change: transform;
+  }
+
+  @media (hover: hover) {
+    .ux-cta:hover {
+      transform: translateY(-1px);
+    }
+
+    .ux-cta:active {
+      transform: translateY(0) scale(0.98);
+    }
+  }
+}
+
+/* ============================================================
    Utility: .container
    ============================================================ */
 
@@ -198,6 +225,89 @@
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Homepage logo carousel
+   ============================================================ */
+
+@keyframes logo-carousel-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.logo-carousel-viewport {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 7%,
+    black 93%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 7%,
+    black 93%,
+    transparent
+  );
+}
+
+.logo-carousel-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 3rem;
+  animation: logo-carousel-scroll 28s linear infinite;
+  will-change: transform;
+}
+
+.logo-carousel-item {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-carousel-viewport:hover .logo-carousel-track {
+  animation-play-state: paused;
+}
+
+@media (max-width: 640px) {
+  .logo-carousel-track {
+    gap: 2rem;
+    animation-duration: 22s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-carousel-viewport {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .logo-carousel-track {
+    width: 100%;
+    animation: none;
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .logo-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .logo-carousel-item[data-duplicate='true'] {
     display: none;
   }
 }

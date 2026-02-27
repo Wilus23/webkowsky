@@ -1,235 +1,186 @@
 'use client'
 
-import {useState} from 'react'
-import Link from 'next/link'
-
-/* ================================================================
-   FeaturesSection — dark bg, "Webkowsky" heading, category pills,
-   feature list, Learn more / Book a call CTAs
-   ================================================================ */
+import MagneticLink from '@/app/components/animations/MagneticLink'
+import LegacyOfferInteractive, {
+  type LegacyOfferTab,
+} from '@/app/components/home/shared/LegacyOfferInteractive'
 
 /* ------------------------------------------------------------------ */
 /*  Figma asset URLs — replace with Sanity CDN in production           */
 /* ------------------------------------------------------------------ */
-const COMPANY_IMAGE =
+const IMAGE_FOUNDERS =
   'https://www.figma.com/api/mcp/asset/6b669ef6-f6a1-4cf5-bbfd-37ff1cdfba2e'
+const IMAGE_SALES =
+  'https://www.figma.com/api/mcp/asset/da14191d-f836-40d6-8d08-88559cd422e2'
+const IMAGE_DEVELOPERS =
+  'https://www.figma.com/api/mcp/asset/97cc0121-ca63-44a4-be41-0f5f009ee6cf'
+const IMAGE_STARTUPS =
+  'https://www.figma.com/api/mcp/asset/b1232b41-8c1b-44cb-86fd-c18bebf12059'
 
-const CATEGORIES = [
-  'Founders',
-  'Marketing',
-  'Sales',
-  'Developers',
-  'Startups',
-] as const
-type Category = (typeof CATEGORIES)[number]
+const TABS: LegacyOfferTab[] = [
+  {
+    key: 'Founders',
+    label: 'Founders',
+    activeFeature: 'Strategia marki i pozycjonowanie oferty dla wzrostu',
+    inactiveFeatures: [
+      'Projektowanie strony pod konkretny model biznesowy',
+      'Roadmapa działań z jasnymi milestone’ami',
+      'Wsparcie decyzyjne i szybkie iteracje weekly',
+    ],
+    description:
+      'Układamy fundament oferty i komunikacji, żeby strona sprzedawała to, co naprawdę buduje wartość firmy.',
+    visual: {type: 'image', src: IMAGE_FOUNDERS, alt: 'Founders strategy'},
+  },
+  {
+    key: 'Marketing',
+    label: 'Marketing',
+    activeFeature: 'SEO i content plan dopasowany do realnych intencji użytkownika',
+    inactiveFeatures: [
+      'Copywriting nastawiony na konwersję',
+      'Google Ads spięte z lejkiem sprzedaży',
+      'Stała optymalizacja na danych i insightach',
+    ],
+    description:
+      'Dla marketingu najważniejsze kanały pokazujemy od razu jako konkretne bloki działań i priorytety na stronie.',
+    visual: {
+      type: 'keywords',
+      label: 'Marketing stack',
+      terms: ['SEO', 'COPYWRITING', 'GOOGLE ADS', 'CONTENT'],
+    },
+  },
+  {
+    key: 'Sales',
+    label: 'Sales',
+    activeFeature: 'Oferta i landingi zaprojektowane pod wzrost liczby leadów',
+    inactiveFeatures: [
+      'Case studies, które wspierają rozmowy sprzedażowe',
+      'Komunikaty wartości dla różnych etapów pipeline’u',
+      'Szybkie testy CTA i sekcji konwersyjnych',
+    ],
+    description:
+      'Sekcje sprzedażowe budujemy tak, aby handlowiec miał gotowe argumenty, a użytkownik jasny kolejny krok.',
+    visual: {type: 'image', src: IMAGE_SALES, alt: 'Sales enablement preview'},
+  },
+  {
+    key: 'Developers',
+    label: 'Developers',
+    activeFeature: 'Implementacja techniczna bez kompromisów dla wydajności',
+    inactiveFeatures: [
+      'Spójny design system do szybszego developmentu',
+      'Komponenty gotowe do skalowania produktu',
+      'Proces współpracy product + engineering',
+    ],
+    description:
+      'Łączymy design i development tak, żeby efekt końcowy był szybki, czytelny i łatwy do utrzymania przez zespół.',
+    visual: {type: 'image', src: IMAGE_DEVELOPERS, alt: 'Developers workflow'},
+  },
+  {
+    key: 'Startups',
+    label: 'Startups',
+    activeFeature: 'Szybki time-to-market z jasnym zakresem i priorytetami',
+    inactiveFeatures: [
+      'Pakiet działań dopasowany do etapu wzrostu',
+      'Iteracje na bazie feedbacku użytkowników',
+      'Skalowanie strony wraz z rozwojem produktu',
+    ],
+    description:
+      'Dla startupów liczy się tempo i dowożenie wyniku. Projektujemy to tak, żeby każda iteracja miała sens biznesowy.',
+    visual: {type: 'image', src: IMAGE_STARTUPS, alt: 'Startup growth site'},
+  },
+]
 
-const FEATURES: Record<
-  Category,
-  {active: string; inactive: string[]}
+const CATEGORY_ACCENTS: Record<
+  (typeof TABS)[number]['key'],
+  {
+    activeBorder: string
+    activeGlow: string
+    activeTint: string
+    hoverBorder: string
+    hoverTint: string
+  }
 > = {
   Founders: {
-    active: 'Brand, Experience, or Interface design support',
-    inactive: [
-      'On-going monthly retainer to fit your needs',
-      'Clear timeline and milestone deliverables',
-      'Expert project manager & weekly async updates',
-    ],
+    activeBorder: 'rgba(119,104,255,0.85)',
+    activeGlow: 'rgba(119,104,255,0.35)',
+    activeTint:
+      'linear-gradient(140deg, rgba(15,12,27,0.85) 0%, rgba(57,46,132,0.55) 100%)',
+    hoverBorder: 'rgba(119,104,255,0.62)',
+    hoverTint: 'rgba(45,35,98,0.45)',
   },
   Marketing: {
-    active: 'Brand, Experience, or Interface design support',
-    inactive: [
-      'On-going monthly retainer to fit your needs',
-      'Clear timeline and milestone deliverables',
-      'Expert project manager & weekly async updates',
-    ],
+    activeBorder: 'rgba(53,23,251,0.88)',
+    activeGlow: 'rgba(53,23,251,0.38)',
+    activeTint:
+      'linear-gradient(140deg, rgba(10,8,21,0.82) 0%, rgba(53,23,251,0.42) 100%)',
+    hoverBorder: 'rgba(53,23,251,0.64)',
+    hoverTint: 'rgba(53,23,251,0.26)',
   },
   Sales: {
-    active: 'Clear timeline and milestone deliverables',
-    inactive: [
-      'Brand, Experience, or Interface design support',
-      'On-going monthly retainer to fit your needs',
-      'Expert project manager & weekly async updates',
-    ],
+    activeBorder: 'rgba(86,66,255,0.86)',
+    activeGlow: 'rgba(86,66,255,0.34)',
+    activeTint:
+      'linear-gradient(140deg, rgba(12,10,24,0.84) 0%, rgba(79,68,165,0.52) 100%)',
+    hoverBorder: 'rgba(86,66,255,0.62)',
+    hoverTint: 'rgba(79,68,165,0.24)',
   },
   Developers: {
-    active: 'Expert project manager & weekly async updates',
-    inactive: [
-      'Brand, Experience, or Interface design support',
-      'On-going monthly retainer to fit your needs',
-      'Clear timeline and milestone deliverables',
-    ],
+    activeBorder: 'rgba(104,87,255,0.86)',
+    activeGlow: 'rgba(104,87,255,0.32)',
+    activeTint:
+      'linear-gradient(140deg, rgba(11,10,21,0.84) 0%, rgba(96,83,170,0.5) 100%)',
+    hoverBorder: 'rgba(104,87,255,0.62)',
+    hoverTint: 'rgba(96,83,170,0.24)',
   },
   Startups: {
-    active: 'On-going monthly retainer to fit your needs',
-    inactive: [
-      'Brand, Experience, or Interface design support',
-      'Clear timeline and milestone deliverables',
-      'Expert project manager & weekly async updates',
-    ],
+    activeBorder: 'rgba(69,49,248,0.86)',
+    activeGlow: 'rgba(69,49,248,0.35)',
+    activeTint:
+      'linear-gradient(140deg, rgba(9,8,18,0.85) 0%, rgba(69,49,248,0.42) 100%)',
+    hoverBorder: 'rgba(69,49,248,0.62)',
+    hoverTint: 'rgba(69,49,248,0.24)',
   },
 }
 
-/* ================================================================
-   FeaturesSection
-   ================================================================ */
 export default function FeaturesSection() {
-  const [active, setActive] = useState<Category>('Marketing')
-  const features = FEATURES[active]
-
   return (
-    <section className="relative py-20 sm:py-24 md:py-[171px] overflow-hidden">
-      {/* Decorative background gradient */}
-      <div
-        className="absolute inset-x-0 top-0 h-[339px] pointer-events-none"
-        aria-hidden="true"
-      >
-        <div
-          className="absolute inset-0 opacity-70"
-          style={{
-            background:
-              'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(53,23,251,0.25) 0%, transparent 70%)',
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-surface" />
-      </div>
-
-      <div className="container relative z-10">
-        <div className="flex flex-col gap-[48px] items-center">
-          {/* ---- Heading block ---- */}
-          <div className="flex flex-col items-center gap-4 text-center">
-            {/* Large "Webkowsky" title */}
-            <div className="relative">
-              <h2
-                className="font-display font-bold text-[56px] sm:text-[64px] lg:text-[80px] xl:text-[96px] tracking-[-1.44px] leading-[1.0]"
-                style={{
-                  background:
-                    'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-                aria-hidden="true"
-              >
-                Webkowsky
-              </h2>
-              <h2
-                className="absolute inset-0 font-display font-bold text-[56px] sm:text-[64px] lg:text-[80px] xl:text-[96px] tracking-[-1.44px] leading-[1.0] text-white text-center"
-                style={{clipPath: 'inset(50% 0 0 0)'}}
-              >
-                Webkowsky
-              </h2>
-            </div>
-
-            <p className="font-sans font-bold text-base text-white tracking-[-0.24px]">
-              All-in-one{' '}
-              <span className="text-primary">website strategy</span>
-            </p>
-          </div>
-
-          {/* ---- Category pills ---- */}
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-8">
-            {CATEGORIES.map((cat) => {
-              const isActive = cat === active
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setActive(cat)}
-                  className={`
-                    relative px-4 py-[12px] rounded-full text-sm transition-all duration-200
-                    backdrop-blur-[10px] shadow-[0px_20px_40px_0px_rgba(0,0,0,0.1)]
-                    ${
-                      isActive
-                        ? 'border border-primary text-white'
-                        : 'border border-[rgba(232,232,232,0.3)] text-[rgba(232,232,232,0.5)]'
-                    }
-                  `}
-                  style={{
-                    background: isActive
-                      ? 'linear-gradient(-22deg, rgba(10,8,12,0.2) 12.7%, rgba(54,54,54,0.4) 87.4%)'
-                      : 'linear-gradient(-23deg, rgba(10,8,12,0.2) 12.7%, rgba(54,54,54,0.4) 87.4%)',
-                  }}
-                >
-                  {cat}
-                </button>
-              )
-            })}
-          </div>
-
-          {/* ---- Content: feature list + image ---- */}
-          <div className="flex flex-col lg:flex-row items-start gap-10 lg:gap-[166px] w-full max-w-[865px]">
-            {/* Feature list + CTAs */}
-            <div className="flex flex-col gap-[39px] w-full lg:w-[321px] shrink-0">
-              <div className="flex flex-col gap-6">
-                {/* Active feature */}
-                <div className="flex items-start gap-[15px]">
-                  <div className="size-3 rounded-full bg-primary mt-0.5 shrink-0" />
-                  <p className="font-sans text-sm text-white leading-[1.3]">
-                    {features.active}
-                  </p>
-                </div>
-
-                {/* Inactive features */}
-                {features.inactive.map((feat) => (
-                  <div key={feat} className="flex items-start gap-[15px]">
-                    <div className="size-3 rounded-full bg-white/20 mt-0.5 shrink-0" />
-                    <p className="font-sans text-sm text-white/50 leading-[1.3]">
-                      {feat}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              {/* CTAs */}
-              <div className="flex items-center gap-[19px]">
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 px-4 py-[12px] rounded-[12px] bg-primary font-sans font-bold text-base text-white tracking-[-0.24px] hover:bg-primary-hover transition-colors"
-                >
-                  <span>Learn more</span>
-                  <svg
-                    className="size-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-                    />
-                  </svg>
-                </Link>
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center px-4 py-[12px] rounded-[12px] border border-[rgba(232,232,232,0.75)] font-sans font-bold text-base text-white tracking-[-0.24px] hover:bg-white/5 transition-colors"
-                >
-                  Book a call
-                </Link>
-              </div>
-            </div>
-
-            {/* Company image + description */}
-            <div className="flex flex-col gap-6 flex-1">
-              <div className="h-[112px] w-full overflow-hidden rounded-[14px]">
-                <img
-                  src={COMPANY_IMAGE}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <p className="font-sans text-sm text-white leading-[1.3]">
-                Webkowsky is a leading UX design agency based in Poland and US.
-                We help startups &amp; Fortune 500 companies delight humans on
-                the other side of the screen. We help startups &amp; Fortune
-                500 companies delight humans on the other side. We help
-                startups &amp; Fortune 500 companies delight humans on the
-                other side of the screen.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <LegacyOfferInteractive
+      title="xSite"
+      subtitlePrefix="All-in-one"
+      subtitleHighlight="website strategy"
+      tabs={TABS}
+      defaultTabKey="Marketing"
+      accents={CATEGORY_ACCENTS}
+      renderPrimaryCta={(className) => (
+        <MagneticLink
+          href="/about"
+          cursorColor="rgb(53, 23, 251)"
+          className={className}
+        >
+          <span>Learn more</span>
+          <svg
+            className="size-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+            />
+          </svg>
+        </MagneticLink>
+      )}
+      renderSecondaryCta={(className) => (
+        <MagneticLink
+          href="/contact"
+          cursorColor="rgb(232, 232, 232)"
+          className={className}
+        >
+          Book a call
+        </MagneticLink>
+      )}
+    />
   )
 }

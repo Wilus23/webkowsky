@@ -42,6 +42,12 @@ export const homepage = defineType({
         {type: 'homeRoiSection'},
         {type: 'homeFaqSection'},
         {type: 'homeContactSection'},
+        {type: 'homeLegacyHeroSection'},
+        {type: 'homeLegacyLogoBarSection'},
+        {type: 'homeLegacyTestimonialSection'},
+        {type: 'homeLegacyWorkSection'},
+        {type: 'homeLegacyOfferSection'},
+        {type: 'homeLegacyPricingSection'},
       ],
       options: {
         insertMenu: {

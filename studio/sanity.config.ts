@@ -25,6 +25,9 @@ const dataset = process.env.SANITY_STUDIO_DATASET || 'production'
 const SANITY_STUDIO_PREVIEW_URL = process.env.SANITY_STUDIO_PREVIEW_URL || 'http://localhost:3000'
 const SANITY_STUDIO_ALLOWED_ORIGINS = [
   'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:3001',
   'http://localhost:3333',
   'https://webkowsky.com',
   'https://www.webkowsky.com',
@@ -73,19 +76,32 @@ export default defineConfig({
         mainDocuments: defineDocuments([
           {
             route: '/',
-            filter: `_type == "homepage" && _id == "homepage"`,
+            type: 'homepage',
           },
           {
             route: '/:slug',
-            filter: `_type == "page" && slug.current == $slug || _id == $slug`,
+            filter: `_type == "page" && (slug.current == $slug || _id == $slug)`,
           },
           {
             route: '/posts/:slug',
-            filter: `_type == "post" && slug.current == $slug || _id == $slug`,
+            filter: `_type == "post" && (slug.current == $slug || _id == $slug)`,
           },
         ]),
         // Locations Resolver API allows you to define where data is being used in your application. https://www.sanity.io/docs/visual-editing/presentation-resolver-api#8d8bca7bfcd7
         locations: {
+          homepage: defineLocations({
+            select: {
+              title: 'title',
+            },
+            resolve: (doc) => ({
+              locations: [
+                {
+                  title: doc?.title || 'Homepage',
+                  href: '/',
+                } satisfies DocumentLocation,
+              ],
+            }),
+          }),
           settings: defineLocations({
             locations: [homeLocation],
             message: 'This document is used on all pages',

@@ -1,126 +1,117 @@
 /* ================================================================
-   TestimonialSection — white bg
-   "WHAT MAKES US BETTER" label, CEO card, quote, stats
+   TestimonialSection — Figma node: 1596:368
    ================================================================ */
+
+import CountUpValue from '@/app/components/animations/CountUpValue'
 
 /* ------------------------------------------------------------------ */
 /*  Figma asset URLs — replace with Sanity CDN in production           */
 /* ------------------------------------------------------------------ */
-const CEO_AVATAR =
-  'https://www.figma.com/api/mcp/asset/ed83d52c-27c7-42cc-a96e-5b368ff11b28'
+const AVATAR_IMAGE =
+  'https://www.figma.com/api/mcp/asset/c87df540-3387-46d5-89e7-e2902fa9d694'
 const PLAY_ICON =
-  'https://www.figma.com/api/mcp/asset/15235677-3aab-43e1-b6a4-7d650fff00d7'
+  'https://www.figma.com/api/mcp/asset/662f3274-6ffb-496b-88cf-43463a08c0e2'
+const BRAND_WORDMARK =
+  'https://www.figma.com/api/mcp/asset/5b8c7d0a-9663-4031-bba6-7fd70553b473'
+const BRAND_SEPARATOR =
+  'https://www.figma.com/api/mcp/asset/f22e3313-5985-431f-959a-7d1dda763dc1'
+const BRAND_SUBMARK =
+  'https://www.figma.com/api/mcp/asset/a29b4c6f-2742-4ea5-9d08-025c25ef4256'
 
 const STATS = [
-  {value: '4+', label: 'years of experience'},
-  {value: '120+', label: 'projects done'},
-  {value: '100%', label: 'satisfaction rate'},
-]
+  {value: 4, suffix: '+', label: 'years of experience'},
+  {value: 120, suffix: '+', label: 'projects done'},
+  {value: 100, suffix: '%', label: 'satisfaction rate'},
+] as const
 
-/* ================================================================
-   CEO card
-   ================================================================ */
-function CeoCard() {
+function TestimonialCard() {
   return (
-    <div className="relative w-full sm:w-[352px] h-[380px] rounded-[14px] overflow-hidden shrink-0">
-      {/* Dark base with semi-transparent black */}
-      <div className="absolute inset-0 bg-surface rounded-[14px]" />
+    <article className="relative h-[380px] w-full max-w-[352px] overflow-hidden rounded-[14px]">
+      <div className="absolute inset-0 bg-black" />
+      <div className="absolute bottom-0 left-0 right-0 h-[139px] rounded-b-[10px] bg-[linear-gradient(180deg,rgba(129,110,252,0)_3.509%,rgba(53,23,251,0.6)_79.825%)]" />
 
-      {/* Purple gradient at bottom */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-[139px] rounded-bl-[10px] rounded-br-[10px]"
-        style={{
-          background:
-            'linear-gradient(to bottom, rgba(129,110,252,0) 3.5%, rgba(53,23,251,0.6) 79.8%)',
-        }}
-      />
-
-      {/* Play icon centered */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="size-16 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-          <img src={PLAY_ICON} alt="Play" className="size-8 object-contain" />
-        </div>
+        <img
+          src={PLAY_ICON}
+          alt="Play testimonial"
+          className="h-8 w-8 object-contain"
+        />
       </div>
 
-      {/* Bottom: CEO info */}
-      <div className="absolute bottom-0 left-0 right-0 px-8 pb-8 flex items-end gap-3">
-        {/* Stars rating */}
-        <div className="flex flex-col gap-1 flex-1">
-          <div className="flex gap-0.5 mb-1">
-            {[...Array(5)].map((_, i) => (
-              <svg
-                key={i}
-                className="size-3 text-primary"
-                viewBox="0 0 12 12"
-                fill="currentColor"
-              >
-                <path d="M6 0L7.35 4.15H11.5L8.08 6.7L9.43 10.85L6 8.3L2.57 10.85L3.92 6.7L0.5 4.15H4.65L6 0Z" />
-              </svg>
-            ))}
-          </div>
-          <p className="font-sans text-sm text-white leading-[1.3]">
-            Michał Piotrowski, CEO
+      <div className="absolute bottom-[36px] left-8 flex items-end gap-[7px]">
+        <img
+          src={AVATAR_IMAGE}
+          alt="Michał piotrowski CEO"
+          className="h-[33px] w-[33px] rounded-full object-cover"
+        />
+        <div className="flex flex-col gap-[2px]">
+          <p className="font-display text-sm leading-[18.2px] text-white">
+            Michał piotrowski CEO
           </p>
-        </div>
-        {/* Avatar */}
-        <div className="size-[33px] rounded-full overflow-hidden shrink-0">
-          <img
-            src={CEO_AVATAR}
-            alt="CEO"
-            className="size-full object-cover"
-          />
+          <div className="flex items-end gap-[6px]">
+            <img
+              src={BRAND_WORDMARK}
+              alt="ecodomum"
+              className="h-[10px] w-auto object-contain"
+            />
+            <img
+              src={BRAND_SEPARATOR}
+              alt=""
+              className="h-[9px] w-px object-contain opacity-70"
+              aria-hidden="true"
+            />
+            <img
+              src={BRAND_SUBMARK}
+              alt="Living"
+              className="h-[15px] w-auto object-contain"
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </article>
   )
 }
 
-/* ================================================================
-   TestimonialSection
-   ================================================================ */
 export default function TestimonialSection() {
   return (
-    <section className="py-20 sm:py-24 md:py-[96px]">
+    <section id="proof" className="bg-white py-20 sm:py-24 md:py-[96px]">
       <div className="container">
-        <div className="flex flex-col gap-[96px]">
-          {/* ---- Header block ---- */}
+        <div className="mx-auto flex max-w-[958px] flex-col gap-[96px]">
           <div className="flex flex-col gap-[96px]">
-            {/* Label */}
             <div className="flex items-center gap-3">
-              <div className="size-3 rounded-full bg-primary shrink-0" />
-              <h2 className="font-sans font-bold text-base text-black tracking-[-0.24px]">
-                WHAT{' '}
-                <span className="text-primary">MAKES US BETTER</span>
+              <span
+                className="h-3 w-3 shrink-0 rounded-full bg-primary"
+                aria-hidden="true"
+              />
+              <h2 className="font-sans text-base font-bold tracking-[-0.24px] text-black">
+                WHAT <span className="text-primary">MAKES US BETTER</span>
               </h2>
             </div>
 
-            {/* CEO card + quote */}
-            <div className="flex flex-col lg:flex-row items-start lg:items-center gap-10 lg:gap-0 lg:justify-between">
-              <CeoCard />
+            <div className="flex flex-col items-start gap-10 lg:flex-row lg:items-center lg:justify-between">
+              <TestimonialCard />
 
-              <blockquote className="lg:max-w-[510px] lg:ml-8">
-                <p className="font-sans font-medium text-[22px] sm:text-[28px] leading-[1.2] text-black tracking-[-0.14px]">
-                  &ldquo; Very few firms can make products look beautiful and
-                  work well at the same time, and that&rsquo;s what I love
-                  about Webkowsky! &rdquo;
+              <blockquote className="max-w-[510px]">
+                <p className="font-sans text-[24px] font-medium leading-[1.2] tracking-[-0.14px] text-black sm:text-[28px]">
+                  &ldquo; Very few firms can make products look beautiful and work
+                  well at the same time, and that&rsquo;s what I love about
+                  Webkowsky! &rdquo;
                 </p>
               </blockquote>
             </div>
           </div>
 
-          {/* ---- Stats row ---- */}
-          <div className="flex flex-col sm:flex-row justify-center gap-8 sm:gap-0 sm:divide-x sm:divide-black/10">
-            {STATS.map(({value, label}) => (
-              <div
-                key={label}
-                className="flex flex-col items-center gap-2 sm:px-16 first:pl-0 last:pr-0"
-              >
-                <span className="font-display font-bold text-[56px] sm:text-[64px] leading-[1.16] tracking-[-0.96px] text-primary">
-                  {value}
-                </span>
-                <span className="font-display font-medium text-base text-black">
+          <div className="mx-auto flex w-full max-w-[887px] flex-col items-center gap-12 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+            {STATS.map(({value, suffix, label}) => (
+              <div key={label} className="text-center">
+                <CountUpValue
+                  value={value}
+                  suffix={suffix}
+                  className="font-display text-[56px] leading-[1.16] font-bold tracking-[-0.96px] text-primary sm:text-[64px]"
+                />
+                <p className="font-display text-base font-medium text-black">
                   {label}
-                </span>
+                </p>
               </div>
             ))}
           </div>

@@ -1,0 +1,275 @@
+{
+  "_id": "homepage",
+  "_type": "homepage",
+  "title": "Homepage",
+  "locale": "pl",
+  "seo": {
+    "_type": "homeSeo",
+    "title": "Webkowsky — We create Fortune 500 websites",
+    "description": "Webkowsky is a leading UX design agency based in Poland and US. We help startups and Fortune 500 companies delight humans on the other side of the screen."
+  },
+  "sections": [
+    {
+      "_key": "legacy-hero",
+      "_type": "homeLegacyHeroSection",
+      "titleLinePrimary": "We create",
+      "titleLineSecondary": "Fortune 500",
+      "titleLineTertiary": "websites",
+      "description": "Webkowsky is a leading UX design agency based in Poland and US. We help startups and Fortune 500 companies delight humans on the other side of the screen.",
+      "ctaButton": {
+        "_type": "button",
+        "buttonText": "Book a call",
+        "link": {
+          "_type": "link",
+          "linkType": "href",
+          "href": "/contact"
+        }
+      },
+      "cards": [
+        {
+          "_key": "hero-card-1",
+          "_type": "object",
+          "label": "How do you want to build?"
+        },
+        {
+          "_key": "hero-card-2",
+          "_type": "object",
+          "label": "Watch how we build your brand."
+        },
+        {
+          "_key": "hero-card-3",
+          "_type": "object",
+          "label": "How do you want to build?"
+        }
+      ]
+    },
+    {
+      "_key": "legacy-logo-bar",
+      "_type": "homeLegacyLogoBarSection",
+      "logos": [
+        {
+          "_key": "logo-1",
+          "_type": "object",
+          "name": "Apple"
+        },
+        {
+          "_key": "logo-2",
+          "_type": "object",
+          "name": "Apple"
+        },
+        {
+          "_key": "logo-3",
+          "_type": "object",
+          "name": "Apple"
+        },
+        {
+          "_key": "logo-4",
+          "_type": "object",
+          "name": "Apple"
+        },
+        {
+          "_key": "logo-5",
+          "_type": "object",
+          "name": "Apple"
+        }
+      ]
+    },
+    {
+      "_key": "legacy-testimonial",
+      "_type": "homeLegacyTestimonialSection",
+      "labelPrefix": "WHAT",
+      "labelHighlight": "MAKES US BETTER",
+      "quote": "Very few firms can make products look beautiful and work well at the same time, and that's what I love about Webkowsky!",
+      "personName": "Michał Piotrowski",
+      "personRole": "CEO",
+      "companyName": "ecodomum",
+      "companySubmark": "Living",
+      "stats": [
+        {
+          "_key": "stat-1",
+          "_type": "object",
+          "value": 4,
+          "suffix": "+",
+          "label": "years of experience"
+        },
+        {
+          "_key": "stat-2",
+          "_type": "object",
+          "value": 120,
+          "suffix": "+",
+          "label": "projects done"
+        },
+        {
+          "_key": "stat-3",
+          "_type": "object",
+          "value": 100,
+          "suffix": "%",
+          "label": "satisfaction rate"
+        }
+      ]
+    },
+    {
+      "_key": "legacy-work",
+      "_type": "homeLegacyWorkSection",
+      "labelPrefix": "OUR",
+      "labelSuffix": "WORK",
+      "cards": [
+        {
+          "_key": "work-1",
+          "company": "Ecodomum",
+          "description": "Ecodomum is a leading UX design agency based in Poland and US. We help startups.",
+          "_type": "object"
+        },
+        {
+          "_key": "work-2",
+          "company": "Ecodomum",
+          "description": "Ecodomum is a leading UX design agency based in Poland and US. We help startups.",
+          "_type": "object"
+        },
+        {
+          "_key": "work-3",
+          "company": "Ecodomum",
+          "description": "Ecodomum is a leading UX design agency based in Poland and US. We help startups.",
+          "_type": "object"
+        }
+      ]
+    },
+    {
+      "_key": "legacy-offer",
+      "_type": "homeLegacyOfferSection",
+      "title": "xSite",
+      "subtitlePrefix": "All-in-one",
+      "subtitleHighlight": "website strategy",
+      "categories": [
+        {
+          "_key": "cat-marketing",
+          "_type": "object",
+          "name": "Marketing",
+          "activeFeature": "SEO and content plan tailored to real user intent",
+          "inactiveFeatures": [
+            "Conversion-first copywriting",
+            "Google Ads aligned with the sales funnel",
+            "Continuous optimization based on insights"
+          ]
+        },
+        {
+          "_key": "cat-founders",
+          "_type": "object",
+          "name": "Founders",
+          "activeFeature": "Brand strategy and offer positioning for growth",
+          "inactiveFeatures": [
+            "Business model-first website planning",
+            "Clear milestones and roadmap",
+            "Weekly iterative support"
+          ]
+        }
+      ],
+      "description": "This section is now editable in Sanity. Replace title, categories, text, image and CTA buttons.",
+      "primaryButton": {
+        "_type": "button",
+        "buttonText": "Learn more",
+        "link": {
+          "_type": "link",
+          "linkType": "href",
+          "href": "/about"
+        }
+      },
+      "secondaryButton": {
+        "_type": "button",
+        "buttonText": "Book a call",
+        "link": {
+          "_type": "link",
+          "linkType": "href",
+          "href": "/contact"
+        }
+      }
+    },
+    {
+      "_key": "legacy-pricing",
+      "_type": "homeLegacyPricingSection",
+      "subtitlePrefix": "All-in-one",
+      "subtitleHighlight": "website strategy",
+      "defaultPlanTitle": "Custom",
+      "plans": [
+        {
+          "_key": "plan-custom",
+          "_type": "object",
+          "title": "Custom",
+          "price": "$20,000",
+          "features": [
+            {
+              "_key": "f1",
+              "_type": "object",
+              "text": "Brand, Experience, or Interface design support",
+              "active": true
+            },
+            {
+              "_key": "f2",
+              "_type": "object",
+              "text": "On-going monthly retainer to fit your needs",
+              "active": false
+            }
+          ],
+          "description": "This pricing plan is editable in Sanity. Update features, prices, copy and CTA.",
+          "primaryButton": {
+            "_type": "button",
+            "buttonText": "Learn more",
+            "link": {
+              "_type": "link",
+              "linkType": "href",
+              "href": "/contact"
+            }
+          },
+          "secondaryButton": {
+            "_type": "button",
+            "buttonText": "Book a call",
+            "link": {
+              "_type": "link",
+              "linkType": "href",
+              "href": "/contact"
+            }
+          }
+        },
+        {
+          "_key": "plan-monthly",
+          "_type": "object",
+          "title": "Monthly",
+          "price": "$10,000/mo",
+          "features": [
+            {
+              "_key": "m1",
+              "_type": "object",
+              "text": "Brand, Experience, or Interface design support",
+              "active": true
+            },
+            {
+              "_key": "m2",
+              "_type": "object",
+              "text": "On-going monthly retainer to fit your needs",
+              "active": true
+            }
+          ],
+          "description": "Second pricing plan editable in Sanity.",
+          "primaryButton": {
+            "_type": "button",
+            "buttonText": "Learn more",
+            "link": {
+              "_type": "link",
+              "linkType": "href",
+              "href": "/contact"
+            }
+          },
+          "secondaryButton": {
+            "_type": "button",
+            "buttonText": "Book a call",
+            "link": {
+              "_type": "link",
+              "linkType": "href",
+              "href": "/contact"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

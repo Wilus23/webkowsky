@@ -10,50 +10,27 @@ import {
 import {type PointerEventHandler, useEffect, useState} from 'react'
 
 import {motionTokens} from '@/app/components/animations/motionTokens'
+import Image from '@/app/components/SanityImage'
 
-/* ================================================================
-   OurWorkSection — dark bg, "OUR WORK" label, 3 portfolio cards
-   ================================================================ */
+type LegacyWorkCard = {
+  company?: string | null
+  description?: string | null
+  image?: unknown
+  badge?: unknown
+}
 
-/* ------------------------------------------------------------------ */
-/*  Figma asset URLs — replace with Sanity CDN in production           */
-/* ------------------------------------------------------------------ */
-const PORTFOLIO_1 =
-  'https://www.figma.com/api/mcp/asset/97cc0121-ca63-44a4-be41-0f5f009ee6cf'
-const PORTFOLIO_2 =
-  'https://www.figma.com/api/mcp/asset/b1232b41-8c1b-44cb-86fd-c18bebf12059'
-const PORTFOLIO_3 =
-  'https://www.figma.com/api/mcp/asset/4960a9b6-fded-4a11-92ef-aa2cae7ebb8a'
-const ICON_BADGE_1 =
-  'https://www.figma.com/api/mcp/asset/5e36ea71-5bad-4cbe-95e2-9134bc208aa7'
-const ICON_BADGE_2 =
-  'https://www.figma.com/api/mcp/asset/3b0b7d90-147d-48ca-a081-cebe5f4a22d8'
-const LAPTOP_MOCKUP =
-  'https://www.figma.com/api/mcp/asset/076a6722-947b-4135-aaa5-8d88c3ce2b96'
+type LegacyWorkSection = {
+  labelPrefix?: string | null
+  labelSuffix?: string | null
+  mockupImage?: unknown
+  cards?: LegacyWorkCard[] | null
+}
 
-const CARDS = [
-  {
-    image: PORTFOLIO_1,
-    badge: ICON_BADGE_1,
-    company: 'Ecodomum',
-    description:
-      'Ecodomum is a leading UX design agency based in Poland and US. We help startups.',
-  },
-  {
-    image: PORTFOLIO_2,
-    badge: ICON_BADGE_1,
-    company: 'Ecodomum',
-    description:
-      'Ecodomum is a leading UX design agency based in Poland and US. We help startups.',
-  },
-  {
-    image: PORTFOLIO_3,
-    badge: ICON_BADGE_2,
-    company: 'ecodomum',
-    description:
-      'Ecodomum is a leading UX design agency based in Poland and US. We help startups.',
-  },
-]
+function imageRef(value: unknown): string | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  const maybeAsset = (value as {asset?: {_ref?: string}}).asset
+  return maybeAsset?._ref
+}
 
 function usePointerReactiveEffects() {
   const prefersReducedMotion = useReducedMotion()
@@ -81,16 +58,19 @@ function usePointerReactiveEffects() {
   return supportsFinePointer && !prefersReducedMotion
 }
 
-/* ================================================================
-   PortfolioCard
-   ================================================================ */
-function PortfolioCard({
-  image,
-  badge,
-  company,
-  description,
+function WorkCard({
+  card,
+  mockupImage,
   pointerReactive,
-}: (typeof CARDS)[number] & {pointerReactive: boolean}) {
+}: {
+  card: LegacyWorkCard
+  mockupImage?: unknown
+  pointerReactive: boolean
+}) {
+  const imageId = imageRef(card.image)
+  const badgeId = imageRef(card.badge)
+  const mockupId = imageRef(mockupImage)
+
   const rotateX = useMotionValue(0)
   const rotateY = useMotionValue(0)
   const mediaX = useMotionValue(0)
@@ -195,88 +175,104 @@ function PortfolioCard({
           ease: motionTokens.easing.standard,
         }}
       >
-        {/* Portfolio background image */}
         <motion.div
           className="absolute inset-0"
           style={pointerReactive ? {x: smoothMediaX, y: smoothMediaY} : undefined}
         >
-          <img
-            src={image}
-            alt={company}
-            className="absolute inset-0 size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.055]"
-          />
+          {imageId ? (
+            <Image
+              id={imageId}
+              alt={card.company || 'Case study'}
+              width={806}
+              height={920}
+              mode="cover"
+              className="absolute inset-0 size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.055]"
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-black/25" />
+          )}
         </motion.div>
 
-        {/* Subtle dark vignette so text is readable */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/30" />
 
-        {/* Reactive highlight */}
         <motion.div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
           style={pointerReactive ? {background: highlightBackground} : undefined}
         />
 
-        {/* Company badge — top area */}
         <div className="absolute left-[25px] right-[25px] top-[26px]">
-          <img
-            src={badge}
-            alt={company}
-            className="h-[43px] w-auto max-w-full object-contain object-left"
-          />
+          {badgeId ? (
+            <Image
+              id={badgeId}
+              alt={`${card.company || 'Company'} badge`}
+              width={220}
+              height={64}
+              mode="contain"
+              className="h-[43px] w-auto max-w-full object-contain object-left"
+              sizes="220px"
+            />
+          ) : null}
         </div>
 
-        {/* Description text — upper-middle */}
         <div className="absolute left-[25px] right-[25px] top-[90px]">
           <p className="line-clamp-4 font-sans text-sm leading-[1.3] text-white">
-            {description}
+            {card.description}
           </p>
         </div>
 
-        {/* Laptop mockup — centered, lower portion */}
         <div className="absolute bottom-0 left-1/2 h-[238px] w-[229px] -translate-x-1/2 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1">
-          <motion.img
-            src={LAPTOP_MOCKUP}
-            alt=""
-            className="absolute inset-0 size-full object-cover"
-            style={pointerReactive ? {x: smoothLaptopX, y: smoothLaptopY} : undefined}
-          />
+          {mockupId ? (
+            <motion.div
+              className="absolute inset-0"
+              style={pointerReactive ? {x: smoothLaptopX, y: smoothLaptopY} : undefined}
+            >
+              <Image
+                id={mockupId}
+                alt=""
+                width={458}
+                height={476}
+                mode="cover"
+                className="absolute inset-0 size-full object-cover"
+                sizes="229px"
+              />
+            </motion.div>
+          ) : null}
         </div>
       </motion.article>
     </div>
   )
 }
 
-/* ================================================================
-   OurWorkSection
-   ================================================================ */
-export default function OurWorkSection() {
+export default function OurWorkSanitySection({section}: {section: LegacyWorkSection}) {
+  const cards = section.cards || []
   const pointerReactive = usePointerReactiveEffects()
 
   return (
-    <section className="py-20 sm:py-24 md:py-[96px]">
+    <div className="py-20 sm:py-24 md:py-[96px]">
       <div className="container">
         <div className="flex flex-col gap-[71px]">
-          {/* Section label */}
           <div className="flex items-center gap-3">
             <div className="size-3 shrink-0 rounded-full bg-[#f2de9f]" />
             <h2 className="font-sans text-base font-bold tracking-[-0.24px] text-white">
-              OUR <span className="text-white">WORK</span>
+              {section.labelPrefix || 'OUR'}{' '}
+              <span className="text-white">{section.labelSuffix || 'WORK'}</span>
             </h2>
           </div>
 
-          {/* Cards */}
           <div className="flex flex-col flex-wrap gap-4 sm:flex-row">
-            {CARDS.map((card) => (
-              <PortfolioCard
-                key={card.company + card.image}
-                {...card}
+            {cards.map((card, index) => (
+              <WorkCard
+                key={`${card.company || 'work'}-${index}`}
+                card={card}
+                mockupImage={section.mockupImage}
                 pointerReactive={pointerReactive}
               />
             ))}
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }

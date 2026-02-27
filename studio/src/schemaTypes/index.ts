@@ -19,6 +19,12 @@ import {homeUseCasesSection} from './objects/homeUseCasesSection'
 import {homeRoiSection} from './objects/homeRoiSection'
 import {homeFaqSection} from './objects/homeFaqSection'
 import {homeContactSection} from './objects/homeContactSection'
+import {homeLegacyHeroSection} from './objects/homeLegacyHeroSection'
+import {homeLegacyLogoBarSection} from './objects/homeLegacyLogoBarSection'
+import {homeLegacyTestimonialSection} from './objects/homeLegacyTestimonialSection'
+import {homeLegacyWorkSection} from './objects/homeLegacyWorkSection'
+import {homeLegacyOfferSection} from './objects/homeLegacyOfferSection'
+import {homeLegacyPricingSection} from './objects/homeLegacyPricingSection'
 
 // Export an array of all the schema types.  This is used in the Sanity Studio configuration. https://www.sanity.io/docs/studio/schema-types
 
@@ -47,4 +53,10 @@ export const schemaTypes = [
   homeRoiSection,
   homeFaqSection,
   homeContactSection,
+  homeLegacyHeroSection,
+  homeLegacyLogoBarSection,
+  homeLegacyTestimonialSection,
+  homeLegacyWorkSection,
+  homeLegacyOfferSection,
+  homeLegacyPricingSection,
 ]

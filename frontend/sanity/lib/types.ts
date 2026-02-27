@@ -1,4 +1,4 @@
-import {GetPageQueryResult} from '@/sanity.types'
+import {GetPageQueryResult, HomepageQueryResult} from '@/sanity.types'
 
 export type PageBuilderSection = NonNullable<NonNullable<GetPageQueryResult>['pageBuilder']>[number]
 export type ExtractPageBuilderType<T extends PageBuilderSection['_type']> = Extract<
@@ -9,11 +9,11 @@ export type ExtractPageBuilderType<T extends PageBuilderSection['_type']> = Extr
 // Represents a Link after GROQ dereferencing (page/post become slug strings)
 export type DereferencedLink = {
   _type: 'link'
-  linkType?: 'href' | 'page' | 'post'
-  href?: string
+  linkType?: 'href' | 'page' | 'post' | null
+  href?: string | null
   page?: string | null
   post?: string | null
-  openInNewTab?: boolean
+  openInNewTab?: boolean | null
 }
 
 export type HomeButton = {
@@ -26,76 +26,24 @@ type HomeSectionBase = {
   _type: string
 }
 
-export type HomeHeroSection = HomeSectionBase & {
-  _type: 'homeHeroSection'
-  eyebrow?: string
-  heading?: string
-  subheading?: string
-  badges?: string[]
-  primaryButton?: HomeButton
-  secondaryButton?: HomeButton
-}
+type HomepageQueryDocument = NonNullable<HomepageQueryResult>
+type HomepageQuerySection = NonNullable<HomepageQueryDocument['sections']>[number]
 
-export type HomeLogosSection = HomeSectionBase & {
-  _type: 'homeLogosSection'
-  heading?: string
-  logos?: {name?: string; logo?: unknown; link?: string}[]
-}
-
-export type HomeCaseStudiesSection = HomeSectionBase & {
-  _type: 'homeCaseStudiesSection'
-  heading?: string
-  subheading?: string
-  items?: {title?: string; summary?: string; image?: unknown; button?: HomeButton}[]
-}
-
-export type HomeProblemSection = HomeSectionBase & {
-  _type: 'homeProblemSection'
-  heading?: string
-  description?: string
-  problems?: string[]
-}
-
-export type HomeOfferSection = HomeSectionBase & {
-  _type: 'homeOfferSection'
-  heading?: string
-  subheading?: string
-  offers?: {name?: string; description?: string; priceNote?: string; button?: HomeButton}[]
-}
-
-export type HomeUseCasesSection = HomeSectionBase & {
-  _type: 'homeUseCasesSection'
-  heading?: string
-  useCases?: {
-    label?: string
-    heading?: string
-    description?: string
-    bullets?: string[]
-    button?: HomeButton
-  }[]
-}
-
-export type HomeRoiSection = HomeSectionBase & {
-  _type: 'homeRoiSection'
-  heading?: string
-  description?: string
-  button?: HomeButton
-  embedUrl?: string
-}
-
-export type HomeFaqSection = HomeSectionBase & {
-  _type: 'homeFaqSection'
-  heading?: string
-  items?: {question?: string; answer?: string}[]
-}
-
-export type HomeContactSection = HomeSectionBase & {
-  _type: 'homeContactSection'
-  heading?: string
-  description?: string
-  email?: string
-  button?: HomeButton
-}
+export type HomeHeroSection = Extract<HomepageQuerySection, {_type: 'homeHeroSection'}>
+export type HomeLogosSection = Extract<HomepageQuerySection, {_type: 'homeLogosSection'}>
+export type HomeCaseStudiesSection = Extract<HomepageQuerySection, {_type: 'homeCaseStudiesSection'}>
+export type HomeProblemSection = Extract<HomepageQuerySection, {_type: 'homeProblemSection'}>
+export type HomeOfferSection = Extract<HomepageQuerySection, {_type: 'homeOfferSection'}>
+export type HomeUseCasesSection = Extract<HomepageQuerySection, {_type: 'homeUseCasesSection'}>
+export type HomeRoiSection = Extract<HomepageQuerySection, {_type: 'homeRoiSection'}>
+export type HomeFaqSection = Extract<HomepageQuerySection, {_type: 'homeFaqSection'}>
+export type HomeContactSection = Extract<HomepageQuerySection, {_type: 'homeContactSection'}>
+export type HomeLegacyHeroSection = Extract<HomepageQuerySection, {_type: 'homeLegacyHeroSection'}>
+export type HomeLegacyLogoBarSection = Extract<HomepageQuerySection, {_type: 'homeLegacyLogoBarSection'}>
+export type HomeLegacyTestimonialSection = Extract<HomepageQuerySection, {_type: 'homeLegacyTestimonialSection'}>
+export type HomeLegacyWorkSection = Extract<HomepageQuerySection, {_type: 'homeLegacyWorkSection'}>
+export type HomeLegacyOfferSection = Extract<HomepageQuerySection, {_type: 'homeLegacyOfferSection'}>
+export type HomeLegacyPricingSection = Extract<HomepageQuerySection, {_type: 'homeLegacyPricingSection'}>
 
 export type UnknownHomeSection = HomeSectionBase & {
   _type: string
@@ -103,26 +51,7 @@ export type UnknownHomeSection = HomeSectionBase & {
 }
 
 export type HomeSection =
-  | HomeHeroSection
-  | HomeLogosSection
-  | HomeCaseStudiesSection
-  | HomeProblemSection
-  | HomeOfferSection
-  | HomeUseCasesSection
-  | HomeRoiSection
-  | HomeFaqSection
-  | HomeContactSection
+  | HomepageQuerySection
   | UnknownHomeSection
 
-export type HomepageDocument = {
-  _id: string
-  _type: 'homepage'
-  title?: string
-  locale?: string
-  seo?: {
-    title?: string
-    description?: string
-    ogImage?: unknown
-  }
-  sections?: HomeSection[]
-}
+export type HomepageDocument = HomepageQueryDocument
