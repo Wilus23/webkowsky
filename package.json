@@ -1,6 +1,6 @@
 {
   "name": "webkowsky-site",
-  "version": "0.1.0",
+  "version": "0.9.1",
   "private": true,
   "description": "Next.js + Sanity: A Powerful Website Starter with Real-time Visual Editing",
   "repository": {
@@ -30,6 +30,12 @@
     "format": "prettier --cache --write .",
     "import-sample-data": "cd studio && sanity dataset import sample-data.tar.gz --replace",
     "lint": "npm run lint --workspace=frontend",
+    "release:preview:patch": "node ./scripts/release.mjs preview patch",
+    "release:preview:minor": "node ./scripts/release.mjs preview minor",
+    "release:preview:major": "node ./scripts/release.mjs preview major",
+    "release:patch": "node ./scripts/release.mjs stable patch",
+    "release:minor": "node ./scripts/release.mjs stable minor",
+    "release:major": "node ./scripts/release.mjs stable major",
     "type-check": "npm run type-check --workspaces"
   },
   "engines": {
