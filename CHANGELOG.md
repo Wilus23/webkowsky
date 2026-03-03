@@ -19,6 +19,21 @@ Preview deploys are versioned through Git tags and GitHub prereleases, not throu
 
 - _None yet_
 
+## [0.9.3] - 2026-03-04
+
+### Added
+
+- _None_
+
+### Changed
+
+- Recorded the hosted Sanity Studio deployment for the current CMS-driven homepage and global settings rollout.
+- Aligned the cloud Studio deployment to use the production preview origin `https://www.webkowsky.com`.
+
+### Fixed
+
+- Restored editing parity between localhost Studio and the hosted `webkowsky-studio.sanity.studio` deployment.
+
 ## [0.9.2] - 2026-03-03
 
 ### Added
