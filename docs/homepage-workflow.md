@@ -3,12 +3,14 @@
 ## 1) Ownership and source of truth
 
 - Route `/` is rendered from Sanity document `homepage` (singleton, `_id = "homepage"`).
+- Route `/` always renders from `homepage.sections[]`; section order in Sanity is the live page order.
 - Marketing owns:
   - section copy,
   - section images,
   - CTA labels and links,
   - FAQ items,
   - section order (`sections[]` drag and drop),
+  - section add/remove/duplicate in `sections[]`,
   - homepage SEO (`seo.title`, `seo.description`, `seo.ogImage`).
 - Engineering owns layout structure and component behavior.
 
@@ -36,13 +38,13 @@ Recommended Vercel variables:
 
 1. Open `Homepage` in Studio.
 2. Update section content (text, images, links).
-3. For current legacy homepage layout, edit these section types in `sections[]`:
-   - `Home Legacy Hero Section` (headline, hero text, CTA, cards),
-   - `Home Legacy Logo Bar Section` (logos and links),
-   - `Home Legacy Testimonial Section` (quote, person, stats),
-   - `Home Legacy Work Section` (cards, badge, mockup, copy),
-   - `Home Legacy Offer Section` (title, categories, image, CTA),
-   - `Home Legacy Pricing Section` (plans, features, image, CTA).
+3. For the current homepage layout, edit these section types in `sections[]`:
+   - `Homepage Hero Section` (headline, hero text, CTA, cards),
+   - `Homepage Logo Bar Section` (logos and links),
+   - `Homepage Testimonial Section` (quote, person, stats),
+   - `Homepage Work Section` (cards, badge, mockup, copy),
+   - `Homepage Offer Section` (title, categories, image, CTA),
+   - `Homepage Pricing Section` (plans, features, image, CTA).
 4. Reorder sections in `sections[]`.
 5. Update SEO fields in `seo`.
 6. Publish to staging dataset.
@@ -82,7 +84,8 @@ Recommended Vercel variables:
 
 ## 6) Notes
 
-- If `homepage` is missing, frontend falls back to legacy homepage sections.
+- If `homepage` is missing, frontend shows a CMS setup state with a direct link to Studio.
+- If `homepage.sections[]` is empty, frontend shows an empty-state prompt and the page is ready for drag-and-drop authoring.
 - Unknown section types render a warning block and do not crash the page.
 - Local visual editing requires `SANITY_STUDIO_PREVIEW_URL=http://localhost:3000` in `studio/.env`, with Next.js on `:3000` and Studio on `:3333`.
 - If the singleton is missing in a dataset, bootstrap it with:

@@ -61,9 +61,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   const {isEnabled: isDraftMode} = await draftMode()
 
   return (
-    <html lang="en" className={ibmPlexMono.variable}>
+    <html lang="en" className={ibmPlexMono.variable} suppressHydrationWarning>
       <body className="bg-surface text-white antialiased">
-        <CursorDot />
+        {!isDraftMode ? <CursorDot /> : null}
         <Toaster />
         {isDraftMode && (
           <>

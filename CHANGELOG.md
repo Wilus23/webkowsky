@@ -19,6 +19,24 @@ Preview deploys are versioned through Git tags and GitHub prereleases, not throu
 
 - _None yet_
 
+## [0.9.2] - 2026-03-03
+
+### Added
+
+- Added Sanity-driven global settings fields for editable header navigation, header CTA, footer CTA, footer legal links, and footer copy.
+- Added field-level visual editing hooks for more homepage content and global settings content.
+
+### Changed
+
+- Switched the homepage to fetch both homepage sections and global settings in a single CMS-driven render path.
+- Restored missing homepage sections in the homepage singleton and improved section editing behavior for images, buttons, and tab-specific media.
+- Updated the hero width behavior for large displays and restored the pricing card to a lighter visual treatment.
+
+### Fixed
+
+- Removed broken footer asset dependencies and replaced them with stable local SVG/CSS rendering.
+- Reduced draft-mode rendering instability by disabling the custom cursor effect during visual editing and suppressing extension-driven hydration noise.
+
 ## [0.9.1] - 2026-03-02
 
 ### Added

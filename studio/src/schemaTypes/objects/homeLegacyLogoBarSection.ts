@@ -3,7 +3,7 @@ import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const homeLegacyLogoBarSection = defineType({
   name: 'homeLegacyLogoBarSection',
-  title: 'Home Legacy Logo Bar Section',
+  title: 'Homepage Logo Bar Section',
   type: 'object',
   icon: ImageIcon,
   fields: [
@@ -47,7 +47,7 @@ export const homeLegacyLogoBarSection = defineType({
   ],
   preview: {
     prepare() {
-      return {title: 'Legacy Logo Bar', subtitle: 'Scrolling logos'}
+      return {title: 'Logo Bar', subtitle: 'Homepage logo strip'}
     },
   },
 })

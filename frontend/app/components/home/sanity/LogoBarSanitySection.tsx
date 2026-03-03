@@ -1,4 +1,5 @@
 import Image from '@/app/components/SanityImage'
+import {getVisualDataAttribute, keyPath, type VisualEditingProps} from './visualEditing'
 
 type LegacyLogoItem = {
   _key?: string
@@ -17,7 +18,13 @@ function imageRef(value: unknown): string | undefined {
   return maybeAsset?._ref
 }
 
-export default function LogoBarSanitySection({section}: {section: LegacyLogoBarSection}) {
+export default function LogoBarSanitySection({
+  section,
+  visualEditing,
+}: {
+  section: LegacyLogoBarSection
+  visualEditing?: VisualEditingProps
+}) {
   const logos = (section.logos || []).filter((logo): logo is LegacyLogoItem => !!logo?.name)
   const carouselItems = [...logos, ...logos]
 
@@ -29,21 +36,30 @@ export default function LogoBarSanitySection({section}: {section: LegacyLogoBarS
             {carouselItems.map((logo, index) => {
               const isDuplicate = index >= logos.length
               const logoId = imageRef(logo.logo)
+              const imageDataAttr = isDuplicate
+                ? undefined
+                : getVisualDataAttribute(visualEditing, keyPath('logos', logo._key, 'logo'))
 
               const content = (
                 <>
                   {logoId ? (
-                    <Image
-                      id={logoId}
-                      alt={logo.name || 'Logo'}
-                      width={128}
-                      height={32}
-                      mode="contain"
-                      className="h-8 w-auto max-w-[140px] object-contain"
-                      sizes="(min-width: 1024px) 128px, 20vw"
-                    />
+                    <span className="inline-flex" data-sanity={imageDataAttr}>
+                      <Image
+                        id={logoId}
+                        alt={logo.name || 'Logo'}
+                        width={128}
+                        height={32}
+                        mode="contain"
+                        className="h-8 w-auto max-w-[140px] object-contain"
+                        sizes="(min-width: 1024px) 128px, 20vw"
+                      />
+                    </span>
                   ) : (
-                    <span className="size-8 rounded-full border border-white/30" aria-hidden="true" />
+                    <span
+                      className="size-8 rounded-full border border-white/30"
+                      aria-hidden="true"
+                      data-sanity={imageDataAttr}
+                    />
                   )}
                   <span className="font-sans text-[20px] font-medium leading-[1.2] text-white">{logo.name}</span>
                 </>

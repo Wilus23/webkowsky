@@ -8,6 +8,7 @@ import LegacyOfferInteractive, {
   type LegacyOfferTab,
 } from '@/app/components/home/shared/LegacyOfferInteractive'
 import {DereferencedLink} from '@/sanity/lib/types'
+import {getVisualDataAttribute, keyPath, type VisualEditingProps} from './visualEditing'
 
 type LegacyButton = {
   buttonText?: string | null
@@ -19,6 +20,7 @@ type LegacyOfferCategory = {
   name?: string | null
   activeFeature?: string | null
   inactiveFeatures?: Array<string | null> | null
+  image?: unknown
 }
 
 type LegacyOfferSection = {
@@ -38,7 +40,13 @@ function imageRef(value: unknown): string | undefined {
   return maybeAsset?._ref
 }
 
-export default function FeaturesSanitySection({section}: {section: LegacyOfferSection}) {
+export default function FeaturesSanitySection({
+  section,
+  visualEditing,
+}: {
+  section: LegacyOfferSection
+  visualEditing?: VisualEditingProps
+}) {
   const categories = useMemo(
     () =>
       (section.categories || []).filter(
@@ -51,20 +59,30 @@ export default function FeaturesSanitySection({section}: {section: LegacyOfferSe
 
   const tabs = useMemo<LegacyOfferTab[]>(
     () =>
-      categories.map((category) => ({
-        key: category._key || category.name,
-        label: category.name,
-        activeFeature: category.activeFeature || 'Feature',
-        inactiveFeatures: (category.inactiveFeatures || []).filter(
-          (feature): feature is string => !!feature,
-        ),
-        description: section.description || undefined,
-        visual: sectionImageId
-          ? {
-              type: 'custom' as const,
-              content: (
+      categories.map((category) => {
+        const categoryImageId = imageRef(category.image)
+        const selectedImageId = categoryImageId || sectionImageId
+
+        return {
+          key: category._key || category.name,
+          label: category.name,
+          activeFeature: category.activeFeature || 'Feature',
+          inactiveFeatures: (category.inactiveFeatures || []).filter(
+            (feature): feature is string => !!feature,
+          ),
+          description: section.description || undefined,
+          visual: {
+            type: 'custom' as const,
+            content: selectedImageId ? (
+              <span
+                className="block h-full w-full"
+                data-sanity={getVisualDataAttribute(
+                  visualEditing,
+                  category._key ? keyPath('categories', category._key, 'image') : 'image',
+                )}
+              >
                 <Image
-                  id={sectionImageId}
+                  id={selectedImageId}
                   alt={category.name || section.title || 'Offer section image'}
                   width={960}
                   height={224}
@@ -72,11 +90,20 @@ export default function FeaturesSanitySection({section}: {section: LegacyOfferSe
                   className="h-full w-full object-cover"
                   sizes="(min-width: 1024px) 544px, 100vw"
                 />
-              ),
-            }
-          : undefined,
-      })),
-    [categories, section.description, section.title, sectionImageId],
+              </span>
+            ) : (
+              <span
+                className="block h-full w-full rounded-[14px] border border-white/25 bg-white/5"
+                data-sanity={getVisualDataAttribute(
+                  visualEditing,
+                  category._key ? keyPath('categories', category._key, 'image') : 'image',
+                )}
+              />
+            ),
+          },
+        }
+      }),
+    [categories, section.description, section.title, sectionImageId, visualEditing],
   )
 
   return (
@@ -89,18 +116,22 @@ export default function FeaturesSanitySection({section}: {section: LegacyOfferSe
       renderPrimaryCta={
         section.primaryButton?.buttonText && section.primaryButton.link
           ? (className) => (
-              <ResolvedLink link={section.primaryButton!.link!} className={className}>
-                {section.primaryButton!.buttonText}
-              </ResolvedLink>
+              <span data-sanity={getVisualDataAttribute(visualEditing, 'primaryButton')}>
+                <ResolvedLink link={section.primaryButton!.link!} className={className}>
+                  {section.primaryButton!.buttonText}
+                </ResolvedLink>
+              </span>
             )
           : undefined
       }
       renderSecondaryCta={
         section.secondaryButton?.buttonText && section.secondaryButton.link
           ? (className) => (
-              <ResolvedLink link={section.secondaryButton!.link!} className={className}>
-                {section.secondaryButton!.buttonText}
-              </ResolvedLink>
+              <span data-sanity={getVisualDataAttribute(visualEditing, 'secondaryButton')}>
+                <ResolvedLink link={section.secondaryButton!.link!} className={className}>
+                  {section.secondaryButton!.buttonText}
+                </ResolvedLink>
+              </span>
             )
           : undefined
       }

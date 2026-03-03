@@ -1,4 +1,5 @@
 import {dataAttr} from '@/sanity/lib/utils'
+import {studioUrl} from '@/sanity/lib/api'
 import {
   HomeCaseStudiesSection,
   HomeContactSection,
@@ -26,11 +27,17 @@ import LogoBarSanitySection from '@/app/components/home/sanity/LogoBarSanitySect
 import OurWorkSanitySection from '@/app/components/home/sanity/OurWorkSanitySection'
 import PricingSanitySection from '@/app/components/home/sanity/PricingSanitySection'
 import TestimonialSanitySection from '@/app/components/home/sanity/TestimonialSanitySection'
+import {getVisualDataAttribute, keyPath, type VisualEditingProps} from '@/app/components/home/sanity/visualEditing'
 
 function imageRef(value: unknown): string | undefined {
   if (!value || typeof value !== 'object') return undefined
   const maybeAsset = (value as {asset?: {_ref?: string}}).asset
   return maybeAsset?._ref
+}
+
+function itemKey(value: unknown): string | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  return (value as {_key?: string})._key
 }
 
 function SectionWrapper({
@@ -53,6 +60,14 @@ function SectionWrapper({
       {children}
     </section>
   )
+}
+
+function sectionVisualEditing(page: HomepageDocument, block: HomeSection): VisualEditingProps {
+  return {
+    id: page._id,
+    type: page._type,
+    path: `sections[_key=="${block._key}"]`,
+  }
 }
 
 function HeroSection({page, block}: {page: HomepageDocument; block: HomeHeroSection}) {
@@ -104,6 +119,8 @@ function HeroSection({page, block}: {page: HomepageDocument; block: HomeHeroSect
 }
 
 function LogosSection({page, block}: {page: HomepageDocument; block: HomeLogosSection}) {
+  const visualEditing = sectionVisualEditing(page, block)
+
   return (
     <SectionWrapper page={page} block={block}>
       <div className="container py-12">
@@ -111,17 +128,26 @@ function LogosSection({page, block}: {page: HomepageDocument; block: HomeLogosSe
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 items-center">
           {block.logos?.map((logo, index) => {
             const id = imageRef(logo.logo)
+            const imageDataAttr = getVisualDataAttribute(
+              visualEditing,
+              keyPath('logos', itemKey(logo) ?? index, 'logo'),
+            )
             const logoContent = id ? (
-              <Image
-                id={id}
-                alt={logo.name || 'Logo'}
-                width={220}
-                height={64}
-                mode="contain"
-                sizes="(min-width: 1024px) 180px, (min-width: 768px) 20vw, 40vw"
-              />
+              <span className="inline-flex" data-sanity={imageDataAttr}>
+                <Image
+                  id={id}
+                  alt={logo.name || 'Logo'}
+                  width={220}
+                  height={64}
+                  mode="contain"
+                  sizes="(min-width: 1024px) 180px, (min-width: 768px) 20vw, 40vw"
+                />
+              </span>
             ) : (
-              <span>{logo.name}</span>
+              <span
+                className="inline-flex h-10 w-20 rounded-lg border border-gray-200 bg-gray-50"
+                data-sanity={imageDataAttr}
+              />
             )
 
             return (
@@ -143,6 +169,8 @@ function LogosSection({page, block}: {page: HomepageDocument; block: HomeLogosSe
 }
 
 function CaseStudiesSection({page, block}: {page: HomepageDocument; block: HomeCaseStudiesSection}) {
+  const visualEditing = sectionVisualEditing(page, block)
+
   return (
     <SectionWrapper page={page} block={block}>
       <div className="container py-16 space-y-8">
@@ -153,19 +181,30 @@ function CaseStudiesSection({page, block}: {page: HomepageDocument; block: HomeC
         <div className="grid md:grid-cols-2 gap-6">
           {block.items?.map((item, index) => {
             const id = imageRef(item.image)
+            const imageDataAttr = getVisualDataAttribute(
+              visualEditing,
+              keyPath('items', itemKey(item) ?? index, 'image'),
+            )
             return (
               <article key={`${item.title || 'case'}-${index}`} className="border border-gray-200 rounded-xl p-5 space-y-4">
                 {id ? (
-                  <Image
-                    id={id}
-                    alt={item.title || 'Case study'}
-                    width={720}
-                    height={420}
-                    mode="cover"
-                    className="rounded-md"
-                    sizes="(min-width: 768px) 50vw, 100vw"
+                  <span className="block" data-sanity={imageDataAttr}>
+                    <Image
+                      id={id}
+                      alt={item.title || 'Case study'}
+                      width={720}
+                      height={420}
+                      mode="cover"
+                      className="rounded-md"
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                    />
+                  </span>
+                ) : (
+                  <div
+                    className="aspect-[12/7] w-full rounded-md border border-gray-200 bg-gray-50"
+                    data-sanity={imageDataAttr}
                   />
-                ) : null}
+                )}
                 <h3 className="text-xl font-medium">{item.title}</h3>
                 {item.summary ? <p className="text-gray-600">{item.summary}</p> : null}
                 {item.button?.buttonText && item.button.link ? (
@@ -332,7 +371,14 @@ function ContactSection({page, block}: {page: HomepageDocument; block: HomeConta
 function LegacyHeroSection({page, block}: {page: HomepageDocument; block: HomeLegacyHeroSection}) {
   return (
     <SectionWrapper page={page} block={block}>
-      <HeroSanitySection section={block} />
+      <HeroSanitySection
+        section={block}
+        visualEditing={{
+          id: page._id,
+          type: page._type,
+          path: `sections[_key=="${block._key}"]`,
+        }}
+      />
     </SectionWrapper>
   )
 }
@@ -340,7 +386,14 @@ function LegacyHeroSection({page, block}: {page: HomepageDocument; block: HomeLe
 function LegacyLogoBarSection({page, block}: {page: HomepageDocument; block: HomeLegacyLogoBarSection}) {
   return (
     <SectionWrapper page={page} block={block}>
-      <LogoBarSanitySection section={block} />
+      <LogoBarSanitySection
+        section={block}
+        visualEditing={{
+          id: page._id,
+          type: page._type,
+          path: `sections[_key=="${block._key}"]`,
+        }}
+      />
     </SectionWrapper>
   )
 }
@@ -354,7 +407,14 @@ function LegacyTestimonialSection({
 }) {
   return (
     <SectionWrapper page={page} block={block}>
-      <TestimonialSanitySection section={block} />
+      <TestimonialSanitySection
+        section={block}
+        visualEditing={{
+          id: page._id,
+          type: page._type,
+          path: `sections[_key=="${block._key}"]`,
+        }}
+      />
     </SectionWrapper>
   )
 }
@@ -362,7 +422,14 @@ function LegacyTestimonialSection({
 function LegacyWorkSection({page, block}: {page: HomepageDocument; block: HomeLegacyWorkSection}) {
   return (
     <SectionWrapper page={page} block={block}>
-      <OurWorkSanitySection section={block} />
+      <OurWorkSanitySection
+        section={block}
+        visualEditing={{
+          id: page._id,
+          type: page._type,
+          path: `sections[_key=="${block._key}"]`,
+        }}
+      />
     </SectionWrapper>
   )
 }
@@ -370,7 +437,14 @@ function LegacyWorkSection({page, block}: {page: HomepageDocument; block: HomeLe
 function LegacyOfferSection({page, block}: {page: HomepageDocument; block: HomeLegacyOfferSection}) {
   return (
     <SectionWrapper page={page} block={block}>
-      <FeaturesSanitySection section={block} />
+      <FeaturesSanitySection
+        section={block}
+        visualEditing={{
+          id: page._id,
+          type: page._type,
+          path: `sections[_key=="${block._key}"]`,
+        }}
+      />
     </SectionWrapper>
   )
 }
@@ -378,7 +452,14 @@ function LegacyOfferSection({page, block}: {page: HomepageDocument; block: HomeL
 function LegacyPricingSection({page, block}: {page: HomepageDocument; block: HomeLegacyPricingSection}) {
   return (
     <SectionWrapper page={page} block={block}>
-      <PricingSanitySection section={block} />
+      <PricingSanitySection
+        section={block}
+        visualEditing={{
+          id: page._id,
+          type: page._type,
+          path: `sections[_key=="${block._key}"]`,
+        }}
+      />
     </SectionWrapper>
   )
 }
@@ -397,15 +478,60 @@ function UnknownSection({page, block}: {page: HomepageDocument; block: HomeSecti
   )
 }
 
+function EmptySectionsState({page}: {page: HomepageDocument}) {
+  const homepageStudioUrl = `${studioUrl}/structure/homepage;homepage`
+
+  return (
+    <section
+      data-sanity={dataAttr({
+        id: page._id,
+        type: page._type,
+        path: 'sections',
+      }).toString()}
+    >
+      <div className="bg-surface py-16 text-white sm:py-24">
+        <div className="container">
+          <div className="mx-auto max-w-3xl rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm sm:p-10">
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/60">
+              Homepage Sections
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+              Add your first homepage section
+            </h2>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-white/75">
+              The homepage now renders directly from <code>homepage.sections[]</code>. Add, remove,
+              and reorder sections in Sanity Studio to build the page.
+            </p>
+            <div className="mt-8">
+              <a
+                href={homepageStudioUrl}
+                className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-colors hover:bg-white/90"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Manage Homepage Sections
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function HomePageRenderer({page}: {page: HomepageDocument}) {
   const sections = (page.sections || []) as HomeSection[]
+
+  if (!sections.length) {
+    return <EmptySectionsState page={page} />
+  }
 
   return (
     <div
       data-sanity={dataAttr({
         id: page._id,
         type: page._type,
-        path: 'title',
+        path: 'sections',
       }).toString()}
     >
       {sections.map((section) => {

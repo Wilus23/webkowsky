@@ -1,6 +1,7 @@
 import {defineField, defineType} from 'sanity'
 import {LinkIcon} from '@sanity/icons'
 import type {Link} from '../../../sanity.types'
+import {isHrefHidden, validateLinkHref} from '../lib/linkValidation'
 
 /**
  * Link schema object. This link object lets the user first select the type of link and then
@@ -18,7 +19,7 @@ export const link = defineType({
       name: 'linkType',
       title: 'Link Type',
       type: 'string',
-      initialValue: 'url',
+      initialValue: 'href',
       options: {
         list: [
           {title: 'URL', value: 'href'},
@@ -31,16 +32,11 @@ export const link = defineType({
     defineField({
       name: 'href',
       title: 'URL',
-      type: 'url',
-      hidden: ({parent}) => parent?.linkType !== 'href',
+      type: 'string',
+      hidden: ({parent}) => isHrefHidden(parent as Link | undefined),
       validation: (Rule) =>
-        // Custom validation to ensure URL is provided if the link type is 'href'
         Rule.custom((value, context) => {
-          const parent = context.parent as Link
-          if (parent?.linkType === 'href' && !value) {
-            return 'URL is required when Link Type is URL'
-          }
-          return true
+          return validateLinkHref(value, context.parent as Link | undefined)
         }),
     }),
     defineField({

@@ -68,6 +68,14 @@ export type Badge = {
   _type: 'image'
 }
 
+export type CategoriesObjectImage = {
+  asset?: SanityImageAssetReference
+  media?: unknown // Unable to locate the referenced type "categories.object.image.media" in schema
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  _type: 'image'
+}
+
 export type PlansObjectImage = {
   asset?: SanityImageAssetReference
   media?: unknown // Unable to locate the referenced type "plans.object.image.media" in schema
@@ -106,6 +114,7 @@ export type HomeLegacyOfferSection = {
     name: string
     activeFeature: string
     inactiveFeatures?: Array<string>
+    image?: CategoriesObjectImage
     _key: string
   }>
   description?: string
@@ -449,6 +458,7 @@ export type Settings = {
   _updatedAt: string
   _rev: string
   title: string
+  brandName?: string
   description?: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -480,6 +490,31 @@ export type Settings = {
     metadataBase?: string
     _type: 'image'
   }
+  headerNavItems?: Array<{
+    label: string
+    link?: Link
+    _key: string
+  }>
+  headerCta?: Button
+  footerHeading?: string
+  footerHighlight?: string
+  footerCta?: Button
+  footerCtaAvatarImages?: Array<{
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }>
+  footerDescription?: string
+  footerLegalText?: string
+  footerLegalLinks?: Array<{
+    label: string
+    link?: Link
+    _key: string
+  }>
+  footerLinkCloudLines?: Array<string>
 }
 
 export type SanityImageCrop = {
@@ -583,6 +618,24 @@ export type Homepage = {
   sections: Array<
     | ({
         _key: string
+      } & HomeLegacyHeroSection)
+    | ({
+        _key: string
+      } & HomeLegacyLogoBarSection)
+    | ({
+        _key: string
+      } & HomeLegacyTestimonialSection)
+    | ({
+        _key: string
+      } & HomeLegacyWorkSection)
+    | ({
+        _key: string
+      } & HomeLegacyOfferSection)
+    | ({
+        _key: string
+      } & HomeLegacyPricingSection)
+    | ({
+        _key: string
       } & HomeHeroSection)
     | ({
         _key: string
@@ -608,24 +661,6 @@ export type Homepage = {
     | ({
         _key: string
       } & HomeContactSection)
-    | ({
-        _key: string
-      } & HomeLegacyHeroSection)
-    | ({
-        _key: string
-      } & HomeLegacyLogoBarSection)
-    | ({
-        _key: string
-      } & HomeLegacyTestimonialSection)
-    | ({
-        _key: string
-      } & HomeLegacyWorkSection)
-    | ({
-        _key: string
-      } & HomeLegacyOfferSection)
-    | ({
-        _key: string
-      } & HomeLegacyPricingSection)
   >
   publishedAt?: string
 }
@@ -871,6 +906,7 @@ export type AllSanitySchemaTypes =
   | ObjectLogo
   | Image1
   | Badge
+  | CategoriesObjectImage
   | PlansObjectImage
   | HomeLegacyPricingSection
   | HomeLegacyOfferSection
@@ -931,15 +967,13 @@ export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: sanity/lib/queries.ts
 // Variable: settingsQuery
-// Query: *[_type == "settings"][0]
+// Query: *[_type == "settings"][0]{    _id,    _type,    title,    brandName,    description,    ogImage,    headerNavItems[]{      _key,      label,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current      }    },    headerCta{      buttonText,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current      }    },    footerHeading,    footerHighlight,    footerCta{      buttonText,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current      }    },    footerCtaAvatarImages,    footerDescription,    footerLegalText,    footerLegalLinks[]{      _key,      label,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current      }    },    footerLinkCloudLines  }
 export type SettingsQueryResult = {
   _id: string
   _type: 'settings'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
   title: string
-  description?: Array<{
+  brandName: string | null
+  description: Array<{
     children?: Array<{
       marks?: Array<string>
       text?: string
@@ -960,8 +994,8 @@ export type SettingsQueryResult = {
     level?: number
     _type: 'block'
     _key: string
-  }>
-  ogImage?: {
+  }> | null
+  ogImage: {
     asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
@@ -969,14 +1003,73 @@ export type SettingsQueryResult = {
     alt?: string
     metadataBase?: string
     _type: 'image'
-  }
+  } | null
+  headerNavItems: Array<{
+    _key: string
+    label: string
+    link: {
+      _type: 'link'
+      linkType: 'href' | 'page' | 'post' | null
+      href: string | null
+      openInNewTab: boolean | null
+      page: string | null
+      post: string | null
+    } | null
+  }> | null
+  headerCta: {
+    buttonText: string | null
+    link: {
+      _type: 'link'
+      linkType: 'href' | 'page' | 'post' | null
+      href: string | null
+      openInNewTab: boolean | null
+      page: string | null
+      post: string | null
+    } | null
+  } | null
+  footerHeading: string | null
+  footerHighlight: string | null
+  footerCta: {
+    buttonText: string | null
+    link: {
+      _type: 'link'
+      linkType: 'href' | 'page' | 'post' | null
+      href: string | null
+      openInNewTab: boolean | null
+      page: string | null
+      post: string | null
+    } | null
+  } | null
+  footerCtaAvatarImages: Array<{
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }> | null
+  footerDescription: string | null
+  footerLegalText: string | null
+  footerLegalLinks: Array<{
+    _key: string
+    label: string
+    link: {
+      _type: 'link'
+      linkType: 'href' | 'page' | 'post' | null
+      href: string | null
+      openInNewTab: boolean | null
+      page: string | null
+      post: string | null
+    } | null
+  }> | null
+  footerLinkCloudLines: Array<string> | null
 } | null
 
 // Source: sanity/lib/queries.ts
 // Variable: homepageQuery
-// Query: *[_type == "homepage" && _id in ["homepage", "drafts.homepage"]] | order(_updatedAt desc)[0]{    _id,    _type,    title,    locale,    seo{      title,      description,      ogImage    },    "sections": sections[]{      _key,      _type,      _type == "homeHeroSection" => {        eyebrow,        heading,        subheading,        badges,        primaryButton{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        },        secondaryButton{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        }      },      _type == "homeLogosSection" => {        heading,        logos[]{          name,          logo,          link        }      },      _type == "homeCaseStudiesSection" => {        heading,        subheading,        items[]{          title,          summary,          image,          button{              buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }          }        }      },      _type == "homeProblemSection" => {        heading,        description,        problems      },      _type == "homeOfferSection" => {        heading,        subheading,        offers[]{          name,          description,          priceNote,          button{              buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }          }        }      },      _type == "homeUseCasesSection" => {        heading,        useCases[]{          label,          heading,          description,          bullets,          button{              buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }          }        }      },      _type == "homeRoiSection" => {        heading,        description,        embedUrl,        button{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        }      },      _type == "homeFaqSection" => {        heading,        items[]{          question,          answer        }      },      _type == "homeContactSection" => {        heading,        description,        email,        button{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        }      },      _type == "homeLegacyHeroSection" => {        titleLinePrimary,        titleLineSecondary,        titleLineTertiary,        description,        ctaButton{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        },        avatarImages,        cards[]{          label,          image        }      },      _type == "homeLegacyLogoBarSection" => {        logos[]{          name,          logo,          link        }      },      _type == "homeLegacyTestimonialSection" => {        labelPrefix,        labelHighlight,        quote,        personName,        personRole,        companyName,        companySubmark,        avatarImage,        cardBackgroundImage,        playIcon,        brandWordmark,        brandSeparator,        brandSubmark,        stats[]{          value,          suffix,          label        }      },      _type == "homeLegacyWorkSection" => {        labelPrefix,        labelSuffix,        mockupImage,        cards[]{          company,          description,          image,          badge        }      },      _type == "homeLegacyOfferSection" => {        title,        subtitlePrefix,        subtitleHighlight,        categories[]{          name,          activeFeature,          inactiveFeatures        },        description,        image,        primaryButton{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        },        secondaryButton{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        }      },      _type == "homeLegacyPricingSection" => {        subtitlePrefix,        subtitleHighlight,        defaultPlanTitle,        plans[]{          title,          price,          features[]{            text,            active          },          description,          image,          primaryButton{              buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }          },          secondaryButton{              buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }          }        }      }    }  }
+// Query: *[_type == "homepage" && _id == "homepage"][0]{    _id,    _type,    title,    locale,    seo{      title,      description,      ogImage    },    "sections": sections[]{      _key,      _type,      _type == "homeHeroSection" => {        eyebrow,        heading,        subheading,        badges,        primaryButton{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        },        secondaryButton{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        }      },      _type == "homeLogosSection" => {        heading,        logos[]{          _key,          name,          logo,          link        }      },      _type == "homeCaseStudiesSection" => {        heading,        subheading,        items[]{          _key,          title,          summary,          image,          button{              buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }          }        }      },      _type == "homeProblemSection" => {        heading,        description,        problems      },      _type == "homeOfferSection" => {        heading,        subheading,        offers[]{          _key,          name,          description,          priceNote,          button{              buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }          }        }      },      _type == "homeUseCasesSection" => {        heading,        useCases[]{          _key,          label,          heading,          description,          bullets,          button{              buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }          }        }      },      _type == "homeRoiSection" => {        heading,        description,        embedUrl,        button{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        }      },      _type == "homeFaqSection" => {        heading,        items[]{          _key,          question,          answer        }      },      _type == "homeContactSection" => {        heading,        description,        email,        button{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        }      },      _type == "homeLegacyHeroSection" => {        titleLinePrimary,        titleLineSecondary,        titleLineTertiary,        description,        ctaButton{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        },        avatarImages,        cards[]{          _key,          label,          image        }      },      _type == "homeLegacyLogoBarSection" => {        logos[]{          _key,          name,          logo,          link        }      },      _type == "homeLegacyTestimonialSection" => {        labelPrefix,        labelHighlight,        quote,        personName,        personRole,        companyName,        companySubmark,        avatarImage,        cardBackgroundImage,        playIcon,        brandWordmark,        brandSeparator,        brandSubmark,        stats[]{          _key,          value,          suffix,          label        }      },      _type == "homeLegacyWorkSection" => {        labelPrefix,        labelSuffix,        mockupImage,        cards[]{          _key,          company,          description,          image,          badge        }      },      _type == "homeLegacyOfferSection" => {        title,        subtitlePrefix,        subtitleHighlight,        categories[]{          _key,          name,          activeFeature,          inactiveFeatures,          image        },        description,        image,        primaryButton{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        },        secondaryButton{            buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }        }      },      _type == "homeLegacyPricingSection" => {        subtitlePrefix,        subtitleHighlight,        defaultPlanTitle,        plans[]{          _key,          title,          price,          features[]{            _key,            text,            active          },          description,          image,          primaryButton{              buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }          },          secondaryButton{              buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }          }        }      }    }  }
 export type HomepageQueryResult = {
-  _id: string
+  _id: 'homepage'
   _type: 'homepage'
   title: string
   locale: 'pl'
@@ -998,6 +1091,7 @@ export type HomepageQueryResult = {
         heading: string
         subheading: string | null
         items: Array<{
+          _key: string
           title: string
           summary: string | null
           image: ObjectImage
@@ -1037,6 +1131,7 @@ export type HomepageQueryResult = {
         _type: 'homeFaqSection'
         heading: string
         items: Array<{
+          _key: string
           question: string
           answer: string
         }>
@@ -1098,6 +1193,7 @@ export type HomepageQueryResult = {
           _key: string
         }> | null
         cards: Array<{
+          _key: string
           label: string
           image: CardsObjectImage | null
         }>
@@ -1106,6 +1202,7 @@ export type HomepageQueryResult = {
         _key: string
         _type: 'homeLegacyLogoBarSection'
         logos: Array<{
+          _key: string
           name: string
           logo: ObjectLogo | null
           link: string | null
@@ -1118,9 +1215,11 @@ export type HomepageQueryResult = {
         subtitlePrefix: string
         subtitleHighlight: string
         categories: Array<{
+          _key: string
           name: string
           activeFeature: string
           inactiveFeatures: Array<string> | null
+          image: CategoriesObjectImage | null
         }>
         description: string | null
         image: {
@@ -1160,9 +1259,11 @@ export type HomepageQueryResult = {
         subtitleHighlight: string
         defaultPlanTitle: string | null
         plans: Array<{
+          _key: string
           title: string
           price: string
           features: Array<{
+            _key: string
             text: string
             active: boolean | null
           }>
@@ -1245,6 +1346,7 @@ export type HomepageQueryResult = {
           _type: 'image'
         } | null
         stats: Array<{
+          _key: string
           value: number
           suffix: string | null
           label: string
@@ -1263,6 +1365,7 @@ export type HomepageQueryResult = {
           _type: 'image'
         } | null
         cards: Array<{
+          _key: string
           company: string
           description: string
           image: Image1 | null
@@ -1274,6 +1377,7 @@ export type HomepageQueryResult = {
         _type: 'homeLogosSection'
         heading: string | null
         logos: Array<{
+          _key: string
           name: string
           logo: Logo
           link: string | null
@@ -1285,6 +1389,7 @@ export type HomepageQueryResult = {
         heading: string
         subheading: string | null
         offers: Array<{
+          _key: string
           name: string
           description: string | null
           priceNote: string | null
@@ -1331,6 +1436,7 @@ export type HomepageQueryResult = {
         _type: 'homeUseCasesSection'
         heading: string
         useCases: Array<{
+          _key: string
           label: string
           heading: string
           description: string | null
@@ -1353,7 +1459,7 @@ export type HomepageQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: homepageSeoQuery
-// Query: *[_type == "homepage" && _id in ["homepage", "drafts.homepage"]] | order(_updatedAt desc)[0]{    seo{      title,      description,      ogImage    }  }
+// Query: *[_type == "homepage" && _id == "homepage"][0]{    seo{      title,      description,      ogImage    }  }
 export type HomepageSeoQueryResult = {
   seo: {
     title: string
@@ -1612,9 +1718,9 @@ export type PagesSlugsResult = Array<{
 import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
-    '*[_type == "settings"][0]': SettingsQueryResult
-    '\n  *[_type == "homepage" && _id in ["homepage", "drafts.homepage"]] | order(_updatedAt desc)[0]{\n    _id,\n    _type,\n    title,\n    locale,\n    seo{\n      title,\n      description,\n      ogImage\n    },\n    "sections": sections[]{\n      _key,\n      _type,\n      _type == "homeHeroSection" => {\n        eyebrow,\n        heading,\n        subheading,\n        badges,\n        primaryButton{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        },\n        secondaryButton{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        }\n      },\n      _type == "homeLogosSection" => {\n        heading,\n        logos[]{\n          name,\n          logo,\n          link\n        }\n      },\n      _type == "homeCaseStudiesSection" => {\n        heading,\n        subheading,\n        items[]{\n          title,\n          summary,\n          image,\n          button{\n            \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n          }\n        }\n      },\n      _type == "homeProblemSection" => {\n        heading,\n        description,\n        problems\n      },\n      _type == "homeOfferSection" => {\n        heading,\n        subheading,\n        offers[]{\n          name,\n          description,\n          priceNote,\n          button{\n            \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n          }\n        }\n      },\n      _type == "homeUseCasesSection" => {\n        heading,\n        useCases[]{\n          label,\n          heading,\n          description,\n          bullets,\n          button{\n            \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n          }\n        }\n      },\n      _type == "homeRoiSection" => {\n        heading,\n        description,\n        embedUrl,\n        button{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        }\n      },\n      _type == "homeFaqSection" => {\n        heading,\n        items[]{\n          question,\n          answer\n        }\n      },\n      _type == "homeContactSection" => {\n        heading,\n        description,\n        email,\n        button{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        }\n      },\n      _type == "homeLegacyHeroSection" => {\n        titleLinePrimary,\n        titleLineSecondary,\n        titleLineTertiary,\n        description,\n        ctaButton{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        },\n        avatarImages,\n        cards[]{\n          label,\n          image\n        }\n      },\n      _type == "homeLegacyLogoBarSection" => {\n        logos[]{\n          name,\n          logo,\n          link\n        }\n      },\n      _type == "homeLegacyTestimonialSection" => {\n        labelPrefix,\n        labelHighlight,\n        quote,\n        personName,\n        personRole,\n        companyName,\n        companySubmark,\n        avatarImage,\n        cardBackgroundImage,\n        playIcon,\n        brandWordmark,\n        brandSeparator,\n        brandSubmark,\n        stats[]{\n          value,\n          suffix,\n          label\n        }\n      },\n      _type == "homeLegacyWorkSection" => {\n        labelPrefix,\n        labelSuffix,\n        mockupImage,\n        cards[]{\n          company,\n          description,\n          image,\n          badge\n        }\n      },\n      _type == "homeLegacyOfferSection" => {\n        title,\n        subtitlePrefix,\n        subtitleHighlight,\n        categories[]{\n          name,\n          activeFeature,\n          inactiveFeatures\n        },\n        description,\n        image,\n        primaryButton{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        },\n        secondaryButton{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        }\n      },\n      _type == "homeLegacyPricingSection" => {\n        subtitlePrefix,\n        subtitleHighlight,\n        defaultPlanTitle,\n        plans[]{\n          title,\n          price,\n          features[]{\n            text,\n            active\n          },\n          description,\n          image,\n          primaryButton{\n            \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n          },\n          secondaryButton{\n            \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n          }\n        }\n      }\n    }\n  }\n': HomepageQueryResult
-    '\n  *[_type == "homepage" && _id in ["homepage", "drafts.homepage"]] | order(_updatedAt desc)[0]{\n    seo{\n      title,\n      description,\n      ogImage\n    }\n  }\n': HomepageSeoQueryResult
+    '\n  *[_type == "settings"][0]{\n    _id,\n    _type,\n    title,\n    brandName,\n    description,\n    ogImage,\n    headerNavItems[]{\n      _key,\n      label,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n      }\n    },\n    headerCta{\n      buttonText,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n      }\n    },\n    footerHeading,\n    footerHighlight,\n    footerCta{\n      buttonText,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n      }\n    },\n    footerCtaAvatarImages,\n    footerDescription,\n    footerLegalText,\n    footerLegalLinks[]{\n      _key,\n      label,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n      }\n    },\n    footerLinkCloudLines\n  }\n': SettingsQueryResult
+    '\n  *[_type == "homepage" && _id == "homepage"][0]{\n    _id,\n    _type,\n    title,\n    locale,\n    seo{\n      title,\n      description,\n      ogImage\n    },\n    "sections": sections[]{\n      _key,\n      _type,\n      _type == "homeHeroSection" => {\n        eyebrow,\n        heading,\n        subheading,\n        badges,\n        primaryButton{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        },\n        secondaryButton{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        }\n      },\n      _type == "homeLogosSection" => {\n        heading,\n        logos[]{\n          _key,\n          name,\n          logo,\n          link\n        }\n      },\n      _type == "homeCaseStudiesSection" => {\n        heading,\n        subheading,\n        items[]{\n          _key,\n          title,\n          summary,\n          image,\n          button{\n            \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n          }\n        }\n      },\n      _type == "homeProblemSection" => {\n        heading,\n        description,\n        problems\n      },\n      _type == "homeOfferSection" => {\n        heading,\n        subheading,\n        offers[]{\n          _key,\n          name,\n          description,\n          priceNote,\n          button{\n            \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n          }\n        }\n      },\n      _type == "homeUseCasesSection" => {\n        heading,\n        useCases[]{\n          _key,\n          label,\n          heading,\n          description,\n          bullets,\n          button{\n            \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n          }\n        }\n      },\n      _type == "homeRoiSection" => {\n        heading,\n        description,\n        embedUrl,\n        button{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        }\n      },\n      _type == "homeFaqSection" => {\n        heading,\n        items[]{\n          _key,\n          question,\n          answer\n        }\n      },\n      _type == "homeContactSection" => {\n        heading,\n        description,\n        email,\n        button{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        }\n      },\n      _type == "homeLegacyHeroSection" => {\n        titleLinePrimary,\n        titleLineSecondary,\n        titleLineTertiary,\n        description,\n        ctaButton{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        },\n        avatarImages,\n        cards[]{\n          _key,\n          label,\n          image\n        }\n      },\n      _type == "homeLegacyLogoBarSection" => {\n        logos[]{\n          _key,\n          name,\n          logo,\n          link\n        }\n      },\n      _type == "homeLegacyTestimonialSection" => {\n        labelPrefix,\n        labelHighlight,\n        quote,\n        personName,\n        personRole,\n        companyName,\n        companySubmark,\n        avatarImage,\n        cardBackgroundImage,\n        playIcon,\n        brandWordmark,\n        brandSeparator,\n        brandSubmark,\n        stats[]{\n          _key,\n          value,\n          suffix,\n          label\n        }\n      },\n      _type == "homeLegacyWorkSection" => {\n        labelPrefix,\n        labelSuffix,\n        mockupImage,\n        cards[]{\n          _key,\n          company,\n          description,\n          image,\n          badge\n        }\n      },\n      _type == "homeLegacyOfferSection" => {\n        title,\n        subtitlePrefix,\n        subtitleHighlight,\n        categories[]{\n          _key,\n          name,\n          activeFeature,\n          inactiveFeatures,\n          image\n        },\n        description,\n        image,\n        primaryButton{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        },\n        secondaryButton{\n          \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n        }\n      },\n      _type == "homeLegacyPricingSection" => {\n        subtitlePrefix,\n        subtitleHighlight,\n        defaultPlanTitle,\n        plans[]{\n          _key,\n          title,\n          price,\n          features[]{\n            _key,\n            text,\n            active\n          },\n          description,\n          image,\n          primaryButton{\n            \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n          },\n          secondaryButton{\n            \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n          }\n        }\n      }\n    }\n  }\n': HomepageQueryResult
+    '\n  *[_type == "homepage" && _id == "homepage"][0]{\n    seo{\n      title,\n      description,\n      ogImage\n    }\n  }\n': HomepageSeoQueryResult
     '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        }\n      },\n    },\n  }\n': GetPageQueryResult
     '\n  *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
     '\n  *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': AllPostsQueryResult

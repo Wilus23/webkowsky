@@ -30,9 +30,17 @@ export const homepage = defineType({
     defineField({
       name: 'sections',
       title: 'Homepage sections',
+      description:
+        'This is the source of truth for the homepage. Add, remove, duplicate, and drag sections to control the live page order.',
       type: 'array',
       validation: (Rule) => Rule.required().min(1),
       of: [
+        {type: 'homeLegacyHeroSection'},
+        {type: 'homeLegacyLogoBarSection'},
+        {type: 'homeLegacyTestimonialSection'},
+        {type: 'homeLegacyWorkSection'},
+        {type: 'homeLegacyOfferSection'},
+        {type: 'homeLegacyPricingSection'},
         {type: 'homeHeroSection'},
         {type: 'homeLogosSection'},
         {type: 'homeCaseStudiesSection'},
@@ -42,12 +50,6 @@ export const homepage = defineType({
         {type: 'homeRoiSection'},
         {type: 'homeFaqSection'},
         {type: 'homeContactSection'},
-        {type: 'homeLegacyHeroSection'},
-        {type: 'homeLegacyLogoBarSection'},
-        {type: 'homeLegacyTestimonialSection'},
-        {type: 'homeLegacyWorkSection'},
-        {type: 'homeLegacyOfferSection'},
-        {type: 'homeLegacyPricingSection'},
       ],
       options: {
         insertMenu: {

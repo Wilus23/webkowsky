@@ -1,19 +1,90 @@
 'use client'
 
-import Link from 'next/link'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 
-export default function Header() {
+import ResolvedLink from '@/app/components/ResolvedLink'
+import {getVisualDataAttribute, keyPath, type VisualEditingProps} from '@/app/components/home/sanity/visualEditing'
+import {DereferencedLink, SiteSettings} from '@/sanity/lib/types'
+
+type HeaderNavItem = {
+  _key?: string
+  label?: string | null
+  link?: DereferencedLink | null
+}
+
+type HeaderButton = {
+  buttonText?: string | null
+  link?: DereferencedLink | null
+} | null
+
+const DEFAULT_NAV_ITEMS: HeaderNavItem[] = [
+  {
+    _key: 'home',
+    label: 'Home',
+    link: {_type: 'link', linkType: 'href', href: '/'},
+  },
+  {
+    _key: 'about',
+    label: 'About',
+    link: {_type: 'link', linkType: 'href', href: '/about'},
+  },
+  {
+    _key: 'contact',
+    label: 'Contact',
+    link: {_type: 'link', linkType: 'href', href: '/contact'},
+  },
+]
+
+const DEFAULT_CTA: HeaderButton = {
+  buttonText: 'Contact us',
+  link: {_type: 'link', linkType: 'href', href: '/contact'},
+}
+
+function settingsVisualEditing(settings: SiteSettings | null): VisualEditingProps | undefined {
+  if (!settings?._id || !settings?._type) return undefined
+
+  return {
+    id: settings._id,
+    type: settings._type,
+    path: '',
+  }
+}
+
+export default function Header({settings}: {settings?: SiteSettings | null}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const visualEditing = settingsVisualEditing(settings || null)
+
+  const navItems = useMemo(
+    () =>
+      (settings?.headerNavItems || []).flatMap((item) =>
+        item?.label && item?.link
+          ? [
+              {
+                _key: item._key,
+                label: item.label,
+                link: item.link as DereferencedLink,
+              },
+            ]
+          : [],
+      ),
+    [settings?.headerNavItems],
+  )
+
+  const usingFallbackNav = navItems.length === 0
+  const resolvedNavItems = navItems.length ? navItems : DEFAULT_NAV_ITEMS
+  const headerCta =
+    settings?.headerCta?.buttonText && settings?.headerCta?.link ? settings.headerCta : DEFAULT_CTA
+  const brandName = settings?.brandName?.trim() || settings?.title?.trim() || 'Webkowsky'
 
   return (
     <header className="w-full py-5 md:py-6">
       <div className="container">
-        <div className="flex items-center justify-between">
-          {/* ---- Logo ---- */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            {/* Logomark */}
-            <div className="relative size-8 rounded-lg bg-primary flex items-center justify-center overflow-hidden">
+        <div className="flex items-center justify-between gap-6">
+          <ResolvedLink
+            link={{_type: 'link', linkType: 'href', href: '/'}}
+            className="flex shrink-0 items-center gap-2"
+          >
+            <div className="relative flex size-8 items-center justify-center overflow-hidden rounded-lg bg-primary">
               <svg
                 width="20"
                 height="14"
@@ -31,98 +102,93 @@ export default function Header() {
                 />
               </svg>
             </div>
-            <span className="font-display font-medium text-[19px] text-white tracking-[-0.39px]">
-              Webkowsky
+            <span
+              className="font-display text-[19px] font-medium tracking-[-0.39px] text-white"
+              data-sanity={getVisualDataAttribute(visualEditing, 'brandName')}
+            >
+              {brandName}
             </span>
-          </Link>
+          </ResolvedLink>
 
-          {/* ---- Desktop Navigation ---- */}
-          <nav className="hidden md:flex items-center gap-16 lg:gap-20">
+          <nav className="hidden items-center gap-16 md:flex lg:gap-20">
             <div className="flex items-center gap-12 lg:gap-20">
-              <Link
-                href="/"
-                className="font-display font-medium text-[19px] text-white tracking-[-0.39px] hover:text-white/80 transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                href="/about"
-                className="font-display font-medium text-[19px] text-white tracking-[-0.39px] hover:text-white/80 transition-colors"
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className="font-display font-medium text-[19px] text-white tracking-[-0.39px] hover:text-white/80 transition-colors"
-              >
-                Contact
-              </Link>
+              {resolvedNavItems.map((item, index) => (
+                <ResolvedLink
+                  key={item._key || item.label || index}
+                  link={item.link || DEFAULT_NAV_ITEMS[0].link!}
+                  className="font-display text-[19px] font-medium tracking-[-0.39px] text-white transition-colors hover:text-white/80"
+                  data-sanity={getVisualDataAttribute(
+                    visualEditing,
+                    usingFallbackNav ? 'headerNavItems' : keyPath('headerNavItems', item._key || index),
+                  )}
+                >
+                  {item.label}
+                </ResolvedLink>
+              ))}
             </div>
           </nav>
 
-          {/* ---- CTA Button (desktop) ---- */}
-          <Link
-            href="/contact"
-            className="hidden md:inline-flex items-center justify-center rounded-[12px] bg-primary px-4 py-3 font-sans font-bold text-base text-white tracking-[-0.24px] hover:bg-primary-hover transition-colors"
-          >
-            Contact us
-          </Link>
+          {headerCta?.buttonText && headerCta.link ? (
+            <ResolvedLink
+              link={headerCta.link}
+              className="hidden items-center justify-center rounded-[12px] bg-primary px-4 py-3 font-sans text-base font-bold tracking-[-0.24px] text-white transition-colors hover:bg-primary-hover md:inline-flex"
+              data-sanity={getVisualDataAttribute(visualEditing, 'headerCta')}
+            >
+              {headerCta.buttonText}
+            </ResolvedLink>
+          ) : null}
 
-          {/* ---- Mobile menu button ---- */}
           <button
             type="button"
-            className="md:hidden flex flex-col gap-1.5 p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex flex-col gap-1.5 p-2 md:hidden"
+            onClick={() => setMobileMenuOpen((current) => !current)}
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
           >
             <span
-              className={`block h-0.5 w-6 bg-white transition-transform duration-200 ${mobileMenuOpen ? 'translate-y-2 rotate-45' : ''}`}
+              className={`block h-0.5 w-6 bg-white transition-transform duration-200 ${
+                mobileMenuOpen ? 'translate-y-2 rotate-45' : ''
+              }`}
             />
             <span
-              className={`block h-0.5 w-6 bg-white transition-opacity duration-200 ${mobileMenuOpen ? 'opacity-0' : ''}`}
+              className={`block h-0.5 w-6 bg-white transition-opacity duration-200 ${
+                mobileMenuOpen ? 'opacity-0' : ''
+              }`}
             />
             <span
-              className={`block h-0.5 w-6 bg-white transition-transform duration-200 ${mobileMenuOpen ? '-translate-y-2 -rotate-45' : ''}`}
+              className={`block h-0.5 w-6 bg-white transition-transform duration-200 ${
+                mobileMenuOpen ? '-translate-y-2 -rotate-45' : ''
+              }`}
             />
           </button>
         </div>
 
-        {/* ---- Mobile Navigation ---- */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            mobileMenuOpen ? 'max-h-80 opacity-100 mt-6' : 'max-h-0 opacity-0'
+          className={`overflow-hidden transition-all duration-300 ease-in-out md:hidden ${
+            mobileMenuOpen ? 'mt-6 max-h-80 opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
           <nav className="flex flex-col gap-4 pb-4">
-            <Link
-              href="/"
-              className="font-display font-medium text-lg text-white hover:text-white/80 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className="font-display font-medium text-lg text-white hover:text-white/80 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className="font-display font-medium text-lg text-white hover:text-white/80 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Contact
-            </Link>
-            <Link
-              href="/contact"
-              className="mt-2 inline-flex items-center justify-center rounded-[12px] bg-primary px-4 py-3 font-sans font-bold text-base text-white tracking-[-0.24px]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Contact us
-            </Link>
+            {resolvedNavItems.map((item, index) => (
+              <ResolvedLink
+                key={`${item._key || item.label || index}-mobile`}
+                link={item.link || DEFAULT_NAV_ITEMS[0].link!}
+                className="font-display text-lg font-medium text-white transition-colors hover:text-white/80"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {item.label}
+              </ResolvedLink>
+            ))}
+
+            {headerCta?.buttonText && headerCta.link ? (
+              <ResolvedLink
+                link={headerCta.link}
+                className="mt-2 inline-flex items-center justify-center rounded-[12px] bg-primary px-4 py-3 font-sans text-base font-bold tracking-[-0.24px] text-white"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {headerCta.buttonText}
+              </ResolvedLink>
+            ) : null}
           </nav>
         </div>
       </div>

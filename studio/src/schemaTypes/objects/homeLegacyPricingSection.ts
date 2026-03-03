@@ -3,7 +3,7 @@ import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const homeLegacyPricingSection = defineType({
   name: 'homeLegacyPricingSection',
-  title: 'Home Legacy Pricing Section',
+  title: 'Homepage Pricing Section',
   type: 'object',
   icon: CreditCardIcon,
   fields: [
@@ -114,7 +114,7 @@ export const homeLegacyPricingSection = defineType({
   ],
   preview: {
     prepare() {
-      return {title: 'Legacy Pricing', subtitle: 'Pricing cards section'}
+      return {title: 'Pricing Section', subtitle: 'Homepage pricing cards'}
     },
   },
 })

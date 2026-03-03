@@ -31,12 +31,10 @@ export function resolveOpenGraphImage(
 export function linkResolver(link: Link | DereferencedLink | undefined) {
   if (!link) return null
 
-  // If linkType is not set but href is, lets set linkType to "href".  This comes into play when pasting links into the portable text editor because a link type is not assumed.
-  if (!link.linkType && link.href) {
-    link.linkType = 'href'
-  }
+  // Portable text links may have only href, so normalize the effective type without mutating the source value.
+  const linkType = link.linkType || (link.href ? 'href' : undefined)
 
-  switch (link.linkType) {
+  switch (linkType) {
     case 'href':
       return link.href || null
     case 'page':

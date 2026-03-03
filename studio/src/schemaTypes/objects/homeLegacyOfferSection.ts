@@ -3,7 +3,7 @@ import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const homeLegacyOfferSection = defineType({
   name: 'homeLegacyOfferSection',
-  title: 'Home Legacy Offer Section',
+  title: 'Homepage Offer Section',
   type: 'object',
   icon: BulbOutlineIcon,
   fields: [
@@ -56,11 +56,18 @@ export const homeLegacyOfferSection = defineType({
               of: [{type: 'string'}],
               validation: (Rule) => Rule.max(6),
             }),
+            defineField({
+              name: 'image',
+              title: 'Tab image (optional)',
+              type: 'image',
+              options: {hotspot: true},
+            }),
           ],
           preview: {
             select: {
               title: 'name',
               subtitle: 'activeFeature',
+              media: 'image',
             },
           },
         }),
@@ -85,7 +92,7 @@ export const homeLegacyOfferSection = defineType({
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'Legacy Offer', subtitle: 'Offer + categories section'}
+      return {title: title || 'Offer Section', subtitle: 'Homepage offer + categories'}
     },
   },
 })

@@ -1,4 +1,4 @@
-import {GetPageQueryResult, HomepageQueryResult} from '@/sanity.types'
+import {GetPageQueryResult, HomepageQueryResult, SettingsQueryResult} from '@/sanity.types'
 
 export type PageBuilderSection = NonNullable<NonNullable<GetPageQueryResult>['pageBuilder']>[number]
 export type ExtractPageBuilderType<T extends PageBuilderSection['_type']> = Extract<
@@ -28,6 +28,7 @@ type HomeSectionBase = {
 
 type HomepageQueryDocument = NonNullable<HomepageQueryResult>
 type HomepageQuerySection = NonNullable<HomepageQueryDocument['sections']>[number]
+export type SiteSettings = NonNullable<SettingsQueryResult>
 
 export type HomeHeroSection = Extract<HomepageQuerySection, {_type: 'homeHeroSection'}>
 export type HomeLogosSection = Extract<HomepageQuerySection, {_type: 'homeLogosSection'}>

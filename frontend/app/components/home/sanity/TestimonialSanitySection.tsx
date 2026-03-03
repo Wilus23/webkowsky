@@ -1,5 +1,6 @@
 import CountUpValue from '@/app/components/animations/CountUpValue'
 import Image from '@/app/components/SanityImage'
+import {getVisualDataAttribute, type VisualEditingProps} from './visualEditing'
 
 type LegacyStat = {
   _key?: string
@@ -31,7 +32,13 @@ function imageRef(value: unknown): string | undefined {
   return maybeAsset?._ref
 }
 
-function TestimonialCard({section}: {section: LegacyTestimonialSection}) {
+function TestimonialCard({
+  section,
+  visualEditing,
+}: {
+  section: LegacyTestimonialSection
+  visualEditing?: VisualEditingProps
+}) {
   const cardBackgroundId = imageRef(section.cardBackgroundImage)
   const playIconId = imageRef(section.playIcon)
   const avatarId = imageRef(section.avatarImage)
@@ -42,26 +49,39 @@ function TestimonialCard({section}: {section: LegacyTestimonialSection}) {
   return (
     <article className="relative h-[380px] w-full max-w-[352px] overflow-hidden rounded-[14px]">
       {cardBackgroundId ? (
-        <Image
-          id={cardBackgroundId}
-          alt="Testimonial background"
-          width={704}
-          height={760}
-          mode="cover"
-          className="absolute inset-0 size-full object-cover"
-          sizes="(min-width: 1024px) 352px, 100vw"
-        />
+        <span
+          className="absolute inset-0"
+          data-sanity={getVisualDataAttribute(visualEditing, 'cardBackgroundImage')}
+        >
+          <Image
+            id={cardBackgroundId}
+            alt="Testimonial background"
+            width={704}
+            height={760}
+            mode="cover"
+            className="absolute inset-0 size-full object-cover"
+            sizes="(min-width: 1024px) 352px, 100vw"
+          />
+        </span>
       ) : (
-        <div className="absolute inset-0 bg-black" />
+        <div
+          className="absolute inset-0 bg-black"
+          data-sanity={getVisualDataAttribute(visualEditing, 'cardBackgroundImage')}
+        />
       )}
 
       <div className="absolute bottom-0 left-0 right-0 h-[139px] rounded-b-[10px] bg-[linear-gradient(180deg,rgba(129,110,252,0)_3.509%,rgba(53,23,251,0.6)_79.825%)]" />
 
       <div className="absolute inset-0 flex items-center justify-center">
         {playIconId ? (
-          <Image id={playIconId} alt="Play testimonial" width={32} height={32} mode="contain" sizes="32px" />
+          <span data-sanity={getVisualDataAttribute(visualEditing, 'playIcon')}>
+            <Image id={playIconId} alt="Play testimonial" width={32} height={32} mode="contain" sizes="32px" />
+          </span>
         ) : (
-          <div className="flex size-10 items-center justify-center rounded-full bg-white/90 shadow-lg">
+          <div
+            className="flex size-10 items-center justify-center rounded-full bg-white/90 shadow-lg"
+            data-sanity={getVisualDataAttribute(visualEditing, 'playIcon')}
+          >
             <svg className="ml-0.5 text-black" width="14" height="16" viewBox="0 0 14 16" fill="currentColor">
               <path d="M0 0L14 8L0 16V0Z" />
             </svg>
@@ -71,17 +91,22 @@ function TestimonialCard({section}: {section: LegacyTestimonialSection}) {
 
       <div className="absolute bottom-[36px] left-8 flex items-end gap-[7px]">
         {avatarId ? (
-          <Image
-            id={avatarId}
-            alt={section.personName || 'Profile'}
-            width={66}
-            height={66}
-            mode="cover"
-            className="h-[33px] w-[33px] rounded-full object-cover"
-            sizes="33px"
-          />
+          <span data-sanity={getVisualDataAttribute(visualEditing, 'avatarImage')}>
+            <Image
+              id={avatarId}
+              alt={section.personName || 'Profile'}
+              width={66}
+              height={66}
+              mode="cover"
+              className="h-[33px] w-[33px] rounded-full object-cover"
+              sizes="33px"
+            />
+          </span>
         ) : (
-          <div className="h-[33px] w-[33px] rounded-full bg-white/25" />
+          <div
+            className="h-[33px] w-[33px] rounded-full bg-white/25"
+            data-sanity={getVisualDataAttribute(visualEditing, 'avatarImage')}
+          />
         )}
         <div className="flex flex-col gap-[2px]">
           <p className="font-display text-sm leading-[18.2px] text-white">
@@ -89,19 +114,40 @@ function TestimonialCard({section}: {section: LegacyTestimonialSection}) {
           </p>
           <div className="flex items-end gap-[6px] text-white/90">
             {brandWordmarkId ? (
-              <Image id={brandWordmarkId} alt={section.companyName || 'Brand'} width={100} height={16} mode="contain" className="h-[10px] w-auto object-contain" sizes="100px" />
+              <span data-sanity={getVisualDataAttribute(visualEditing, 'brandWordmark')}>
+                <Image id={brandWordmarkId} alt={section.companyName || 'Brand'} width={100} height={16} mode="contain" className="h-[10px] w-auto object-contain" sizes="100px" />
+              </span>
             ) : (
-              <span className="font-display text-[12px]">{section.companyName || 'Company'}</span>
+              <span
+                className="font-display text-[12px]"
+                data-sanity={getVisualDataAttribute(visualEditing, 'brandWordmark')}
+              >
+                {section.companyName || 'Company'}
+              </span>
             )}
             {brandSeparatorId ? (
-              <Image id={brandSeparatorId} alt="" width={1} height={9} mode="contain" className="h-[9px] w-px object-contain opacity-70" sizes="1px" />
+              <span data-sanity={getVisualDataAttribute(visualEditing, 'brandSeparator')}>
+                <Image id={brandSeparatorId} alt="" width={1} height={9} mode="contain" className="h-[9px] w-px object-contain opacity-70" sizes="1px" />
+              </span>
             ) : (
-              <span className="opacity-70">|</span>
+              <span
+                className="opacity-70"
+                data-sanity={getVisualDataAttribute(visualEditing, 'brandSeparator')}
+              >
+                |
+              </span>
             )}
             {brandSubmarkId ? (
-              <Image id={brandSubmarkId} alt={section.companySubmark || 'Submark'} width={64} height={20} mode="contain" className="h-[15px] w-auto object-contain" sizes="64px" />
+              <span data-sanity={getVisualDataAttribute(visualEditing, 'brandSubmark')}>
+                <Image id={brandSubmarkId} alt={section.companySubmark || 'Submark'} width={64} height={20} mode="contain" className="h-[15px] w-auto object-contain" sizes="64px" />
+              </span>
             ) : (
-              <span className="font-display text-[12px]">{section.companySubmark || 'Living'}</span>
+              <span
+                className="font-display text-[12px]"
+                data-sanity={getVisualDataAttribute(visualEditing, 'brandSubmark')}
+              >
+                {section.companySubmark || 'Living'}
+              </span>
             )}
           </div>
         </div>
@@ -110,7 +156,13 @@ function TestimonialCard({section}: {section: LegacyTestimonialSection}) {
   )
 }
 
-export default function TestimonialSanitySection({section}: {section: LegacyTestimonialSection}) {
+export default function TestimonialSanitySection({
+  section,
+  visualEditing,
+}: {
+  section: LegacyTestimonialSection
+  visualEditing?: VisualEditingProps
+}) {
   const stats = (section.stats || []).filter(
     (stat): stat is LegacyStat & {value: number; label: string} =>
       typeof stat?.value === 'number' && !!stat?.label,
@@ -130,7 +182,7 @@ export default function TestimonialSanitySection({section}: {section: LegacyTest
             </div>
 
             <div className="flex flex-col items-start gap-10 lg:flex-row lg:items-center lg:justify-between">
-              <TestimonialCard section={section} />
+              <TestimonialCard section={section} visualEditing={visualEditing} />
 
               <blockquote className="max-w-[510px]">
                 <p className="font-sans text-[24px] font-medium leading-[1.2] tracking-[-0.14px] text-black sm:text-[28px]">

@@ -1,6 +1,56 @@
 import {defineQuery} from 'next-sanity'
 
-export const settingsQuery = defineQuery(`*[_type == "settings"][0]`)
+const resolvedLinkFields = /* groq */ `
+  _type,
+  linkType,
+  href,
+  openInNewTab,
+  "page": page->slug.current,
+  "post": post->slug.current
+`
+
+export const settingsQuery = defineQuery(`
+  *[_type == "settings"][0]{
+    _id,
+    _type,
+    title,
+    brandName,
+    description,
+    ogImage,
+    headerNavItems[]{
+      _key,
+      label,
+      link{
+        ${resolvedLinkFields}
+      }
+    },
+    headerCta{
+      buttonText,
+      link{
+        ${resolvedLinkFields}
+      }
+    },
+    footerHeading,
+    footerHighlight,
+    footerCta{
+      buttonText,
+      link{
+        ${resolvedLinkFields}
+      }
+    },
+    footerCtaAvatarImages,
+    footerDescription,
+    footerLegalText,
+    footerLegalLinks[]{
+      _key,
+      label,
+      link{
+        ${resolvedLinkFields}
+      }
+    },
+    footerLinkCloudLines
+  }
+`)
 
 const postFields = /* groq */ `
   _id,
@@ -27,14 +77,7 @@ const linkFields = /* groq */ `
       }
 `
 
-const homepageLinkFields = /* groq */ `
-  _type,
-  linkType,
-  href,
-  openInNewTab,
-  "page": page->slug.current,
-  "post": post->slug.current
-`
+const homepageLinkFields = resolvedLinkFields
 
 const homepageButtonFields = /* groq */ `
   buttonText,
@@ -44,7 +87,7 @@ const homepageButtonFields = /* groq */ `
 `
 
 export const homepageQuery = defineQuery(`
-  *[_type == "homepage" && _id in ["homepage", "drafts.homepage"]] | order(_updatedAt desc)[0]{
+  *[_type == "homepage" && _id == "homepage"][0]{
     _id,
     _type,
     title,
@@ -72,6 +115,7 @@ export const homepageQuery = defineQuery(`
       _type == "homeLogosSection" => {
         heading,
         logos[]{
+          _key,
           name,
           logo,
           link
@@ -81,6 +125,7 @@ export const homepageQuery = defineQuery(`
         heading,
         subheading,
         items[]{
+          _key,
           title,
           summary,
           image,
@@ -98,6 +143,7 @@ export const homepageQuery = defineQuery(`
         heading,
         subheading,
         offers[]{
+          _key,
           name,
           description,
           priceNote,
@@ -109,6 +155,7 @@ export const homepageQuery = defineQuery(`
       _type == "homeUseCasesSection" => {
         heading,
         useCases[]{
+          _key,
           label,
           heading,
           description,
@@ -129,6 +176,7 @@ export const homepageQuery = defineQuery(`
       _type == "homeFaqSection" => {
         heading,
         items[]{
+          _key,
           question,
           answer
         }
@@ -151,12 +199,14 @@ export const homepageQuery = defineQuery(`
         },
         avatarImages,
         cards[]{
+          _key,
           label,
           image
         }
       },
       _type == "homeLegacyLogoBarSection" => {
         logos[]{
+          _key,
           name,
           logo,
           link
@@ -177,6 +227,7 @@ export const homepageQuery = defineQuery(`
         brandSeparator,
         brandSubmark,
         stats[]{
+          _key,
           value,
           suffix,
           label
@@ -187,6 +238,7 @@ export const homepageQuery = defineQuery(`
         labelSuffix,
         mockupImage,
         cards[]{
+          _key,
           company,
           description,
           image,
@@ -198,9 +250,11 @@ export const homepageQuery = defineQuery(`
         subtitlePrefix,
         subtitleHighlight,
         categories[]{
+          _key,
           name,
           activeFeature,
-          inactiveFeatures
+          inactiveFeatures,
+          image
         },
         description,
         image,
@@ -216,9 +270,11 @@ export const homepageQuery = defineQuery(`
         subtitleHighlight,
         defaultPlanTitle,
         plans[]{
+          _key,
           title,
           price,
           features[]{
+            _key,
             text,
             active
           },
@@ -237,7 +293,7 @@ export const homepageQuery = defineQuery(`
 `)
 
 export const homepageSeoQuery = defineQuery(`
-  *[_type == "homepage" && _id in ["homepage", "drafts.homepage"]] | order(_updatedAt desc)[0]{
+  *[_type == "homepage" && _id == "homepage"][0]{
     seo{
       title,
       description,

@@ -1,5 +1,6 @@
 import {defineArrayMember, defineType, defineField} from 'sanity'
 import type {Link} from '../../../sanity.types'
+import {isHrefHidden, validateLinkHref} from '../lib/linkValidation'
 
 /**
  * This is the schema definition for the rich text fields used for
@@ -44,15 +45,11 @@ export const blockContent = defineType({
               defineField({
                 name: 'href',
                 title: 'URL',
-                type: 'url',
-                hidden: ({parent}) => parent?.linkType !== 'href' && parent?.linkType != null,
+                type: 'string',
+                hidden: ({parent}) => isHrefHidden(parent as Link | undefined),
                 validation: (Rule) =>
                   Rule.custom((value, context) => {
-                    const parent = context.parent as Link
-                    if (parent?.linkType === 'href' && !value) {
-                      return 'URL is required when Link Type is URL'
-                    }
-                    return true
+                    return validateLinkHref(value, context.parent as Link | undefined)
                   }),
               }),
               defineField({

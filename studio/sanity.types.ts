@@ -13,6 +13,339 @@
  */
 
 // Source: ../sanity.schema.json
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+}
+
+export type Logo = {
+  asset?: SanityImageAssetReference
+  media?: unknown // Unable to locate the referenced type "logo.media" in schema
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  _type: 'image'
+}
+
+export type ObjectImage = {
+  asset?: SanityImageAssetReference
+  media?: unknown // Unable to locate the referenced type "object.image.media" in schema
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  _type: 'image'
+}
+
+export type CardsObjectImage = {
+  asset?: SanityImageAssetReference
+  media?: unknown // Unable to locate the referenced type "cards.object.image.media" in schema
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  _type: 'image'
+}
+
+export type ObjectLogo = {
+  asset?: SanityImageAssetReference
+  media?: unknown // Unable to locate the referenced type "object.logo.media" in schema
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  _type: 'image'
+}
+
+export type Image1 = {
+  asset?: SanityImageAssetReference
+  media?: unknown // Unable to locate the referenced type "media1" in schema
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  _type: 'image'
+}
+
+export type Badge = {
+  asset?: SanityImageAssetReference
+  media?: unknown // Unable to locate the referenced type "badge.media" in schema
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  _type: 'image'
+}
+
+export type CategoriesObjectImage = {
+  asset?: SanityImageAssetReference
+  media?: unknown // Unable to locate the referenced type "categories.object.image.media" in schema
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  _type: 'image'
+}
+
+export type PlansObjectImage = {
+  asset?: SanityImageAssetReference
+  media?: unknown // Unable to locate the referenced type "plans.object.image.media" in schema
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  _type: 'image'
+}
+
+export type HomeLegacyPricingSection = {
+  _type: 'homeLegacyPricingSection'
+  subtitlePrefix: string
+  subtitleHighlight: string
+  defaultPlanTitle?: string
+  plans: Array<{
+    title: string
+    price: string
+    features: Array<{
+      text: string
+      active?: boolean
+      _key: string
+    }>
+    description: string
+    image?: PlansObjectImage
+    primaryButton?: Button
+    secondaryButton?: Button
+    _key: string
+  }>
+}
+
+export type HomeLegacyOfferSection = {
+  _type: 'homeLegacyOfferSection'
+  title: string
+  subtitlePrefix: string
+  subtitleHighlight: string
+  categories: Array<{
+    name: string
+    activeFeature: string
+    inactiveFeatures?: Array<string>
+    image?: CategoriesObjectImage
+    _key: string
+  }>
+  description?: string
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  primaryButton?: Button
+  secondaryButton?: Button
+}
+
+export type HomeLegacyWorkSection = {
+  _type: 'homeLegacyWorkSection'
+  labelPrefix: string
+  labelSuffix: string
+  mockupImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  cards: Array<{
+    company: string
+    description: string
+    image?: Image1
+    badge?: Badge
+    _key: string
+  }>
+}
+
+export type HomeLegacyTestimonialSection = {
+  _type: 'homeLegacyTestimonialSection'
+  labelPrefix: string
+  labelHighlight: string
+  quote: string
+  personName: string
+  personRole: string
+  companyName?: string
+  companySubmark?: string
+  avatarImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  cardBackgroundImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  playIcon?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  brandWordmark?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  brandSeparator?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  brandSubmark?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  stats: Array<{
+    value: number
+    suffix?: string
+    label: string
+    _key: string
+  }>
+}
+
+export type HomeLegacyLogoBarSection = {
+  _type: 'homeLegacyLogoBarSection'
+  logos: Array<{
+    name: string
+    logo?: ObjectLogo
+    link?: string
+    _key: string
+  }>
+}
+
+export type HomeLegacyHeroSection = {
+  _type: 'homeLegacyHeroSection'
+  titleLinePrimary: string
+  titleLineSecondary: string
+  titleLineTertiary: string
+  description: string
+  ctaButton?: Button
+  avatarImages?: Array<{
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }>
+  cards: Array<{
+    label: string
+    image?: CardsObjectImage
+    _key: string
+  }>
+}
+
+export type HomeContactSection = {
+  _type: 'homeContactSection'
+  heading: string
+  description?: string
+  email?: string
+  button?: Button
+}
+
+export type HomeFaqSection = {
+  _type: 'homeFaqSection'
+  heading: string
+  items: Array<{
+    question: string
+    answer: string
+    _key: string
+  }>
+}
+
+export type HomeRoiSection = {
+  _type: 'homeRoiSection'
+  heading: string
+  description?: string
+  button?: Button
+  embedUrl?: string
+}
+
+export type HomeUseCasesSection = {
+  _type: 'homeUseCasesSection'
+  heading: string
+  useCases: Array<{
+    label: string
+    heading: string
+    description?: string
+    bullets?: Array<string>
+    button?: Button
+    _key: string
+  }>
+}
+
+export type HomeOfferSection = {
+  _type: 'homeOfferSection'
+  heading: string
+  subheading?: string
+  offers: Array<{
+    name: string
+    description?: string
+    priceNote?: string
+    button?: Button
+    _key: string
+  }>
+}
+
+export type HomeProblemSection = {
+  _type: 'homeProblemSection'
+  heading: string
+  description?: string
+  problems: Array<string>
+}
+
+export type HomeCaseStudiesSection = {
+  _type: 'homeCaseStudiesSection'
+  heading: string
+  subheading?: string
+  items: Array<{
+    title: string
+    summary?: string
+    image: ObjectImage
+    button?: Button
+    _key: string
+  }>
+}
+
+export type HomeLogosSection = {
+  _type: 'homeLogosSection'
+  heading?: string
+  logos: Array<{
+    name: string
+    logo: Logo
+    link?: string
+    _key: string
+  }>
+}
+
+export type HomeHeroSection = {
+  _type: 'homeHeroSection'
+  eyebrow?: string
+  heading: string
+  subheading?: string
+  badges?: Array<string>
+  primaryButton?: Button
+  secondaryButton?: Button
+}
+
+export type HomeSeo = {
+  _type: 'homeSeo'
+  title: string
+  description: string
+  ogImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+}
+
 export type PageReference = {
   _ref: string
   _type: 'reference'
@@ -34,13 +367,6 @@ export type Link = {
   page?: PageReference
   post?: PostReference
   openInNewTab?: boolean
-}
-
-export type SanityImageAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
 }
 
 export type CallToAction = {
@@ -132,6 +458,7 @@ export type Settings = {
   _updatedAt: string
   _rev: string
   title: string
+  brandName?: string
   description?: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -163,6 +490,31 @@ export type Settings = {
     metadataBase?: string
     _type: 'image'
   }
+  headerNavItems?: Array<{
+    label: string
+    link?: Link
+    _key: string
+  }>
+  headerCta?: Button
+  footerHeading?: string
+  footerHighlight?: string
+  footerCta?: Button
+  footerCtaAvatarImages?: Array<{
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }>
+  footerDescription?: string
+  footerLegalText?: string
+  footerLegalLinks?: Array<{
+    label: string
+    link?: Link
+    _key: string
+  }>
+  footerLinkCloudLines?: Array<string>
 }
 
 export type SanityImageCrop = {
@@ -252,6 +604,65 @@ export type Slug = {
   _type: 'slug'
   current: string
   source?: string
+}
+
+export type Homepage = {
+  _id: string
+  _type: 'homepage'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  locale: 'pl'
+  seo?: HomeSeo
+  sections: Array<
+    | ({
+        _key: string
+      } & HomeLegacyHeroSection)
+    | ({
+        _key: string
+      } & HomeLegacyLogoBarSection)
+    | ({
+        _key: string
+      } & HomeLegacyTestimonialSection)
+    | ({
+        _key: string
+      } & HomeLegacyWorkSection)
+    | ({
+        _key: string
+      } & HomeLegacyOfferSection)
+    | ({
+        _key: string
+      } & HomeLegacyPricingSection)
+    | ({
+        _key: string
+      } & HomeHeroSection)
+    | ({
+        _key: string
+      } & HomeLogosSection)
+    | ({
+        _key: string
+      } & HomeCaseStudiesSection)
+    | ({
+        _key: string
+      } & HomeProblemSection)
+    | ({
+        _key: string
+      } & HomeOfferSection)
+    | ({
+        _key: string
+      } & HomeUseCasesSection)
+    | ({
+        _key: string
+      } & HomeRoiSection)
+    | ({
+        _key: string
+      } & HomeFaqSection)
+    | ({
+        _key: string
+      } & HomeContactSection)
+  >
+  publishedAt?: string
 }
 
 export type SanityAssistInstructionTask = {
@@ -488,10 +899,34 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | SanityImageAssetReference
+  | Logo
+  | ObjectImage
+  | CardsObjectImage
+  | ObjectLogo
+  | Image1
+  | Badge
+  | CategoriesObjectImage
+  | PlansObjectImage
+  | HomeLegacyPricingSection
+  | HomeLegacyOfferSection
+  | HomeLegacyWorkSection
+  | HomeLegacyTestimonialSection
+  | HomeLegacyLogoBarSection
+  | HomeLegacyHeroSection
+  | HomeContactSection
+  | HomeFaqSection
+  | HomeRoiSection
+  | HomeUseCasesSection
+  | HomeOfferSection
+  | HomeProblemSection
+  | HomeCaseStudiesSection
+  | HomeLogosSection
+  | HomeHeroSection
+  | HomeSeo
   | PageReference
   | PostReference
   | Link
-  | SanityImageAssetReference
   | CallToAction
   | InfoSection
   | BlockContentTextOnly
@@ -505,6 +940,7 @@ export type AllSanitySchemaTypes =
   | Post
   | Person
   | Slug
+  | Homepage
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations

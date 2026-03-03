@@ -5,6 +5,7 @@ import {useMemo, useState} from 'react'
 import ResolvedLink from '@/app/components/ResolvedLink'
 import Image from '@/app/components/SanityImage'
 import {DereferencedLink} from '@/sanity/lib/types'
+import {getVisualDataAttribute, keyPath, type VisualEditingProps} from './visualEditing'
 
 type LegacyButton = {
   buttonText?: string | null
@@ -41,7 +42,13 @@ function imageRef(value: unknown): string | undefined {
   return maybeAsset?._ref
 }
 
-export default function PricingSanitySection({section}: {section: LegacyPricingSection}) {
+export default function PricingSanitySection({
+  section,
+  visualEditing,
+}: {
+  section: LegacyPricingSection
+  visualEditing?: VisualEditingProps
+}) {
   const plans = useMemo(
     () =>
       (section.plans || []).filter(
@@ -58,6 +65,10 @@ export default function PricingSanitySection({section}: {section: LegacyPricingS
     : defaultPlanTitle
   const activePlan = plans.find((plan) => plan.title === normalizedActivePlanTitle) || plans[0]
   const planImageId = imageRef(activePlan?.image)
+  const planImageDataAttr = getVisualDataAttribute(
+    visualEditing,
+    keyPath('plans', activePlan?._key, 'image'),
+  )
   const features = (activePlan?.features || []).filter(
     (feature): feature is LegacyPricingFeature & {text: string} => !!feature?.text,
   )
@@ -67,7 +78,7 @@ export default function PricingSanitySection({section}: {section: LegacyPricingS
       <div className="container">
         {plans.length ? (
           <div className="mb-8 flex items-center justify-center">
-            <div className="inline-flex rounded-[14px] bg-[rgba(200,203,211,0.45)] p-1">
+            <div className="inline-flex rounded-[14px] bg-white/90 p-1 shadow-[0px_18px_36px_-24px_rgba(255,255,255,0.4)]">
               {plans.map((plan) => {
                 const isActive = plan.title === activePlan?.title
 
@@ -77,8 +88,12 @@ export default function PricingSanitySection({section}: {section: LegacyPricingS
                     type="button"
                     onClick={() => setActivePlanTitle(plan.title)}
                     className={`rounded-[12px] px-4 py-3 transition-all ${
-                      isActive ? 'bg-surface text-white' : 'text-black hover:bg-white/60'
+                      isActive ? 'bg-surface text-white' : 'text-black hover:bg-black/5'
                     }`}
+                    data-sanity={getVisualDataAttribute(
+                      visualEditing,
+                      keyPath('plans', plan._key, 'title'),
+                    )}
                   >
                     <span className="font-sans text-base font-bold tracking-[-0.24px]">
                       {plan.title}{' '}
@@ -101,14 +116,13 @@ export default function PricingSanitySection({section}: {section: LegacyPricingS
 
         <div className="p-2">
           <div
-            className="w-full rounded-[28px] border border-[rgba(232,232,232,0.3)] px-6 py-10 shadow-[0px_20px_40px_0px_rgba(0,0,0,0.1)] backdrop-blur-[10px] sm:px-12 sm:py-14 md:px-[159px] md:py-[87px]"
-            style={{
-              background:
-                'linear-gradient(-25deg, rgba(232,232,232,0.2) 10.9%, rgba(200,203,211,0.4) 90.5%)',
-            }}
+            className="w-full rounded-[28px] border border-black/5 bg-white px-6 py-10 shadow-[0px_20px_40px_0px_rgba(0,0,0,0.1)] sm:px-12 sm:py-14 md:px-[159px] md:py-[87px]"
           >
             {activePlan ? (
-              <div className="flex flex-col items-center gap-[92px]">
+              <div
+                key={activePlan._key || activePlan.title}
+                className="flex flex-col items-center gap-[92px]"
+              >
                 <div className="flex flex-col items-center gap-2 text-center">
                   <h2 className="font-display text-[56px] leading-[1.16] font-bold tracking-[-0.96px] text-primary sm:text-[64px]">
                     {activePlan.title}
@@ -147,26 +161,43 @@ export default function PricingSanitySection({section}: {section: LegacyPricingS
 
                     <div className="flex items-center gap-[19px]">
                       {activePlan.primaryButton?.buttonText && activePlan.primaryButton.link ? (
-                        <ResolvedLink
-                          link={activePlan.primaryButton.link}
-                          className="ux-cta inline-flex items-center gap-2 rounded-[12px] bg-primary px-4 py-[12px] font-sans text-base font-bold tracking-[-0.24px] text-white hover:bg-primary-hover"
+                        <span
+                          data-sanity={getVisualDataAttribute(
+                            visualEditing,
+                            keyPath('plans', activePlan._key, 'primaryButton'),
+                          )}
                         >
-                          {activePlan.primaryButton.buttonText}
-                        </ResolvedLink>
+                          <ResolvedLink
+                            link={activePlan.primaryButton.link}
+                            className="ux-cta inline-flex items-center gap-2 rounded-[12px] bg-primary px-4 py-[12px] font-sans text-base font-bold tracking-[-0.24px] text-white hover:bg-primary-hover"
+                          >
+                            {activePlan.primaryButton.buttonText}
+                          </ResolvedLink>
+                        </span>
                       ) : null}
                       {activePlan.secondaryButton?.buttonText && activePlan.secondaryButton.link ? (
-                        <ResolvedLink
-                          link={activePlan.secondaryButton.link}
-                          className="ux-cta inline-flex items-center rounded-[12px] border border-black px-4 py-[12px] font-sans text-base font-bold tracking-[-0.24px] text-black hover:bg-black/5"
+                        <span
+                          data-sanity={getVisualDataAttribute(
+                            visualEditing,
+                            keyPath('plans', activePlan._key, 'secondaryButton'),
+                          )}
                         >
-                          {activePlan.secondaryButton.buttonText}
-                        </ResolvedLink>
+                          <ResolvedLink
+                            link={activePlan.secondaryButton.link}
+                            className="ux-cta inline-flex items-center rounded-[12px] border border-black px-4 py-[12px] font-sans text-base font-bold tracking-[-0.24px] text-black hover:bg-black/5"
+                          >
+                            {activePlan.secondaryButton.buttonText}
+                          </ResolvedLink>
+                        </span>
                       ) : null}
                     </div>
                   </div>
 
                   <div className="flex flex-1 flex-col gap-8">
-                    <div className="h-[112px] w-full overflow-hidden rounded-[14px]">
+                    <div
+                      className="h-[112px] w-full overflow-hidden rounded-[14px]"
+                      data-sanity={planImageDataAttr}
+                    >
                       {planImageId ? (
                         <Image
                           id={planImageId}

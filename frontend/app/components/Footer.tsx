@@ -1,29 +1,164 @@
-import Link from 'next/link'
+import ResolvedLink from '@/app/components/ResolvedLink'
+import Image from '@/app/components/SanityImage'
+import {getVisualDataAttribute, keyPath, type VisualEditingProps} from '@/app/components/home/sanity/visualEditing'
+import {DereferencedLink, SiteSettings} from '@/sanity/lib/types'
 
-/* ------------------------------------------------------------------ */
-/*  Figma asset URLs — replace with Sanity CDN in production           */
-/* ------------------------------------------------------------------ */
-const CTA_AVATAR_A =
-  'https://www.figma.com/api/mcp/asset/bd80163b-171a-4473-9d90-7c39392ae1d7'
-const CTA_AVATAR_B =
-  'https://www.figma.com/api/mcp/asset/e3ae2ca1-a124-4adf-8e11-72a6dcec5591'
-const CTA_ONLINE_DOT =
-  'https://www.figma.com/api/mcp/asset/00b44471-d582-4626-87c4-badd6f477d96'
+type FooterButton = {
+  buttonText?: string | null
+  link?: DereferencedLink | null
+} | null
 
-const LOGO_MARK =
-  'https://www.figma.com/api/mcp/asset/bd164405-41c2-4473-9e88-b9d46e7893f4'
-const LOGO_GLOW =
-  'https://www.figma.com/api/mcp/asset/7e58800e-3a39-499b-86da-56051b2151a0'
+type FooterLegalLink = {
+  _key?: string
+  label?: string | null
+  link?: DereferencedLink | null
+}
 
-const FOOTER_DECOR_LINE =
-  'https://www.figma.com/api/mcp/asset/55f2d2b4-8ed1-4e40-966f-32d32f5a43c7'
-const FOOTER_DECOR_GLOW =
-  'https://www.figma.com/api/mcp/asset/bb93b155-2e2a-4df2-9b6f-94e17b746d4b'
+function imageRef(value: unknown): string | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  const maybeAsset = (value as {asset?: {_ref?: string}}).asset
+  return maybeAsset?._ref
+}
 
-const FOOTER_COPY =
+function itemKey(value: unknown): string | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  return (value as {_key?: string})._key
+}
+
+function settingsVisualEditing(settings: SiteSettings | null): VisualEditingProps | undefined {
+  if (!settings?._id || !settings?._type) return undefined
+
+  return {
+    id: settings._id,
+    type: settings._type,
+    path: '',
+  }
+}
+
+function FooterAvatarStack({
+  avatars,
+  visualEditing,
+}: {
+  avatars: unknown[]
+  visualEditing?: VisualEditingProps
+}) {
+  const avatarSlots = Array.from({length: 3}, (_, index) => {
+    const avatar = avatars[index]
+    return {
+      hasSource: Boolean(avatar),
+      id: imageRef(avatar),
+      selector: itemKey(avatar) ?? index,
+      key: itemKey(avatar) ?? `footer-avatar-${index}`,
+      fallbackLabel: index === 0 ? 'W' : index === 1 ? 'K' : '',
+    }
+  })
+
+  return (
+    <span className="flex items-center gap-1.5">
+      <span className="flex -space-x-[7px]">
+        {avatarSlots.map((avatar, index) =>
+          avatar.id ? (
+            <span
+              key={avatar.key}
+              className="relative size-[21px] shrink-0 overflow-hidden rounded-full border-2 border-primary"
+              data-sanity={getVisualDataAttribute(
+                visualEditing,
+                avatar.hasSource
+                  ? keyPath('footerCtaAvatarImages', avatar.selector)
+                  : 'footerCtaAvatarImages',
+              )}
+            >
+              <Image
+                id={avatar.id}
+                alt=""
+                width={42}
+                height={42}
+                mode="cover"
+                className="absolute inset-0 size-full object-cover"
+                sizes="21px"
+              />
+            </span>
+          ) : (
+            <span
+              key={avatar.key}
+              className={`flex size-[21px] shrink-0 items-center justify-center rounded-full border-2 border-primary text-[9px] font-bold text-white ${
+                index === 0 ? 'bg-white/20' : index === 1 ? 'bg-white/15' : 'bg-primary/30'
+              }`}
+              data-sanity={getVisualDataAttribute(
+                visualEditing,
+                avatar.hasSource
+                  ? keyPath('footerCtaAvatarImages', avatar.selector)
+                  : 'footerCtaAvatarImages',
+              )}
+            >
+              {avatar.fallbackLabel}
+            </span>
+          ),
+        )}
+      </span>
+      <span className="size-3 shrink-0 rounded-full border-2 border-primary bg-green-400" />
+    </span>
+  )
+}
+
+const DEFAULT_FOOTER_COPY =
   'Crafting exceptional digital experiences to captivate users across screens. Elevating startups, Fortune companies, and beyond with unparalleled web design and UX mastery'
 
-export default function Footer() {
+const DEFAULT_FOOTER_CTA: FooterButton = {
+  buttonText: 'Book a call',
+  link: {_type: 'link', linkType: 'href', href: '/contact'},
+}
+
+const DEFAULT_LEGAL_LINKS: FooterLegalLink[] = [
+  {
+    _key: 'privacy',
+    label: 'Privacy policy',
+    link: {_type: 'link', linkType: 'href', href: '/privacy-policy'},
+  },
+  {
+    _key: 'terms',
+    label: 'Terms',
+    link: {_type: 'link', linkType: 'href', href: '/terms'},
+  },
+]
+
+const DEFAULT_LINK_CLOUD_LINES = [
+  'Company Home Capabilities Our Work Why Orizon Design Subscription Careers Blog Services UX Design Landing',
+  'Page Design Mobile App Design Design System & UI Kit Branding & Identity Web 3.0 Design & NFTs Services',
+  'Figma Design Experts Spatial Computing & XR Design Video Production, Explainer & Teasers Webflow Agency 3D Art & 3D Motion Design Your Brand',
+]
+
+export default function Footer({settings}: {settings?: SiteSettings | null}) {
+  const visualEditing = settingsVisualEditing(settings || null)
+  const brandName = settings?.brandName?.trim() || settings?.title?.trim() || 'Webkowsky'
+  const footerHeading = settings?.footerHeading?.trim() || 'Need help with a project?'
+  const footerHighlight = settings?.footerHighlight?.trim() || 'Contact us.'
+  const footerCopy = settings?.footerDescription?.trim() || DEFAULT_FOOTER_COPY
+  const footerLegalText = settings?.footerLegalText?.trim() || '© 2026 Webkowsky. All Rights Reserved.'
+  const footerCta =
+    settings?.footerCta?.buttonText && settings?.footerCta?.link ? settings.footerCta : DEFAULT_FOOTER_CTA
+  const footerLegalLinks =
+    (settings?.footerLegalLinks || []).flatMap((item) =>
+      item?.label && item?.link
+        ? [
+            {
+              _key: item._key,
+              label: item.label,
+              link: item.link as DereferencedLink,
+            },
+          ]
+        : [],
+    ) || []
+  const usingFallbackLegalLinks = footerLegalLinks.length === 0
+  const resolvedLegalLinks = footerLegalLinks.length ? footerLegalLinks : DEFAULT_LEGAL_LINKS
+  const footerLinkCloudLines = (settings?.footerLinkCloudLines || []).filter(
+    (line): line is string => !!line,
+  )
+  const resolvedLinkCloudLines = footerLinkCloudLines.length
+    ? footerLinkCloudLines
+    : DEFAULT_LINK_CLOUD_LINES
+  const footerAvatars = settings?.footerCtaAvatarImages || []
+
   return (
     <footer className="relative mt-auto overflow-hidden bg-surface text-white">
       <div
@@ -32,117 +167,118 @@ export default function Footer() {
       />
 
       <div className="pointer-events-none absolute left-1/2 top-[-324px] hidden h-[672px] w-[672px] -translate-x-1/2 md:block md:origin-top md:scale-[0.82] lg:scale-100">
-        <div className="absolute inset-[169.44px_-39.02px_72.44px_41.95px]">
-          <img
-            src={FOOTER_DECOR_LINE}
-            alt=""
-            className="h-full w-full object-contain opacity-70"
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-        <div className="absolute left-[324px] top-[489px] h-[111px] w-[111px]">
-          <img
-            src={FOOTER_DECOR_GLOW}
-            alt=""
-            className="h-full w-full object-contain opacity-70"
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
+        <div className="absolute inset-[170px_18px_76px_18px] rounded-full border border-white/8 opacity-70" />
+        <div className="absolute inset-[205px_78px_118px_78px] rounded-full border border-white/6 opacity-60" />
+        <div className="absolute left-1/2 top-[498px] h-[120px] w-[120px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(53,23,251,0.35)_0%,rgba(53,23,251,0.12)_42%,rgba(53,23,251,0)_72%)] blur-xl" />
       </div>
 
       <div className="container relative">
         <div className="mx-auto max-w-[1024px] pb-10 pt-14 sm:pb-12 sm:pt-20 lg:pb-4">
           <div className="mx-auto flex w-full max-w-[742px] flex-col items-center gap-4 text-center">
-            <h2 className="font-display text-[36px] font-bold leading-[1.06] tracking-[-0.96px] text-white sm:text-[52px] sm:leading-[1.05] lg:text-[64px] lg:leading-[74.4px]">
-              Need help with a project?
+            <h2
+              className="font-display text-[36px] font-bold leading-[1.06] tracking-[-0.96px] text-white sm:text-[52px] sm:leading-[1.05] lg:text-[64px] lg:leading-[74.4px]"
+              data-sanity={getVisualDataAttribute(visualEditing, 'footerHeading')}
+            >
+              {footerHeading}
             </h2>
-            <p className="font-display text-[36px] font-bold leading-[1.06] tracking-[-0.96px] text-primary sm:text-[52px] sm:leading-[1.05] lg:text-[64px] lg:leading-[74.4px]">
-              Contact us.
+            <p
+              className="font-display text-[36px] font-bold leading-[1.06] tracking-[-0.96px] text-primary sm:text-[52px] sm:leading-[1.05] lg:text-[64px] lg:leading-[74.4px]"
+              data-sanity={getVisualDataAttribute(visualEditing, 'footerHighlight')}
+            >
+              {footerHighlight}
             </p>
 
-            <Link
-              href="/contact"
-              className="mt-1 inline-flex min-h-12 items-center justify-center gap-2 rounded-[12px] bg-primary px-4 py-3 font-sans text-base font-bold tracking-[-0.24px] text-white transition-colors hover:bg-primary-hover sm:mt-2"
-            >
-              <span className="relative h-6 w-[42px] shrink-0">
-                <img
-                  src={CTA_AVATAR_A}
-                  alt=""
-                  className="absolute left-0 top-[3px] h-[21px] w-[21px] rounded-full border border-secondary object-cover"
-                  aria-hidden="true"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <img
-                  src={CTA_AVATAR_B}
-                  alt=""
-                  className="absolute left-[14px] top-[3px] h-[21px] w-[21px] rounded-full border border-secondary object-cover"
-                  aria-hidden="true"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <img
-                  src={CTA_ONLINE_DOT}
-                  alt=""
-                  className="absolute left-[30px] top-0 h-3 w-3 object-contain"
-                  aria-hidden="true"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </span>
-              <span>Book a call</span>
-            </Link>
+            {footerCta?.buttonText && footerCta.link ? (
+              <ResolvedLink
+                link={footerCta.link}
+                className="ux-cta mt-1 inline-flex min-h-12 items-center justify-center gap-2 rounded-[12px] bg-primary px-4 py-3 font-sans text-base font-bold tracking-[-0.24px] text-white transition-colors hover:bg-primary-hover sm:mt-2"
+                data-sanity={getVisualDataAttribute(visualEditing, 'footerCta')}
+              >
+                <FooterAvatarStack avatars={footerAvatars} visualEditing={visualEditing} />
+                <span>{footerCta.buttonText}</span>
+              </ResolvedLink>
+            ) : null}
           </div>
 
           <div className="mt-16 grid gap-10 md:mt-24 md:gap-12 lg:mt-[193px] lg:grid-cols-[633px_407px] lg:justify-between lg:gap-10">
             <div className="flex flex-col gap-10 md:gap-12">
               <div className="flex flex-col gap-5">
-                <Link href="/" className="relative block h-[121px] w-[128px]">
-                  <img
-                    src={LOGO_GLOW}
-                    alt=""
-                    className="absolute left-[26px] top-0 h-[120px] w-[73px] object-contain"
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <img
-                    src={LOGO_MARK}
-                    alt=""
-                    className="absolute left-0 top-[50px] h-[22px] w-[22px] object-contain"
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <span className="absolute left-[27px] top-[50px] font-display text-[13.477px] font-medium leading-[1.45] tracking-[-0.2695px] text-white">
-                    Webkowsky
+                <ResolvedLink
+                  link={{_type: 'link', linkType: 'href', href: '/'}}
+                  className="relative inline-flex items-center gap-3"
+                >
+                  <span className="absolute left-[-8px] top-1/2 h-14 w-14 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(53,23,251,0.35)_0%,rgba(53,23,251,0.12)_42%,rgba(53,23,251,0)_72%)] blur-md" />
+                  <span className="relative flex size-8 items-center justify-center rounded-lg bg-primary">
+                    <svg
+                      width="20"
+                      height="14"
+                      viewBox="0 0 20 14"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="text-white"
+                    >
+                      <path
+                        d="M2 7L6 11L10 3L14 11L18 7"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </span>
-                  <span className="absolute left-[102px] top-[42px] font-display text-[8.314px] font-black text-white">
+                  <span
+                    className="relative font-display text-[19px] font-medium tracking-[-0.39px] text-white"
+                    data-sanity={getVisualDataAttribute(visualEditing, 'brandName')}
+                  >
+                    {brandName}
+                  </span>
+                  <span className="relative self-start pt-0.5 font-display text-[8px] font-black text-white">
                     TM
                   </span>
-                </Link>
-                <p className="max-w-[310px] font-display text-sm leading-[18.2px] text-white/95">{FOOTER_COPY}</p>
+                </ResolvedLink>
+                <p
+                  className="max-w-[310px] font-display text-sm leading-[18.2px] text-white/95"
+                  data-sanity={getVisualDataAttribute(visualEditing, 'footerDescription')}
+                >
+                  {footerCopy}
+                </p>
               </div>
 
               <div className="grid gap-3 font-display text-sm leading-[18.2px] text-white/95 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center sm:gap-8">
-                <p>© 2026 Webkowsky. All Rights Reserved.</p>
-                <Link href="/privacy-policy" className="transition-colors hover:text-white/75">
-                  Privacy policy
-                </Link>
-                <Link href="/terms" className="transition-colors hover:text-white/75">
-                  Terms
-                </Link>
+                <p data-sanity={getVisualDataAttribute(visualEditing, 'footerLegalText')}>
+                  {footerLegalText}
+                </p>
+                {resolvedLegalLinks.map((item, index) => (
+                  <ResolvedLink
+                    key={item._key || item.label || index}
+                    link={item.link || DEFAULT_LEGAL_LINKS[0].link!}
+                    className="transition-colors hover:text-white/75"
+                    data-sanity={getVisualDataAttribute(
+                      visualEditing,
+                      usingFallbackLegalLinks
+                        ? 'footerLegalLinks'
+                        : keyPath('footerLegalLinks', item._key || index),
+                    )}
+                  >
+                    {item.label}
+                  </ResolvedLink>
+                ))}
               </div>
             </div>
 
             <div className="max-w-[407px] font-display text-sm leading-[1.3] text-white/95">
-              <p>Company Home Capabilities Our Work Why Orizon Design Subscription Careers Blog Services UX Design Landing</p>
-              <p className="mt-3 md:mt-4">Page Design Mobile App Design Design System &amp; UI Kit Branding &amp; Identity Web 3.0 Design &amp; NFTs Services</p>
-              <p className="mt-3 md:mt-4">Figma Design Experts Spatial Computing &amp; XR Design Video Production, Explainer &amp; Teasers Webflow Agency 3D Art &amp; 3D Motion Design Your Brand</p>
+              {resolvedLinkCloudLines.map((line, index) => (
+                <p
+                  key={`${line}-${index}`}
+                  className={index === 0 ? '' : 'mt-3 md:mt-4'}
+                  data-sanity={getVisualDataAttribute(
+                    visualEditing,
+                    footerLinkCloudLines.length ? `footerLinkCloudLines[${index}]` : 'footerLinkCloudLines',
+                  )}
+                >
+                  {line}
+                </p>
+              ))}
             </div>
           </div>
         </div>

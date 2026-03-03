@@ -11,8 +11,10 @@ import {type PointerEventHandler, useEffect, useState} from 'react'
 
 import {motionTokens} from '@/app/components/animations/motionTokens'
 import Image from '@/app/components/SanityImage'
+import {getVisualDataAttribute, keyPath, type VisualEditingProps} from './visualEditing'
 
 type LegacyWorkCard = {
+  _key?: string
   company?: string | null
   description?: string | null
   image?: unknown
@@ -61,15 +63,18 @@ function usePointerReactiveEffects() {
 function WorkCard({
   card,
   mockupImage,
+  visualEditing,
   pointerReactive,
 }: {
   card: LegacyWorkCard
   mockupImage?: unknown
+  visualEditing?: VisualEditingProps
   pointerReactive: boolean
 }) {
   const imageId = imageRef(card.image)
-  const badgeId = imageRef(card.badge)
   const mockupId = imageRef(mockupImage)
+  const cardImageDataAttr = getVisualDataAttribute(visualEditing, keyPath('cards', card._key, 'image'))
+  const mockupDataAttr = getVisualDataAttribute(visualEditing, 'mockupImage')
 
   const rotateX = useMotionValue(0)
   const rotateY = useMotionValue(0)
@@ -175,24 +180,26 @@ function WorkCard({
           ease: motionTokens.easing.standard,
         }}
       >
-        <motion.div
-          className="absolute inset-0"
-          style={pointerReactive ? {x: smoothMediaX, y: smoothMediaY} : undefined}
-        >
-          {imageId ? (
-            <Image
-              id={imageId}
-              alt={card.company || 'Case study'}
-              width={806}
-              height={920}
-              mode="cover"
-              className="absolute inset-0 size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.055]"
-              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-black/25" />
-          )}
-        </motion.div>
+        <div className="absolute inset-0" data-sanity={cardImageDataAttr}>
+          <motion.div
+            className="absolute inset-0"
+            style={pointerReactive ? {x: smoothMediaX, y: smoothMediaY} : undefined}
+          >
+            {imageId ? (
+              <Image
+                id={imageId}
+                alt={card.company || 'Case study'}
+                width={806}
+                height={920}
+                mode="cover"
+                className="absolute inset-0 size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.055]"
+                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-black/25" />
+            )}
+          </motion.div>
+        </div>
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/30" />
 
@@ -201,28 +208,16 @@ function WorkCard({
           className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
           style={pointerReactive ? {background: highlightBackground} : undefined}
         />
-
         <div className="absolute left-[25px] right-[25px] top-[26px]">
-          {badgeId ? (
-            <Image
-              id={badgeId}
-              alt={`${card.company || 'Company'} badge`}
-              width={220}
-              height={64}
-              mode="contain"
-              className="h-[43px] w-auto max-w-full object-contain object-left"
-              sizes="220px"
-            />
-          ) : null}
-        </div>
-
-        <div className="absolute left-[25px] right-[25px] top-[90px]">
           <p className="line-clamp-4 font-sans text-sm leading-[1.3] text-white">
             {card.description}
           </p>
         </div>
 
-        <div className="absolute bottom-0 left-1/2 h-[238px] w-[229px] -translate-x-1/2 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1">
+        <div
+          className="absolute bottom-0 left-1/2 h-[238px] w-[229px] -translate-x-1/2 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1"
+          data-sanity={mockupDataAttr}
+        >
           {mockupId ? (
             <motion.div
               className="absolute inset-0"
@@ -238,14 +233,22 @@ function WorkCard({
                 sizes="229px"
               />
             </motion.div>
-          ) : null}
+          ) : (
+            <div className="absolute inset-0 rounded-[14px] border border-white/15 bg-white/5" />
+          )}
         </div>
       </motion.article>
     </div>
   )
 }
 
-export default function OurWorkSanitySection({section}: {section: LegacyWorkSection}) {
+export default function OurWorkSanitySection({
+  section,
+  visualEditing,
+}: {
+  section: LegacyWorkSection
+  visualEditing?: VisualEditingProps
+}) {
   const cards = section.cards || []
   const pointerReactive = usePointerReactiveEffects()
 
@@ -267,6 +270,7 @@ export default function OurWorkSanitySection({section}: {section: LegacyWorkSect
                 key={`${card.company || 'work'}-${index}`}
                 card={card}
                 mockupImage={section.mockupImage}
+                visualEditing={visualEditing}
                 pointerReactive={pointerReactive}
               />
             ))}
