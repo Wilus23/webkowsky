@@ -19,6 +19,24 @@ Preview deploys are versioned through Git tags and GitHub prereleases, not throu
 
 - _None yet_
 
+## [0.10.0] - 2026-03-04
+
+### Added
+
+- Added a shared section catalog so homepage sections can also be used in `page.pageBuilder[]`.
+- Added optimistic drag-and-drop Visual Editing support for homepage sections, page builder sections, and settings arrays.
+- Added nested drag-and-drop data bindings for homepage and legacy section lists (badges, cards, logos, FAQs, plans, and features).
+
+### Changed
+
+- Unified homepage and page-builder rendering through a shared `_type` section renderer.
+- Expanded `getPageQuery` and generated Sanity types to include the shared homepage section model in `pageBuilder[]`.
+- Extended the CMS workflow documentation with a Visual DnD 0.10 QA checklist for homepage, pages, and settings.
+
+### Fixed
+
+- Aligned repository release metadata with the existing `v0.9.3` stable baseline before preparing `v0.10.0`.
+
 ## [0.9.3] - 2026-03-04
 
 ### Added
