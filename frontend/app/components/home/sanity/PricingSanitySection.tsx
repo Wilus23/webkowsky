@@ -64,10 +64,12 @@ export default function PricingSanitySection({
     ? activePlanTitle
     : defaultPlanTitle
   const activePlan = plans.find((plan) => plan.title === normalizedActivePlanTitle) || plans[0]
+  const activePlanSelector =
+    activePlan?._key || Math.max(0, plans.findIndex((plan) => plan.title === activePlan?.title))
   const planImageId = imageRef(activePlan?.image)
   const planImageDataAttr = getVisualDataAttribute(
     visualEditing,
-    keyPath('plans', activePlan?._key, 'image'),
+    keyPath('plans', activePlanSelector, 'image'),
   )
   const features = (activePlan?.features || []).filter(
     (feature): feature is LegacyPricingFeature & {text: string} => !!feature?.text,
@@ -78,8 +80,11 @@ export default function PricingSanitySection({
       <div className="container">
         {plans.length ? (
           <div className="mb-8 flex items-center justify-center">
-            <div className="inline-flex rounded-[14px] bg-white/90 p-1 shadow-[0px_18px_36px_-24px_rgba(255,255,255,0.4)]">
-              {plans.map((plan) => {
+            <div
+              className="inline-flex rounded-[14px] bg-white/90 p-1 shadow-[0px_18px_36px_-24px_rgba(255,255,255,0.4)]"
+              data-sanity={getVisualDataAttribute(visualEditing, 'plans')}
+            >
+              {plans.map((plan, planIndex) => {
                 const isActive = plan.title === activePlan?.title
 
                 return (
@@ -92,7 +97,7 @@ export default function PricingSanitySection({
                     }`}
                     data-sanity={getVisualDataAttribute(
                       visualEditing,
-                      keyPath('plans', plan._key, 'title'),
+                      keyPath('plans', plan._key || planIndex),
                     )}
                   >
                     <span className="font-sans text-base font-bold tracking-[-0.24px]">
@@ -137,11 +142,27 @@ export default function PricingSanitySection({
 
                 <div className="flex w-full flex-col items-start gap-12 lg:flex-row lg:gap-[101px]">
                   <div className="flex shrink-0 flex-col gap-12 lg:w-[321px]">
-                    <div className="flex flex-col gap-6">
-                      {features.map((feature) => (
+                    <div
+                      className="flex flex-col gap-6"
+                      data-sanity={getVisualDataAttribute(
+                        visualEditing,
+                        keyPath('plans', activePlanSelector, 'features'),
+                      )}
+                    >
+                      {features.map((feature, featureIndex) => (
                         <div
                           key={feature._key || feature.text}
                           className="flex items-start gap-[15px]"
+                          data-sanity={getVisualDataAttribute(
+                            visualEditing,
+                            keyPath(
+                              'plans',
+                              activePlanSelector,
+                              `features[${
+                                feature._key ? `_key=="${feature._key}"` : featureIndex
+                              }]`,
+                            ),
+                          )}
                         >
                           <div
                             className={`mt-0.5 size-3 shrink-0 rounded-full ${
@@ -164,7 +185,7 @@ export default function PricingSanitySection({
                         <span
                           data-sanity={getVisualDataAttribute(
                             visualEditing,
-                            keyPath('plans', activePlan._key, 'primaryButton'),
+                            keyPath('plans', activePlanSelector, 'primaryButton'),
                           )}
                         >
                           <ResolvedLink
@@ -179,7 +200,7 @@ export default function PricingSanitySection({
                         <span
                           data-sanity={getVisualDataAttribute(
                             visualEditing,
-                            keyPath('plans', activePlan._key, 'secondaryButton'),
+                            keyPath('plans', activePlanSelector, 'secondaryButton'),
                           )}
                         >
                           <ResolvedLink

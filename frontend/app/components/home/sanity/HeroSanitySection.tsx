@@ -46,19 +46,17 @@ function AvatarStack({
   avatars: unknown[]
   visualEditing?: VisualEditingProps
 }) {
-  const avatarSlots = Array.from({length: 3}, (_, index) => {
-    const avatar = avatars[index]
-    return {
-      id: imageRef(avatar),
-      selector: itemKey(avatar) ?? index,
-      key: itemKey(avatar) ?? `avatar-slot-${index}`,
-    }
-  })
+  const filledAvatars = avatars.map((avatar, index) => ({
+    id: imageRef(avatar),
+    selector: itemKey(avatar) ?? index,
+    key: itemKey(avatar) ?? `avatar-slot-${index}`,
+  }))
+  const placeholderCount = Math.max(0, 3 - filledAvatars.length)
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5" data-sanity={getVisualDataAttribute(visualEditing, 'avatarImages')}>
       <div className="flex -space-x-[7px]">
-        {avatarSlots.map((avatar) =>
+        {filledAvatars.map((avatar) =>
           avatar.id ? (
             <div
               key={avatar.key}
@@ -89,6 +87,12 @@ function AvatarStack({
             />
           ),
         )}
+        {Array.from({length: placeholderCount}).map((_, index) => (
+          <div
+            key={`avatar-placeholder-${index}`}
+            className="size-[21px] shrink-0 rounded-full border-2 border-primary bg-primary/30"
+          />
+        ))}
       </div>
       <div className="size-3 shrink-0 rounded-full border-2 border-primary bg-green-400" />
     </div>
@@ -105,13 +109,15 @@ function InfoCard({
   visualEditing?: VisualEditingProps
 }) {
   const imageId = imageRef(card.image)
+  const cardSelector = card._key ?? index
+  const cardDataAttr = getVisualDataAttribute(visualEditing, keyPath('cards', cardSelector))
   const cardImageDataAttr = getVisualDataAttribute(
     visualEditing,
-    keyPath('cards', card._key ?? index, 'image'),
+    keyPath('cards', cardSelector, 'image'),
   )
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-4 sm:gap-5">
+    <div className="flex min-w-0 flex-1 flex-col gap-4 sm:gap-5" data-sanity={cardDataAttr}>
       <p className="font-display text-sm leading-[1.3] text-black/90">{card.label || 'Card label'}</p>
       {imageId ? (
         <div
@@ -255,7 +261,10 @@ export default function HeroSanitySection({
           </div>
         </div>
 
-        <div className="flex flex-col gap-5 pt-1 sm:flex-row sm:gap-4">
+        <div
+          className="flex flex-col gap-5 pt-1 sm:flex-row sm:gap-4"
+          data-sanity={getVisualDataAttribute(visualEditing, 'cards')}
+        >
           {cards.length
             ? cards.map((card, index) => (
                 <InfoCard

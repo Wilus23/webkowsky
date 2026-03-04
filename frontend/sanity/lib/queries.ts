@@ -86,6 +86,199 @@ const homepageButtonFields = /* groq */ `
   }
 `
 
+const homeSectionFields = /* groq */ `
+  _key,
+  _type,
+  _type == "homeHeroSection" => {
+    eyebrow,
+    heading,
+    subheading,
+    badges,
+    primaryButton{
+      ${homepageButtonFields}
+    },
+    secondaryButton{
+      ${homepageButtonFields}
+    }
+  },
+  _type == "homeLogosSection" => {
+    heading,
+    logos[]{
+      _key,
+      name,
+      logo,
+      link
+    }
+  },
+  _type == "homeCaseStudiesSection" => {
+    heading,
+    subheading,
+    items[]{
+      _key,
+      title,
+      summary,
+      image,
+      button{
+        ${homepageButtonFields}
+      }
+    }
+  },
+  _type == "homeProblemSection" => {
+    heading,
+    description,
+    problems
+  },
+  _type == "homeOfferSection" => {
+    heading,
+    subheading,
+    offers[]{
+      _key,
+      name,
+      description,
+      priceNote,
+      button{
+        ${homepageButtonFields}
+      }
+    }
+  },
+  _type == "homeUseCasesSection" => {
+    heading,
+    useCases[]{
+      _key,
+      label,
+      heading,
+      description,
+      bullets,
+      button{
+        ${homepageButtonFields}
+      }
+    }
+  },
+  _type == "homeRoiSection" => {
+    heading,
+    description,
+    embedUrl,
+    button{
+      ${homepageButtonFields}
+    }
+  },
+  _type == "homeFaqSection" => {
+    heading,
+    items[]{
+      _key,
+      question,
+      answer
+    }
+  },
+  _type == "homeContactSection" => {
+    heading,
+    description,
+    email,
+    button{
+      ${homepageButtonFields}
+    }
+  },
+  _type == "homeLegacyHeroSection" => {
+    titleLinePrimary,
+    titleLineSecondary,
+    titleLineTertiary,
+    description,
+    ctaButton{
+      ${homepageButtonFields}
+    },
+    avatarImages,
+    cards[]{
+      _key,
+      label,
+      image
+    }
+  },
+  _type == "homeLegacyLogoBarSection" => {
+    logos[]{
+      _key,
+      name,
+      logo,
+      link
+    }
+  },
+  _type == "homeLegacyTestimonialSection" => {
+    labelPrefix,
+    labelHighlight,
+    quote,
+    personName,
+    personRole,
+    companyName,
+    companySubmark,
+    avatarImage,
+    cardBackgroundImage,
+    playIcon,
+    brandWordmark,
+    brandSeparator,
+    brandSubmark,
+    stats[]{
+      _key,
+      value,
+      suffix,
+      label
+    }
+  },
+  _type == "homeLegacyWorkSection" => {
+    labelPrefix,
+    labelSuffix,
+    mockupImage,
+    cards[]{
+      _key,
+      company,
+      description,
+      image,
+      badge
+    }
+  },
+  _type == "homeLegacyOfferSection" => {
+    title,
+    subtitlePrefix,
+    subtitleHighlight,
+    categories[]{
+      _key,
+      name,
+      activeFeature,
+      inactiveFeatures,
+      image
+    },
+    description,
+    image,
+    primaryButton{
+      ${homepageButtonFields}
+    },
+    secondaryButton{
+      ${homepageButtonFields}
+    }
+  },
+  _type == "homeLegacyPricingSection" => {
+    subtitlePrefix,
+    subtitleHighlight,
+    defaultPlanTitle,
+    plans[]{
+      _key,
+      title,
+      price,
+      features[]{
+        _key,
+        text,
+        active
+      },
+      description,
+      image,
+      primaryButton{
+        ${homepageButtonFields}
+      },
+      secondaryButton{
+        ${homepageButtonFields}
+      }
+    }
+  }
+`
+
 export const homepageQuery = defineQuery(`
   *[_type == "homepage" && _id == "homepage"][0]{
     _id,
@@ -98,196 +291,7 @@ export const homepageQuery = defineQuery(`
       ogImage
     },
     "sections": sections[]{
-      _key,
-      _type,
-      _type == "homeHeroSection" => {
-        eyebrow,
-        heading,
-        subheading,
-        badges,
-        primaryButton{
-          ${homepageButtonFields}
-        },
-        secondaryButton{
-          ${homepageButtonFields}
-        }
-      },
-      _type == "homeLogosSection" => {
-        heading,
-        logos[]{
-          _key,
-          name,
-          logo,
-          link
-        }
-      },
-      _type == "homeCaseStudiesSection" => {
-        heading,
-        subheading,
-        items[]{
-          _key,
-          title,
-          summary,
-          image,
-          button{
-            ${homepageButtonFields}
-          }
-        }
-      },
-      _type == "homeProblemSection" => {
-        heading,
-        description,
-        problems
-      },
-      _type == "homeOfferSection" => {
-        heading,
-        subheading,
-        offers[]{
-          _key,
-          name,
-          description,
-          priceNote,
-          button{
-            ${homepageButtonFields}
-          }
-        }
-      },
-      _type == "homeUseCasesSection" => {
-        heading,
-        useCases[]{
-          _key,
-          label,
-          heading,
-          description,
-          bullets,
-          button{
-            ${homepageButtonFields}
-          }
-        }
-      },
-      _type == "homeRoiSection" => {
-        heading,
-        description,
-        embedUrl,
-        button{
-          ${homepageButtonFields}
-        }
-      },
-      _type == "homeFaqSection" => {
-        heading,
-        items[]{
-          _key,
-          question,
-          answer
-        }
-      },
-      _type == "homeContactSection" => {
-        heading,
-        description,
-        email,
-        button{
-          ${homepageButtonFields}
-        }
-      },
-      _type == "homeLegacyHeroSection" => {
-        titleLinePrimary,
-        titleLineSecondary,
-        titleLineTertiary,
-        description,
-        ctaButton{
-          ${homepageButtonFields}
-        },
-        avatarImages,
-        cards[]{
-          _key,
-          label,
-          image
-        }
-      },
-      _type == "homeLegacyLogoBarSection" => {
-        logos[]{
-          _key,
-          name,
-          logo,
-          link
-        }
-      },
-      _type == "homeLegacyTestimonialSection" => {
-        labelPrefix,
-        labelHighlight,
-        quote,
-        personName,
-        personRole,
-        companyName,
-        companySubmark,
-        avatarImage,
-        cardBackgroundImage,
-        playIcon,
-        brandWordmark,
-        brandSeparator,
-        brandSubmark,
-        stats[]{
-          _key,
-          value,
-          suffix,
-          label
-        }
-      },
-      _type == "homeLegacyWorkSection" => {
-        labelPrefix,
-        labelSuffix,
-        mockupImage,
-        cards[]{
-          _key,
-          company,
-          description,
-          image,
-          badge
-        }
-      },
-      _type == "homeLegacyOfferSection" => {
-        title,
-        subtitlePrefix,
-        subtitleHighlight,
-        categories[]{
-          _key,
-          name,
-          activeFeature,
-          inactiveFeatures,
-          image
-        },
-        description,
-        image,
-        primaryButton{
-          ${homepageButtonFields}
-        },
-        secondaryButton{
-          ${homepageButtonFields}
-        }
-      },
-      _type == "homeLegacyPricingSection" => {
-        subtitlePrefix,
-        subtitleHighlight,
-        defaultPlanTitle,
-        plans[]{
-          _key,
-          title,
-          price,
-          features[]{
-            _key,
-            text,
-            active
-          },
-          description,
-          image,
-          primaryButton{
-            ${homepageButtonFields}
-          },
-          secondaryButton{
-            ${homepageButtonFields}
-          }
-        }
-      }
+      ${homeSectionFields}
     }
   }
 `)
@@ -311,6 +315,8 @@ export const getPageQuery = defineQuery(`
     heading,
     subheading,
     "pageBuilder": pageBuilder[]{
+      _key,
+      _type,
       ...,
       _type == "callToAction" => {
         ...,
@@ -328,6 +334,7 @@ export const getPageQuery = defineQuery(`
           }
         }
       },
+      ${homeSectionFields}
     },
   }
 `)

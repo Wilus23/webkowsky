@@ -1,6 +1,6 @@
 import CountUpValue from '@/app/components/animations/CountUpValue'
 import Image from '@/app/components/SanityImage'
-import {getVisualDataAttribute, type VisualEditingProps} from './visualEditing'
+import {getVisualDataAttribute, keyPath, type VisualEditingProps} from './visualEditing'
 
 type LegacyStat = {
   _key?: string
@@ -192,10 +192,20 @@ export default function TestimonialSanitySection({
             </div>
           </div>
 
-          <div className="mx-auto flex w-full max-w-[887px] flex-col items-center gap-12 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+          <div
+            className="mx-auto flex w-full max-w-[887px] flex-col items-center gap-12 sm:flex-row sm:items-start sm:justify-between sm:gap-8"
+            data-sanity={getVisualDataAttribute(visualEditing, 'stats')}
+          >
             {stats.length
-              ? stats.map((stat) => (
-                  <div key={stat._key || stat.label} className="text-center">
+              ? stats.map((stat, index) => (
+                  <div
+                    key={stat._key || stat.label}
+                    className="text-center"
+                    data-sanity={getVisualDataAttribute(
+                      visualEditing,
+                      keyPath('stats', stat._key || index),
+                    )}
+                  >
                     <CountUpValue
                       value={stat.value}
                       suffix={stat.suffix || ''}

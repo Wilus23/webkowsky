@@ -1,3 +1,8 @@
+'use client'
+
+import {SanityDocument} from 'next-sanity'
+import {useOptimistic} from 'next-sanity/hooks'
+
 import ResolvedLink from '@/app/components/ResolvedLink'
 import Image from '@/app/components/SanityImage'
 import {getVisualDataAttribute, keyPath, type VisualEditingProps} from '@/app/components/home/sanity/visualEditing'
@@ -54,7 +59,10 @@ function FooterAvatarStack({
   })
 
   return (
-    <span className="flex items-center gap-1.5">
+    <span
+      className="flex items-center gap-1.5"
+      data-sanity={getVisualDataAttribute(visualEditing, 'footerCtaAvatarImages')}
+    >
       <span className="flex -space-x-[7px]">
         {avatarSlots.map((avatar, index) =>
           avatar.id ? (
@@ -130,6 +138,57 @@ const DEFAULT_LINK_CLOUD_LINES = [
 
 export default function Footer({settings}: {settings?: SiteSettings | null}) {
   const visualEditing = settingsVisualEditing(settings || null)
+  const optimisticFooterLegalLinks = useOptimistic<
+    FooterLegalLink[] | null | undefined,
+    SanityDocument<{_id: string; footerLegalLinks?: FooterLegalLink[] | null}>
+  >(settings?.footerLegalLinks, (currentLinks, action) => {
+    if (action.id !== settings?._id) {
+      return currentLinks
+    }
+
+    const nextLinks = action.document.footerLegalLinks
+    if (Array.isArray(nextLinks)) {
+      return nextLinks.map((link) => {
+        const current = currentLinks?.find((currentLink) => currentLink?._key === link?._key)
+        return current || link
+      })
+    }
+
+    return currentLinks
+  })
+  const optimisticFooterLinkCloudLines = useOptimistic<
+    string[] | null | undefined,
+    SanityDocument<{_id: string; footerLinkCloudLines?: string[] | null}>
+  >(settings?.footerLinkCloudLines, (currentLines, action) => {
+    if (action.id !== settings?._id) {
+      return currentLines
+    }
+
+    if (Array.isArray(action.document.footerLinkCloudLines)) {
+      return action.document.footerLinkCloudLines
+    }
+
+    return currentLines
+  })
+  const optimisticFooterAvatars = useOptimistic<
+    unknown[] | null | undefined,
+    SanityDocument<{_id: string; footerCtaAvatarImages?: unknown[] | null}>
+  >(settings?.footerCtaAvatarImages, (currentAvatars, action) => {
+    if (action.id !== settings?._id) {
+      return currentAvatars
+    }
+
+    const nextAvatars = action.document.footerCtaAvatarImages
+    if (Array.isArray(nextAvatars)) {
+      return nextAvatars.map((avatar) => {
+        const avatarKey = itemKey(avatar)
+        const current = currentAvatars?.find((currentAvatar) => itemKey(currentAvatar) === avatarKey)
+        return current || avatar
+      })
+    }
+
+    return currentAvatars
+  })
   const brandName = settings?.brandName?.trim() || settings?.title?.trim() || 'Webkowsky'
   const footerHeading = settings?.footerHeading?.trim() || 'Need help with a project?'
   const footerHighlight = settings?.footerHighlight?.trim() || 'Contact us.'
@@ -138,7 +197,7 @@ export default function Footer({settings}: {settings?: SiteSettings | null}) {
   const footerCta =
     settings?.footerCta?.buttonText && settings?.footerCta?.link ? settings.footerCta : DEFAULT_FOOTER_CTA
   const footerLegalLinks =
-    (settings?.footerLegalLinks || []).flatMap((item) =>
+    (optimisticFooterLegalLinks || []).flatMap((item) =>
       item?.label && item?.link
         ? [
             {
@@ -151,13 +210,13 @@ export default function Footer({settings}: {settings?: SiteSettings | null}) {
     ) || []
   const usingFallbackLegalLinks = footerLegalLinks.length === 0
   const resolvedLegalLinks = footerLegalLinks.length ? footerLegalLinks : DEFAULT_LEGAL_LINKS
-  const footerLinkCloudLines = (settings?.footerLinkCloudLines || []).filter(
+  const footerLinkCloudLines = (optimisticFooterLinkCloudLines || []).filter(
     (line): line is string => !!line,
   )
   const resolvedLinkCloudLines = footerLinkCloudLines.length
     ? footerLinkCloudLines
     : DEFAULT_LINK_CLOUD_LINES
-  const footerAvatars = settings?.footerCtaAvatarImages || []
+  const footerAvatars = optimisticFooterAvatars || []
 
   return (
     <footer className="relative mt-auto overflow-hidden bg-surface text-white">
@@ -248,25 +307,33 @@ export default function Footer({settings}: {settings?: SiteSettings | null}) {
                 <p data-sanity={getVisualDataAttribute(visualEditing, 'footerLegalText')}>
                   {footerLegalText}
                 </p>
-                {resolvedLegalLinks.map((item, index) => (
-                  <ResolvedLink
-                    key={item._key || item.label || index}
-                    link={item.link || DEFAULT_LEGAL_LINKS[0].link!}
-                    className="transition-colors hover:text-white/75"
-                    data-sanity={getVisualDataAttribute(
-                      visualEditing,
-                      usingFallbackLegalLinks
-                        ? 'footerLegalLinks'
-                        : keyPath('footerLegalLinks', item._key || index),
-                    )}
-                  >
-                    {item.label}
-                  </ResolvedLink>
-                ))}
+                <div
+                  className="contents"
+                  data-sanity={getVisualDataAttribute(visualEditing, 'footerLegalLinks')}
+                >
+                  {resolvedLegalLinks.map((item, index) => (
+                    <ResolvedLink
+                      key={item._key || item.label || index}
+                      link={item.link || DEFAULT_LEGAL_LINKS[0].link!}
+                      className="transition-colors hover:text-white/75"
+                      data-sanity={getVisualDataAttribute(
+                        visualEditing,
+                        usingFallbackLegalLinks
+                          ? 'footerLegalLinks'
+                          : keyPath('footerLegalLinks', item._key || index),
+                      )}
+                    >
+                      {item.label}
+                    </ResolvedLink>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="max-w-[407px] font-display text-sm leading-[1.3] text-white/95">
+            <div
+              className="max-w-[407px] font-display text-sm leading-[1.3] text-white/95"
+              data-sanity={getVisualDataAttribute(visualEditing, 'footerLinkCloudLines')}
+            >
               {resolvedLinkCloudLines.map((line, index) => (
                 <p
                   key={`${line}-${index}`}

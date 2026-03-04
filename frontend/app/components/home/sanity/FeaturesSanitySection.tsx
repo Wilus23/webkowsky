@@ -59,17 +59,34 @@ export default function FeaturesSanitySection({
 
   const tabs = useMemo<LegacyOfferTab[]>(
     () =>
-      categories.map((category) => {
+      categories.map((category, categoryIndex) => {
         const categoryImageId = imageRef(category.image)
         const selectedImageId = categoryImageId || sectionImageId
+        const categorySelector = category._key || categoryIndex
+        const inactiveFeatures = (category.inactiveFeatures || []).flatMap((feature, featureIndex) =>
+          feature
+            ? [
+                {
+                  text: feature,
+                  dataSanity: getVisualDataAttribute(
+                    visualEditing,
+                    keyPath('categories', categorySelector, `inactiveFeatures[${featureIndex}]`),
+                  ),
+                },
+              ]
+            : [],
+        )
 
         return {
           key: category._key || category.name,
           label: category.name,
           activeFeature: category.activeFeature || 'Feature',
-          inactiveFeatures: (category.inactiveFeatures || []).filter(
-            (feature): feature is string => !!feature,
+          activeFeatureDataSanity: getVisualDataAttribute(
+            visualEditing,
+            keyPath('categories', categorySelector, 'activeFeature'),
           ),
+          inactiveFeatures,
+          tabDataSanity: getVisualDataAttribute(visualEditing, keyPath('categories', categorySelector)),
           description: section.description || undefined,
           visual: {
             type: 'custom' as const,
@@ -78,7 +95,7 @@ export default function FeaturesSanitySection({
                 className="block h-full w-full"
                 data-sanity={getVisualDataAttribute(
                   visualEditing,
-                  category._key ? keyPath('categories', category._key, 'image') : 'image',
+                  category._key ? keyPath('categories', categorySelector, 'image') : 'image',
                 )}
               >
                 <Image
@@ -96,7 +113,7 @@ export default function FeaturesSanitySection({
                 className="block h-full w-full rounded-[14px] border border-white/25 bg-white/5"
                 data-sanity={getVisualDataAttribute(
                   visualEditing,
-                  category._key ? keyPath('categories', category._key, 'image') : 'image',
+                  category._key ? keyPath('categories', categorySelector, 'image') : 'image',
                 )}
               />
             ),
@@ -112,6 +129,7 @@ export default function FeaturesSanitySection({
       subtitlePrefix={section.subtitlePrefix || 'All-in-one'}
       subtitleHighlight={section.subtitleHighlight || 'website strategy'}
       tabs={tabs}
+      tabsDataSanity={getVisualDataAttribute(visualEditing, 'categories')}
       defaultTabKey={tabs[0]?.key}
       renderPrimaryCta={
         section.primaryButton?.buttonText && section.primaryButton.link

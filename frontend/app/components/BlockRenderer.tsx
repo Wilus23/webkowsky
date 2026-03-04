@@ -1,8 +1,4 @@
-import React from 'react'
-
-import Cta from '@/app/components/Cta'
-import Info from '@/app/components/InfoSection'
-import {dataAttr} from '@/sanity/lib/utils'
+import {renderStructuredSection} from '@/app/components/home/HomePageRenderer'
 import {PageBuilderSection} from '@/sanity/lib/types'
 
 type BlockProps = {
@@ -12,47 +8,15 @@ type BlockProps = {
   pageType: string
 }
 
-type BlocksType = {
-  [key: string]: React.FC<BlockProps>
-}
-
-const Blocks = {
-  callToAction: Cta,
-  infoSection: Info,
-} as BlocksType
-
 /**
- * Used by the <PageBuilder>, this component renders a the component that matches the block type.
+ * Used by <PageBuilder>, this component renders a section from pageBuilder[]
+ * using the same _type->component registry as the homepage renderer.
  */
 export default function BlockRenderer({block, index, pageId, pageType}: BlockProps) {
-  // Block does exist
-  if (typeof Blocks[block._type] !== 'undefined') {
-    return (
-      <div
-        key={block._key}
-        data-sanity={dataAttr({
-          id: pageId,
-          type: pageType,
-          path: `pageBuilder[_key=="${block._key}"]`,
-        }).toString()}
-      >
-        {React.createElement(Blocks[block._type], {
-          key: block._key,
-          block: block,
-          index: index,
-          pageId: pageId,
-          pageType: pageType,
-        })}
-      </div>
-    )
-  }
-  // Block doesn't exist yet
-  return React.createElement(
-    () => (
-      <div className="w-full bg-gray-100 text-center text-gray-500 p-20 rounded">
-        A &ldquo;{block._type}&rdquo; block hasn&apos;t been created
-      </div>
-    ),
-    {key: block._key},
-  )
+  return renderStructuredSection({
+    document: {_id: pageId, _type: pageType},
+    section: block,
+    arrayField: 'pageBuilder',
+    index,
+  })
 }

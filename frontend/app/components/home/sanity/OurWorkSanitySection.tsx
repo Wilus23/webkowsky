@@ -62,18 +62,22 @@ function usePointerReactiveEffects() {
 
 function WorkCard({
   card,
+  cardIndex,
   mockupImage,
   visualEditing,
   pointerReactive,
 }: {
   card: LegacyWorkCard
+  cardIndex: number
   mockupImage?: unknown
   visualEditing?: VisualEditingProps
   pointerReactive: boolean
 }) {
   const imageId = imageRef(card.image)
   const mockupId = imageRef(mockupImage)
-  const cardImageDataAttr = getVisualDataAttribute(visualEditing, keyPath('cards', card._key, 'image'))
+  const cardSelector = card._key ?? cardIndex
+  const cardDataAttr = getVisualDataAttribute(visualEditing, keyPath('cards', cardSelector))
+  const cardImageDataAttr = getVisualDataAttribute(visualEditing, keyPath('cards', cardSelector, 'image'))
   const mockupDataAttr = getVisualDataAttribute(visualEditing, 'mockupImage')
 
   const rotateX = useMotionValue(0)
@@ -160,6 +164,7 @@ function WorkCard({
         onPointerMove={handlePointerMove}
         onPointerLeave={resetTransform}
         className="relative h-full overflow-hidden rounded-[28px] border border-[rgba(56,56,56,0.6)] shadow-[0px_20px_40px_0px_rgba(0,0,0,0.1)]"
+        data-sanity={cardDataAttr}
         style={
           pointerReactive
             ? {
@@ -264,11 +269,15 @@ export default function OurWorkSanitySection({
             </h2>
           </div>
 
-          <div className="flex flex-col flex-wrap gap-4 sm:flex-row">
+          <div
+            className="flex flex-col flex-wrap gap-4 sm:flex-row"
+            data-sanity={getVisualDataAttribute(visualEditing, 'cards')}
+          >
             {cards.map((card, index) => (
               <WorkCard
-                key={`${card.company || 'work'}-${index}`}
+                key={card._key || `${card.company || 'work'}-${index}`}
                 card={card}
+                cardIndex={index}
                 mockupImage={section.mockupImage}
                 visualEditing={visualEditing}
                 pointerReactive={pointerReactive}

@@ -1,6 +1,8 @@
 'use client'
 
 import {useMemo, useState} from 'react'
+import {SanityDocument} from 'next-sanity'
+import {useOptimistic} from 'next-sanity/hooks'
 
 import ResolvedLink from '@/app/components/ResolvedLink'
 import {getVisualDataAttribute, keyPath, type VisualEditingProps} from '@/app/components/home/sanity/visualEditing'
@@ -53,10 +55,28 @@ function settingsVisualEditing(settings: SiteSettings | null): VisualEditingProp
 export default function Header({settings}: {settings?: SiteSettings | null}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const visualEditing = settingsVisualEditing(settings || null)
+  const optimisticHeaderNavItems = useOptimistic<
+    HeaderNavItem[] | null | undefined,
+    SanityDocument<{_id: string; headerNavItems?: HeaderNavItem[] | null}>
+  >(settings?.headerNavItems, (currentItems, action) => {
+    if (action.id !== settings?._id) {
+      return currentItems
+    }
+
+    const nextItems = action.document.headerNavItems
+    if (Array.isArray(nextItems)) {
+      return nextItems.map((item) => {
+        const current = currentItems?.find((currentItem) => currentItem?._key === item?._key)
+        return current || item
+      })
+    }
+
+    return currentItems
+  })
 
   const navItems = useMemo(
     () =>
-      (settings?.headerNavItems || []).flatMap((item) =>
+      (optimisticHeaderNavItems || []).flatMap((item) =>
         item?.label && item?.link
           ? [
               {
@@ -67,7 +87,7 @@ export default function Header({settings}: {settings?: SiteSettings | null}) {
             ]
           : [],
       ),
-    [settings?.headerNavItems],
+    [optimisticHeaderNavItems],
   )
 
   const usingFallbackNav = navItems.length === 0
@@ -111,7 +131,10 @@ export default function Header({settings}: {settings?: SiteSettings | null}) {
           </ResolvedLink>
 
           <nav className="hidden items-center gap-16 md:flex lg:gap-20">
-            <div className="flex items-center gap-12 lg:gap-20">
+            <div
+              className="flex items-center gap-12 lg:gap-20"
+              data-sanity={getVisualDataAttribute(visualEditing, 'headerNavItems')}
+            >
               {resolvedNavItems.map((item, index) => (
                 <ResolvedLink
                   key={item._key || item.label || index}

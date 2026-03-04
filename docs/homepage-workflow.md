@@ -90,3 +90,45 @@ Recommended Vercel variables:
 - Local visual editing requires `SANITY_STUDIO_PREVIEW_URL=http://localhost:3000` in `studio/.env`, with Next.js on `:3000` and Studio on `:3333`.
 - If the singleton is missing in a dataset, bootstrap it with:
   - `npm exec --workspace=studio -- sanity documents create scripts/homepage-bootstrap.json --replace`
+
+## 7) Visual DnD 0.10 QA Checklist
+
+Validate drag-and-drop in Sanity Presentation Tool (desktop pointer devices):
+
+- Homepage top-level array:
+  - `homepage.sections[]`
+- Page builder top-level array:
+  - `page.pageBuilder[]`
+- Settings top-level arrays:
+  - `settings.headerNavItems[]`
+  - `settings.footerLegalLinks[]`
+  - `settings.footerLinkCloudLines[]`
+  - `settings.footerCtaAvatarImages[]`
+
+Validate nested arrays for homepage sections:
+
+- `homeHeroSection.badges[]`
+- `homeLogosSection.logos[]`
+- `homeCaseStudiesSection.items[]`
+- `homeProblemSection.problems[]`
+- `homeOfferSection.offers[]`
+- `homeUseCasesSection.useCases[]`
+- `homeUseCasesSection.useCases[].bullets[]`
+- `homeFaqSection.items[]`
+- `homeLegacyHeroSection.avatarImages[]`
+- `homeLegacyHeroSection.cards[]`
+- `homeLegacyLogoBarSection.logos[]`
+- `homeLegacyTestimonialSection.stats[]`
+- `homeLegacyWorkSection.cards[]`
+- `homeLegacyOfferSection.categories[]`
+- `homeLegacyOfferSection.categories[].inactiveFeatures[]`
+- `homeLegacyPricingSection.plans[]`
+- `homeLegacyPricingSection.plans[].features[]`
+
+Additional acceptance checks:
+
+- Add/remove/duplicate still works in Presentation overlays.
+- Links (href/page/post) remain stable during optimistic updates.
+- Visual editing click-to-edit still works for text, images, and buttons.
+- Metadata fetches remain `stega: false` to avoid SEO contamination.
+- On touch devices, reorder is performed in Studio forms (Presentation DnD is desktop-oriented).

@@ -1,24 +1,10 @@
-import {dataAttr} from '@/sanity/lib/utils'
-import {studioUrl} from '@/sanity/lib/api'
-import {
-  HomeCaseStudiesSection,
-  HomeContactSection,
-  HomeFaqSection,
-  HomeHeroSection,
-  HomeLegacyOfferSection,
-  HomeLegacyPricingSection,
-  HomeLegacyHeroSection,
-  HomeLegacyLogoBarSection,
-  HomeLegacyTestimonialSection,
-  HomeLegacyWorkSection,
-  HomeLogosSection,
-  HomeOfferSection,
-  HomeProblemSection,
-  HomeRoiSection,
-  HomeSection,
-  HomeUseCasesSection,
-  HomepageDocument,
-} from '@/sanity/lib/types'
+'use client'
+
+import {SanityDocument} from 'next-sanity'
+import {useOptimistic} from 'next-sanity/hooks'
+
+import Cta from '@/app/components/Cta'
+import InfoSectionBlock from '@/app/components/InfoSection'
 import Image from '@/app/components/SanityImage'
 import ResolvedLink from '@/app/components/ResolvedLink'
 import FeaturesSanitySection from '@/app/components/home/sanity/FeaturesSanitySection'
@@ -28,6 +14,43 @@ import OurWorkSanitySection from '@/app/components/home/sanity/OurWorkSanitySect
 import PricingSanitySection from '@/app/components/home/sanity/PricingSanitySection'
 import TestimonialSanitySection from '@/app/components/home/sanity/TestimonialSanitySection'
 import {getVisualDataAttribute, keyPath, type VisualEditingProps} from '@/app/components/home/sanity/visualEditing'
+import {studioUrl} from '@/sanity/lib/api'
+import {
+  ExtractPageBuilderType,
+  HomeCaseStudiesSection,
+  HomeContactSection,
+  HomeFaqSection,
+  HomeHeroSection,
+  HomeLegacyHeroSection,
+  HomeLegacyLogoBarSection,
+  HomeLegacyOfferSection,
+  HomeLegacyPricingSection,
+  HomeLegacyTestimonialSection,
+  HomeLegacyWorkSection,
+  HomeLogosSection,
+  HomeOfferSection,
+  HomeProblemSection,
+  HomeRoiSection,
+  HomeSection,
+  HomeUseCasesSection,
+  HomepageDocument,
+  PageBuilderSection,
+} from '@/sanity/lib/types'
+import {dataAttr} from '@/sanity/lib/utils'
+
+type DocumentMeta = {
+  _id: string
+  _type: string
+}
+
+type RenderableSection = HomeSection | PageBuilderSection
+
+type RenderContext = {
+  document: DocumentMeta
+  section: RenderableSection
+  arrayField: string
+  index: number
+}
 
 function imageRef(value: unknown): string | undefined {
   if (!value || typeof value !== 'object') return undefined
@@ -40,21 +63,27 @@ function itemKey(value: unknown): string | undefined {
   return (value as {_key?: string})._key
 }
 
+function sectionPath(blockKey: string, arrayField: string) {
+  return `${arrayField}[_key=="${blockKey}"]`
+}
+
 function SectionWrapper({
-  page,
+  document,
+  arrayField,
   block,
   children,
 }: {
-  page: HomepageDocument
-  block: HomeSection
+  document: DocumentMeta
+  arrayField: string
+  block: RenderableSection
   children: React.ReactNode
 }) {
   return (
     <section
       data-sanity={dataAttr({
-        id: page._id,
-        type: page._type,
-        path: `sections[_key=="${block._key}"]`,
+        id: document._id,
+        type: document._type,
+        path: sectionPath(block._key, arrayField),
       }).toString()}
     >
       {children}
@@ -62,17 +91,31 @@ function SectionWrapper({
   )
 }
 
-function sectionVisualEditing(page: HomepageDocument, block: HomeSection): VisualEditingProps {
+function sectionVisualEditing(
+  document: DocumentMeta,
+  block: RenderableSection,
+  arrayField: string,
+): VisualEditingProps {
   return {
-    id: page._id,
-    type: page._type,
-    path: `sections[_key=="${block._key}"]`,
+    id: document._id,
+    type: document._type,
+    path: sectionPath(block._key, arrayField),
   }
 }
 
-function HeroSection({page, block}: {page: HomepageDocument; block: HomeHeroSection}) {
+function HeroSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeHeroSection
+  arrayField: string
+}) {
+  const visualEditing = sectionVisualEditing(document, block, arrayField)
+
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <div className="container py-16 lg:py-24">
         <div className="max-w-4xl space-y-6">
           {block.eyebrow ? (
@@ -83,11 +126,15 @@ function HeroSection({page, block}: {page: HomepageDocument; block: HomeHeroSect
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl">{block.subheading}</p>
           ) : null}
           {block.badges?.length ? (
-            <div className="flex flex-wrap gap-2">
-              {block.badges.map((badge) => (
+            <div
+              className="flex flex-wrap gap-2"
+              data-sanity={getVisualDataAttribute(visualEditing, 'badges')}
+            >
+              {block.badges.map((badge, badgeIndex) => (
                 <span
-                  key={badge}
+                  key={`${badge}-${badgeIndex}`}
                   className="rounded-full border border-gray-200 px-3 py-1 text-sm text-gray-700"
+                  data-sanity={getVisualDataAttribute(visualEditing, keyPath('badges', badgeIndex))}
                 >
                   {badge}
                 </span>
@@ -118,20 +165,30 @@ function HeroSection({page, block}: {page: HomepageDocument; block: HomeHeroSect
   )
 }
 
-function LogosSection({page, block}: {page: HomepageDocument; block: HomeLogosSection}) {
-  const visualEditing = sectionVisualEditing(page, block)
+function LogosSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeLogosSection
+  arrayField: string
+}) {
+  const visualEditing = sectionVisualEditing(document, block, arrayField)
 
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <div className="container py-12">
         {block.heading ? <h2 className="text-sm uppercase text-gray-500 mb-6">{block.heading}</h2> : null}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 items-center">
+        <div
+          className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 items-center"
+          data-sanity={getVisualDataAttribute(visualEditing, 'logos')}
+        >
           {block.logos?.map((logo, index) => {
+            const selector = itemKey(logo) ?? index
             const id = imageRef(logo.logo)
-            const imageDataAttr = getVisualDataAttribute(
-              visualEditing,
-              keyPath('logos', itemKey(logo) ?? index, 'logo'),
-            )
+            const imageDataAttr = getVisualDataAttribute(visualEditing, keyPath('logos', selector, 'logo'))
+            const logoDataAttr = getVisualDataAttribute(visualEditing, keyPath('logos', selector))
             const logoContent = id ? (
               <span className="inline-flex" data-sanity={imageDataAttr}>
                 <Image
@@ -151,7 +208,11 @@ function LogosSection({page, block}: {page: HomepageDocument; block: HomeLogosSe
             )
 
             return (
-              <div key={`${logo.name || 'logo'}-${index}`} className="opacity-80 hover:opacity-100 transition-opacity">
+              <div
+                key={itemKey(logo) || `${logo.name || 'logo'}-${index}`}
+                className="opacity-80 hover:opacity-100 transition-opacity"
+                data-sanity={logoDataAttr}
+              >
                 {logo.link ? (
                   <a href={logo.link} target="_blank" rel="noopener noreferrer" className="inline-flex">
                     {logoContent}
@@ -168,25 +229,35 @@ function LogosSection({page, block}: {page: HomepageDocument; block: HomeLogosSe
   )
 }
 
-function CaseStudiesSection({page, block}: {page: HomepageDocument; block: HomeCaseStudiesSection}) {
-  const visualEditing = sectionVisualEditing(page, block)
+function CaseStudiesSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeCaseStudiesSection
+  arrayField: string
+}) {
+  const visualEditing = sectionVisualEditing(document, block, arrayField)
 
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <div className="container py-16 space-y-8">
         <div className="max-w-3xl space-y-3">
           <h2 className="text-3xl md:text-4xl font-semibold">{block.heading}</h2>
           {block.subheading ? <p className="text-gray-600">{block.subheading}</p> : null}
         </div>
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-6" data-sanity={getVisualDataAttribute(visualEditing, 'items')}>
           {block.items?.map((item, index) => {
+            const selector = itemKey(item) ?? index
             const id = imageRef(item.image)
-            const imageDataAttr = getVisualDataAttribute(
-              visualEditing,
-              keyPath('items', itemKey(item) ?? index, 'image'),
-            )
+            const imageDataAttr = getVisualDataAttribute(visualEditing, keyPath('items', selector, 'image'))
             return (
-              <article key={`${item.title || 'case'}-${index}`} className="border border-gray-200 rounded-xl p-5 space-y-4">
+              <article
+                key={itemKey(item) || `${item.title || 'case'}-${index}`}
+                className="border border-gray-200 rounded-xl p-5 space-y-4"
+                data-sanity={getVisualDataAttribute(visualEditing, keyPath('items', selector))}
+              >
                 {id ? (
                   <span className="block" data-sanity={imageDataAttr}>
                     <Image
@@ -221,16 +292,30 @@ function CaseStudiesSection({page, block}: {page: HomepageDocument; block: HomeC
   )
 }
 
-function ProblemSection({page, block}: {page: HomepageDocument; block: HomeProblemSection}) {
+function ProblemSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeProblemSection
+  arrayField: string
+}) {
+  const visualEditing = sectionVisualEditing(document, block, arrayField)
+
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <div className="container py-16">
         <div className="max-w-3xl space-y-4">
           <h2 className="text-3xl md:text-4xl font-semibold">{block.heading}</h2>
           {block.description ? <p className="text-gray-600">{block.description}</p> : null}
-          <ul className="space-y-2">
+          <ul className="space-y-2" data-sanity={getVisualDataAttribute(visualEditing, 'problems')}>
             {block.problems?.map((point, index) => (
-              <li key={`${point}-${index}`} className="flex items-start gap-3">
+              <li
+                key={`${point}-${index}`}
+                className="flex items-start gap-3"
+                data-sanity={getVisualDataAttribute(visualEditing, keyPath('problems', index))}
+              >
                 <span className="mt-2 h-2 w-2 rounded-full bg-gray-900" />
                 <span>{point}</span>
               </li>
@@ -242,67 +327,124 @@ function ProblemSection({page, block}: {page: HomepageDocument; block: HomeProbl
   )
 }
 
-function OfferSection({page, block}: {page: HomepageDocument; block: HomeOfferSection}) {
+function OfferSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeOfferSection
+  arrayField: string
+}) {
+  const visualEditing = sectionVisualEditing(document, block, arrayField)
+
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <div className="container py-16 space-y-8">
         <div className="max-w-3xl">
           <h2 className="text-3xl md:text-4xl font-semibold">{block.heading}</h2>
           {block.subheading ? <p className="mt-3 text-gray-600">{block.subheading}</p> : null}
         </div>
-        <div className="grid md:grid-cols-2 gap-6">
-          {block.offers?.map((offer, index) => (
-            <article key={`${offer.name || 'offer'}-${index}`} className="rounded-xl border border-gray-200 p-6 space-y-3">
-              <h3 className="text-xl font-medium">{offer.name}</h3>
-              {offer.description ? <p className="text-gray-600">{offer.description}</p> : null}
-              {offer.priceNote ? <p className="text-sm uppercase tracking-wide text-gray-500">{offer.priceNote}</p> : null}
-              {offer.button?.buttonText && offer.button.link ? (
-                <ResolvedLink link={offer.button.link} className="inline-flex underline">
-                  {offer.button.buttonText}
-                </ResolvedLink>
-              ) : null}
-            </article>
-          ))}
+        <div className="grid md:grid-cols-2 gap-6" data-sanity={getVisualDataAttribute(visualEditing, 'offers')}>
+          {block.offers?.map((offer, index) => {
+            const selector = itemKey(offer) ?? index
+            return (
+              <article
+                key={itemKey(offer) || `${offer.name || 'offer'}-${index}`}
+                className="rounded-xl border border-gray-200 p-6 space-y-3"
+                data-sanity={getVisualDataAttribute(visualEditing, keyPath('offers', selector))}
+              >
+                <h3 className="text-xl font-medium">{offer.name}</h3>
+                {offer.description ? <p className="text-gray-600">{offer.description}</p> : null}
+                {offer.priceNote ? <p className="text-sm uppercase tracking-wide text-gray-500">{offer.priceNote}</p> : null}
+                {offer.button?.buttonText && offer.button.link ? (
+                  <ResolvedLink link={offer.button.link} className="inline-flex underline">
+                    {offer.button.buttonText}
+                  </ResolvedLink>
+                ) : null}
+              </article>
+            )
+          })}
         </div>
       </div>
     </SectionWrapper>
   )
 }
 
-function UseCasesSection({page, block}: {page: HomepageDocument; block: HomeUseCasesSection}) {
+function UseCasesSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeUseCasesSection
+  arrayField: string
+}) {
+  const visualEditing = sectionVisualEditing(document, block, arrayField)
+
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <div className="container py-16 space-y-8">
         <h2 className="text-3xl md:text-4xl font-semibold">{block.heading}</h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          {block.useCases?.map((useCase, index) => (
-            <article key={`${useCase.label || 'usecase'}-${index}`} className="border border-gray-200 rounded-xl p-6 space-y-3">
-              {useCase.label ? <p className="text-xs uppercase tracking-wide text-gray-500">{useCase.label}</p> : null}
-              <h3 className="text-xl font-medium">{useCase.heading}</h3>
-              {useCase.description ? <p className="text-gray-600">{useCase.description}</p> : null}
-              {useCase.bullets?.length ? (
-                <ul className="space-y-2">
-                  {useCase.bullets.map((bullet, bulletIndex) => (
-                    <li key={`${bullet}-${bulletIndex}`} className="text-sm text-gray-700">• {bullet}</li>
-                  ))}
-                </ul>
-              ) : null}
-              {useCase.button?.buttonText && useCase.button.link ? (
-                <ResolvedLink link={useCase.button.link} className="inline-flex underline">
-                  {useCase.button.buttonText}
-                </ResolvedLink>
-              ) : null}
-            </article>
-          ))}
+        <div className="grid md:grid-cols-2 gap-6" data-sanity={getVisualDataAttribute(visualEditing, 'useCases')}>
+          {block.useCases?.map((useCase, index) => {
+            const selector = itemKey(useCase) ?? index
+            return (
+              <article
+                key={itemKey(useCase) || `${useCase.label || 'usecase'}-${index}`}
+                className="border border-gray-200 rounded-xl p-6 space-y-3"
+                data-sanity={getVisualDataAttribute(visualEditing, keyPath('useCases', selector))}
+              >
+                {useCase.label ? <p className="text-xs uppercase tracking-wide text-gray-500">{useCase.label}</p> : null}
+                <h3 className="text-xl font-medium">{useCase.heading}</h3>
+                {useCase.description ? <p className="text-gray-600">{useCase.description}</p> : null}
+                {useCase.bullets?.length ? (
+                  <ul
+                    className="space-y-2"
+                    data-sanity={getVisualDataAttribute(
+                      visualEditing,
+                      keyPath('useCases', selector, 'bullets'),
+                    )}
+                  >
+                    {useCase.bullets.map((bullet, bulletIndex) => (
+                      <li
+                        key={`${bullet}-${bulletIndex}`}
+                        className="text-sm text-gray-700"
+                        data-sanity={getVisualDataAttribute(
+                          visualEditing,
+                          keyPath('useCases', selector, `bullets[${bulletIndex}]`),
+                        )}
+                      >
+                        • {bullet}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {useCase.button?.buttonText && useCase.button.link ? (
+                  <ResolvedLink link={useCase.button.link} className="inline-flex underline">
+                    {useCase.button.buttonText}
+                  </ResolvedLink>
+                ) : null}
+              </article>
+            )
+          })}
         </div>
       </div>
     </SectionWrapper>
   )
 }
 
-function RoiSection({page, block}: {page: HomepageDocument; block: HomeRoiSection}) {
+function RoiSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeRoiSection
+  arrayField: string
+}) {
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <div className="container py-16">
         <div className="rounded-2xl bg-gray-50 border border-gray-200 p-8 md:p-10 space-y-4">
           <h2 className="text-3xl md:text-4xl font-semibold">{block.heading}</h2>
@@ -325,27 +467,52 @@ function RoiSection({page, block}: {page: HomepageDocument; block: HomeRoiSectio
   )
 }
 
-function FaqSection({page, block}: {page: HomepageDocument; block: HomeFaqSection}) {
+function FaqSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeFaqSection
+  arrayField: string
+}) {
+  const visualEditing = sectionVisualEditing(document, block, arrayField)
+
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <div className="container py-16 space-y-8">
         <h2 className="text-3xl md:text-4xl font-semibold">{block.heading}</h2>
-        <div className="space-y-3">
-          {block.items?.map((item, index) => (
-            <details key={`${item.question || 'faq'}-${index}`} className="border border-gray-200 rounded-xl p-5">
-              <summary className="font-medium cursor-pointer">{item.question}</summary>
-              <p className="mt-3 text-gray-600">{item.answer}</p>
-            </details>
-          ))}
+        <div className="space-y-3" data-sanity={getVisualDataAttribute(visualEditing, 'items')}>
+          {block.items?.map((item, index) => {
+            const selector = itemKey(item) ?? index
+            return (
+              <details
+                key={itemKey(item) || `${item.question || 'faq'}-${index}`}
+                className="border border-gray-200 rounded-xl p-5"
+                data-sanity={getVisualDataAttribute(visualEditing, keyPath('items', selector))}
+              >
+                <summary className="font-medium cursor-pointer">{item.question}</summary>
+                <p className="mt-3 text-gray-600">{item.answer}</p>
+              </details>
+            )
+          })}
         </div>
       </div>
     </SectionWrapper>
   )
 }
 
-function ContactSection({page, block}: {page: HomepageDocument; block: HomeContactSection}) {
+function ContactSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeContactSection
+  arrayField: string
+}) {
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <div className="container py-16">
         <div className="max-w-3xl space-y-4">
           <h2 className="text-3xl md:text-4xl font-semibold">{block.heading}</h2>
@@ -368,107 +535,174 @@ function ContactSection({page, block}: {page: HomepageDocument; block: HomeConta
   )
 }
 
-function LegacyHeroSection({page, block}: {page: HomepageDocument; block: HomeLegacyHeroSection}) {
+function LegacyHeroSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeLegacyHeroSection
+  arrayField: string
+}) {
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <HeroSanitySection
         section={block}
-        visualEditing={{
-          id: page._id,
-          type: page._type,
-          path: `sections[_key=="${block._key}"]`,
-        }}
+        visualEditing={sectionVisualEditing(document, block, arrayField)}
       />
     </SectionWrapper>
   )
 }
 
-function LegacyLogoBarSection({page, block}: {page: HomepageDocument; block: HomeLegacyLogoBarSection}) {
+function LegacyLogoBarSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeLegacyLogoBarSection
+  arrayField: string
+}) {
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <LogoBarSanitySection
         section={block}
-        visualEditing={{
-          id: page._id,
-          type: page._type,
-          path: `sections[_key=="${block._key}"]`,
-        }}
+        visualEditing={sectionVisualEditing(document, block, arrayField)}
       />
     </SectionWrapper>
   )
 }
 
 function LegacyTestimonialSection({
-  page,
+  document,
   block,
+  arrayField,
 }: {
-  page: HomepageDocument
+  document: DocumentMeta
   block: HomeLegacyTestimonialSection
+  arrayField: string
 }) {
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <TestimonialSanitySection
         section={block}
-        visualEditing={{
-          id: page._id,
-          type: page._type,
-          path: `sections[_key=="${block._key}"]`,
-        }}
+        visualEditing={sectionVisualEditing(document, block, arrayField)}
       />
     </SectionWrapper>
   )
 }
 
-function LegacyWorkSection({page, block}: {page: HomepageDocument; block: HomeLegacyWorkSection}) {
+function LegacyWorkSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeLegacyWorkSection
+  arrayField: string
+}) {
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <OurWorkSanitySection
         section={block}
-        visualEditing={{
-          id: page._id,
-          type: page._type,
-          path: `sections[_key=="${block._key}"]`,
-        }}
+        visualEditing={sectionVisualEditing(document, block, arrayField)}
       />
     </SectionWrapper>
   )
 }
 
-function LegacyOfferSection({page, block}: {page: HomepageDocument; block: HomeLegacyOfferSection}) {
+function LegacyOfferSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeLegacyOfferSection
+  arrayField: string
+}) {
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <FeaturesSanitySection
         section={block}
-        visualEditing={{
-          id: page._id,
-          type: page._type,
-          path: `sections[_key=="${block._key}"]`,
-        }}
+        visualEditing={sectionVisualEditing(document, block, arrayField)}
       />
     </SectionWrapper>
   )
 }
 
-function LegacyPricingSection({page, block}: {page: HomepageDocument; block: HomeLegacyPricingSection}) {
+function LegacyPricingSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: HomeLegacyPricingSection
+  arrayField: string
+}) {
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <PricingSanitySection
         section={block}
-        visualEditing={{
-          id: page._id,
-          type: page._type,
-          path: `sections[_key=="${block._key}"]`,
-        }}
+        visualEditing={sectionVisualEditing(document, block, arrayField)}
       />
     </SectionWrapper>
   )
 }
 
-function UnknownSection({page, block}: {page: HomepageDocument; block: HomeSection}) {
-  console.warn('Unknown homepage section type:', block._type)
+function CallToActionSection({
+  document,
+  block,
+  arrayField,
+  index,
+}: {
+  document: DocumentMeta
+  block: ExtractPageBuilderType<'callToAction'>
+  arrayField: string
+  index: number
+}) {
+  return (
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
+      <Cta block={block} index={index} pageId={document._id} pageType={document._type} />
+    </SectionWrapper>
+  )
+}
+
+function InfoSection({
+  document,
+  block,
+  arrayField,
+  index,
+}: {
+  document: DocumentMeta
+  block: ExtractPageBuilderType<'infoSection'>
+  arrayField: string
+  index: number
+}) {
+  return (
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
+      <InfoSectionBlock
+        block={block}
+        index={index}
+        pageId={document._id}
+        pageType={document._type}
+      />
+    </SectionWrapper>
+  )
+}
+
+function UnknownSection({
+  document,
+  block,
+  arrayField,
+}: {
+  document: DocumentMeta
+  block: RenderableSection
+  arrayField: string
+}) {
+  console.warn('Unknown section type:', block._type)
 
   return (
-    <SectionWrapper page={page} block={block}>
+    <SectionWrapper document={document} arrayField={arrayField} block={block}>
       <div className="container py-8">
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900">
           Unknown section type: <code>{block._type}</code>
@@ -519,8 +753,200 @@ function EmptySectionsState({page}: {page: HomepageDocument}) {
   )
 }
 
+export function renderStructuredSection({
+  document,
+  section,
+  arrayField,
+  index,
+}: RenderContext) {
+  switch (section._type) {
+    case 'homeHeroSection':
+      return (
+        <HeroSection
+          key={section._key}
+          document={document}
+          block={section as HomeHeroSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeLogosSection':
+      return (
+        <LogosSection
+          key={section._key}
+          document={document}
+          block={section as HomeLogosSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeCaseStudiesSection':
+      return (
+        <CaseStudiesSection
+          key={section._key}
+          document={document}
+          block={section as HomeCaseStudiesSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeProblemSection':
+      return (
+        <ProblemSection
+          key={section._key}
+          document={document}
+          block={section as HomeProblemSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeOfferSection':
+      return (
+        <OfferSection
+          key={section._key}
+          document={document}
+          block={section as HomeOfferSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeUseCasesSection':
+      return (
+        <UseCasesSection
+          key={section._key}
+          document={document}
+          block={section as HomeUseCasesSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeRoiSection':
+      return (
+        <RoiSection
+          key={section._key}
+          document={document}
+          block={section as HomeRoiSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeFaqSection':
+      return (
+        <FaqSection
+          key={section._key}
+          document={document}
+          block={section as HomeFaqSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeContactSection':
+      return (
+        <ContactSection
+          key={section._key}
+          document={document}
+          block={section as HomeContactSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeLegacyHeroSection':
+      return (
+        <LegacyHeroSection
+          key={section._key}
+          document={document}
+          block={section as HomeLegacyHeroSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeLegacyLogoBarSection':
+      return (
+        <LegacyLogoBarSection
+          key={section._key}
+          document={document}
+          block={section as HomeLegacyLogoBarSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeLegacyTestimonialSection':
+      return (
+        <LegacyTestimonialSection
+          key={section._key}
+          document={document}
+          block={section as HomeLegacyTestimonialSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeLegacyWorkSection':
+      return (
+        <LegacyWorkSection
+          key={section._key}
+          document={document}
+          block={section as HomeLegacyWorkSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeLegacyOfferSection':
+      return (
+        <LegacyOfferSection
+          key={section._key}
+          document={document}
+          block={section as HomeLegacyOfferSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'homeLegacyPricingSection':
+      return (
+        <LegacyPricingSection
+          key={section._key}
+          document={document}
+          block={section as HomeLegacyPricingSection}
+          arrayField={arrayField}
+        />
+      )
+    case 'callToAction':
+      return (
+        <CallToActionSection
+          key={section._key}
+          document={document}
+          block={section as ExtractPageBuilderType<'callToAction'>}
+          arrayField={arrayField}
+          index={index}
+        />
+      )
+    case 'infoSection':
+      return (
+        <InfoSection
+          key={section._key}
+          document={document}
+          block={section as ExtractPageBuilderType<'infoSection'>}
+          arrayField={arrayField}
+          index={index}
+        />
+      )
+    default:
+      return <UnknownSection key={section._key} document={document} block={section} arrayField={arrayField} />
+  }
+}
+
+type HomepageOptimisticData = {
+  _id: string
+  _type: string
+  sections?: HomeSection[]
+}
+
 export default function HomePageRenderer({page}: {page: HomepageDocument}) {
-  const sections = (page.sections || []) as HomeSection[]
+  const optimisticSections = useOptimistic<
+    HomeSection[] | undefined,
+    SanityDocument<HomepageOptimisticData>
+  >(page.sections || [], (currentSections, action) => {
+    if (action.id !== page._id) {
+      return currentSections
+    }
+
+    const nextSections = action.document.sections as HomeSection[] | undefined
+    if (nextSections) {
+      return nextSections.map((section) => {
+        const current = currentSections?.find((item) => item._key === section?._key)
+        return current || section
+      })
+    }
+
+    return currentSections
+  })
+
+  const sections = (optimisticSections || []) as HomeSection[]
 
   if (!sections.length) {
     return <EmptySectionsState page={page} />
@@ -534,50 +960,14 @@ export default function HomePageRenderer({page}: {page: HomepageDocument}) {
         path: 'sections',
       }).toString()}
     >
-      {sections.map((section) => {
-        switch (section._type) {
-          case 'homeHeroSection':
-            return <HeroSection key={section._key} page={page} block={section as HomeHeroSection} />
-          case 'homeLogosSection':
-            return <LogosSection key={section._key} page={page} block={section as HomeLogosSection} />
-          case 'homeCaseStudiesSection':
-            return (
-              <CaseStudiesSection key={section._key} page={page} block={section as HomeCaseStudiesSection} />
-            )
-          case 'homeProblemSection':
-            return <ProblemSection key={section._key} page={page} block={section as HomeProblemSection} />
-          case 'homeOfferSection':
-            return <OfferSection key={section._key} page={page} block={section as HomeOfferSection} />
-          case 'homeUseCasesSection':
-            return <UseCasesSection key={section._key} page={page} block={section as HomeUseCasesSection} />
-          case 'homeRoiSection':
-            return <RoiSection key={section._key} page={page} block={section as HomeRoiSection} />
-          case 'homeFaqSection':
-            return <FaqSection key={section._key} page={page} block={section as HomeFaqSection} />
-          case 'homeContactSection':
-            return <ContactSection key={section._key} page={page} block={section as HomeContactSection} />
-          case 'homeLegacyHeroSection':
-            return <LegacyHeroSection key={section._key} page={page} block={section as HomeLegacyHeroSection} />
-          case 'homeLegacyLogoBarSection':
-            return (
-              <LegacyLogoBarSection key={section._key} page={page} block={section as HomeLegacyLogoBarSection} />
-            )
-          case 'homeLegacyTestimonialSection':
-            return (
-              <LegacyTestimonialSection key={section._key} page={page} block={section as HomeLegacyTestimonialSection} />
-            )
-          case 'homeLegacyWorkSection':
-            return <LegacyWorkSection key={section._key} page={page} block={section as HomeLegacyWorkSection} />
-          case 'homeLegacyOfferSection':
-            return <LegacyOfferSection key={section._key} page={page} block={section as HomeLegacyOfferSection} />
-          case 'homeLegacyPricingSection':
-            return (
-              <LegacyPricingSection key={section._key} page={page} block={section as HomeLegacyPricingSection} />
-            )
-          default:
-            return <UnknownSection key={section._key} page={page} block={section} />
-        }
-      })}
+      {sections.map((section, index) =>
+        renderStructuredSection({
+          document: {_id: page._id, _type: page._type},
+          section,
+          arrayField: 'sections',
+          index,
+        }),
+      )}
     </div>
   )
 }

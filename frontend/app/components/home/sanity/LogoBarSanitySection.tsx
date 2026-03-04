@@ -18,6 +18,11 @@ function imageRef(value: unknown): string | undefined {
   return maybeAsset?._ref
 }
 
+function itemKey(value: unknown): string | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  return (value as {_key?: string})._key
+}
+
 export default function LogoBarSanitySection({
   section,
   visualEditing,
@@ -32,13 +37,22 @@ export default function LogoBarSanitySection({
     <section className="overflow-hidden pt-8 pb-12 sm:pt-10 sm:pb-14">
       <div className="container">
         <div className="logo-carousel-viewport">
-          <ul className="logo-carousel-track" role="list" aria-label="Brands trusted by Webkowsky">
+          <ul
+            className="logo-carousel-track"
+            role="list"
+            aria-label="Brands trusted by Webkowsky"
+            data-sanity={getVisualDataAttribute(visualEditing, 'logos')}
+          >
             {carouselItems.map((logo, index) => {
               const isDuplicate = index >= logos.length
               const logoId = imageRef(logo.logo)
+              const selector = itemKey(logo) ?? index
               const imageDataAttr = isDuplicate
                 ? undefined
-                : getVisualDataAttribute(visualEditing, keyPath('logos', logo._key, 'logo'))
+                : getVisualDataAttribute(visualEditing, keyPath('logos', selector, 'logo'))
+              const itemDataAttr = isDuplicate
+                ? undefined
+                : getVisualDataAttribute(visualEditing, keyPath('logos', selector))
 
               const content = (
                 <>
@@ -71,6 +85,7 @@ export default function LogoBarSanitySection({
                   className="logo-carousel-item"
                   data-duplicate={isDuplicate ? 'true' : undefined}
                   aria-hidden={isDuplicate ? true : undefined}
+                  data-sanity={itemDataAttr}
                 >
                   {logo.link ? (
                     <a href={logo.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3">

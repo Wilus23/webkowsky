@@ -18,11 +18,18 @@ export type LegacyOfferVisual =
   | {type: 'keywords'; label: string; terms: string[]}
   | {type: 'custom'; content: ReactNode}
 
+export type LegacyOfferFeature = {
+  text: string
+  dataSanity?: string
+}
+
 export type LegacyOfferTab = {
   key: string
   label: string
   activeFeature: string
-  inactiveFeatures: string[]
+  activeFeatureDataSanity?: string
+  inactiveFeatures: Array<LegacyOfferFeature | string>
+  tabDataSanity?: string
   description?: string
   visual?: LegacyOfferVisual
 }
@@ -32,6 +39,7 @@ type LegacyOfferInteractiveProps = {
   subtitlePrefix: string
   subtitleHighlight: string
   tabs: LegacyOfferTab[]
+  tabsDataSanity?: string
   defaultTabKey?: string
   accents?: Record<string, CategoryAccent>
   renderPrimaryCta?: (className: string) => ReactNode
@@ -90,6 +98,7 @@ export default function LegacyOfferInteractive({
   subtitlePrefix,
   subtitleHighlight,
   tabs,
+  tabsDataSanity,
   defaultTabKey,
   accents,
   renderPrimaryCta,
@@ -141,7 +150,10 @@ export default function LegacyOfferInteractive({
           </div>
 
           {tabs.length ? (
-            <div className="flex flex-wrap justify-center gap-3 sm:gap-8">
+            <div
+              className="flex flex-wrap justify-center gap-3 sm:gap-8"
+              data-sanity={tabsDataSanity}
+            >
               {tabs.map((tab) => {
                 const isActive = tab.key === normalizedActiveKey
                 const isHovered = hoveredTabKey === tab.key
@@ -155,6 +167,7 @@ export default function LegacyOfferInteractive({
                     onHoverStart={() => setHoveredTabKey(tab.key)}
                     onHoverEnd={() => setHoveredTabKey(null)}
                     data-cursor-color={isActive ? accent.activeBorder : accent.hoverBorder}
+                    data-sanity={tab.tabDataSanity}
                     className="relative rounded-full px-4 py-[12px] text-sm backdrop-blur-[10px]"
                     style={{
                       background:
@@ -235,6 +248,7 @@ export default function LegacyOfferInteractive({
                         initial={{opacity: 0, x: -12}}
                         animate={{opacity: 1, x: 0}}
                         transition={{duration: 0.2, ease: motionTokens.easing.standard}}
+                        data-sanity={activeTab.activeFeatureDataSanity}
                       >
                         <div className="mt-0.5 size-3 shrink-0 rounded-full bg-primary" />
                         <p className="font-sans text-sm leading-[1.3] text-white">
@@ -242,9 +256,13 @@ export default function LegacyOfferInteractive({
                         </p>
                       </motion.div>
 
-                      {activeTab.inactiveFeatures.map((feature, index) => (
+                      {activeTab.inactiveFeatures.map((feature, index) => {
+                        const normalizedFeature =
+                          typeof feature === 'string' ? {text: feature} : feature
+
+                        return (
                         <motion.div
-                          key={`${feature}-${index}`}
+                          key={`${normalizedFeature.text}-${index}`}
                           className="flex items-start gap-[15px]"
                           initial={{opacity: 0, x: -10}}
                           animate={{opacity: 1, x: 0}}
@@ -253,11 +271,15 @@ export default function LegacyOfferInteractive({
                             delay: 0.06 + index * 0.05,
                             ease: motionTokens.easing.standard,
                           }}
+                          data-sanity={normalizedFeature.dataSanity}
                         >
                           <div className="mt-0.5 size-3 shrink-0 rounded-full bg-white/20" />
-                          <p className="font-sans text-sm leading-[1.3] text-white/55">{feature}</p>
+                          <p className="font-sans text-sm leading-[1.3] text-white/55">
+                            {normalizedFeature.text}
+                          </p>
                         </motion.div>
-                      ))}
+                        )
+                      })}
                     </div>
 
                     <div className="flex items-center gap-[19px]">

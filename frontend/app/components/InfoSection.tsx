@@ -1,10 +1,10 @@
 import {type PortableTextBlock} from 'next-sanity'
 
 import PortableText from '@/app/components/PortableText'
-import {InfoSection} from '@/sanity.types'
+import {ExtractPageBuilderType} from '@/sanity/lib/types'
 
 type InfoProps = {
-  block: InfoSection
+  block: ExtractPageBuilderType<'infoSection'>
   index: number
   // Needed if you want to createDataAttributes to do non-text overlays in Presentation (Visual Editing)
   pageId: string

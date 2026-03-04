@@ -1,5 +1,6 @@
 import {HomeIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
+import {homeSectionMembers} from '../objects/pageBuilderSections'
 
 export const homepage = defineType({
   name: 'homepage',
@@ -34,23 +35,7 @@ export const homepage = defineType({
         'This is the source of truth for the homepage. Add, remove, duplicate, and drag sections to control the live page order.',
       type: 'array',
       validation: (Rule) => Rule.required().min(1),
-      of: [
-        {type: 'homeLegacyHeroSection'},
-        {type: 'homeLegacyLogoBarSection'},
-        {type: 'homeLegacyTestimonialSection'},
-        {type: 'homeLegacyWorkSection'},
-        {type: 'homeLegacyOfferSection'},
-        {type: 'homeLegacyPricingSection'},
-        {type: 'homeHeroSection'},
-        {type: 'homeLogosSection'},
-        {type: 'homeCaseStudiesSection'},
-        {type: 'homeProblemSection'},
-        {type: 'homeOfferSection'},
-        {type: 'homeUseCasesSection'},
-        {type: 'homeRoiSection'},
-        {type: 'homeFaqSection'},
-        {type: 'homeContactSection'},
-      ],
+      of: homeSectionMembers,
       options: {
         insertMenu: {
           views: [{name: 'grid'}],
