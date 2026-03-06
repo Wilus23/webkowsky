@@ -1,5 +1,38 @@
 import {defineArrayMember} from 'sanity'
 
+const pageBuilderThumbnailTypes = new Set([
+  'homeLegacyHeroSection',
+  'homeLegacyLogoBarSection',
+  'homeLegacyTestimonialSection',
+  'homeLegacyWorkSection',
+  'homeLegacyOfferSection',
+  'homeLegacyPricingSection',
+  'homeHeroSection',
+  'homeLogosSection',
+  'homeCaseStudiesSection',
+  'homeProblemSection',
+  'homeOfferSection',
+  'homeUseCasesSection',
+  'homeRoiSection',
+  'homeFaqSection',
+  'homeContactSection',
+  'callToAction',
+  'infoSection',
+])
+
+export function getPageBuilderPreviewImageUrl(schemaTypeName: string) {
+  const thumbnailName = pageBuilderThumbnailTypes.has(schemaTypeName) ? schemaTypeName : 'default'
+  return `/static/page-builder-thumbnails/${thumbnailName}.svg`
+}
+
+export const pageBuilderInsertMenuViews = [
+  {
+    name: 'grid' as const,
+    previewImageUrl: getPageBuilderPreviewImageUrl,
+  },
+  {name: 'list' as const},
+]
+
 export const homeSectionMembers = [
   defineArrayMember({type: 'homeLegacyHeroSection'}),
   defineArrayMember({type: 'homeLegacyLogoBarSection'}),

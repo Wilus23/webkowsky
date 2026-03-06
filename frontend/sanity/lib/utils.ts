@@ -4,6 +4,7 @@ import {createDataAttribute, CreateDataAttributeProps} from 'next-sanity'
 import imageUrlBuilder from '@sanity/image-url'
 import type {SanityImageSource} from '@sanity/image-url/lib/types/types'
 import {DereferencedLink} from '@/sanity/lib/types'
+import {stegaClean} from '@sanity/client/stega'
 
 const builder = imageUrlBuilder({
   projectId: projectId || '',
@@ -32,18 +33,19 @@ export function linkResolver(link: Link | DereferencedLink | undefined) {
   if (!link) return null
 
   // Portable text links may have only href, so normalize the effective type without mutating the source value.
-  const linkType = link.linkType || (link.href ? 'href' : undefined)
+  const rawLinkType = link.linkType || (link.href ? 'href' : undefined)
+  const linkType = typeof rawLinkType === 'string' ? stegaClean(rawLinkType) : undefined
 
   switch (linkType) {
     case 'href':
-      return link.href || null
+      return typeof link.href === 'string' ? stegaClean(link.href) : link.href || null
     case 'page':
       if (link?.page && typeof link.page === 'string') {
-        return `/${link.page}`
+        return `/${stegaClean(link.page)}`
       }
     case 'post':
       if (link?.post && typeof link.post === 'string') {
-        return `/posts/${link.post}`
+        return `/posts/${stegaClean(link.post)}`
       }
     default:
       return null

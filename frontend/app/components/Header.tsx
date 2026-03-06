@@ -3,6 +3,7 @@
 import {useMemo, useState} from 'react'
 import {SanityDocument} from 'next-sanity'
 import {useOptimistic} from 'next-sanity/hooks'
+import {stegaClean} from '@sanity/client/stega'
 
 import ResolvedLink from '@/app/components/ResolvedLink'
 import {getVisualDataAttribute, keyPath, type VisualEditingProps} from '@/app/components/home/sanity/visualEditing'
@@ -42,11 +43,16 @@ const DEFAULT_CTA: HeaderButton = {
   link: {_type: 'link', linkType: 'href', href: '/contact'},
 }
 
+function toPublishedId(id: string | undefined | null): string | undefined {
+  if (!id) return undefined
+  return id.startsWith('drafts.') ? id.slice('drafts.'.length) : id
+}
+
 function settingsVisualEditing(settings: SiteSettings | null): VisualEditingProps | undefined {
   if (!settings?._id || !settings?._type) return undefined
 
   return {
-    id: settings._id,
+    id: toPublishedId(settings._id) || settings._id,
     type: settings._type,
     path: '',
   }
@@ -55,11 +61,12 @@ function settingsVisualEditing(settings: SiteSettings | null): VisualEditingProp
 export default function Header({settings}: {settings?: SiteSettings | null}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const visualEditing = settingsVisualEditing(settings || null)
+  const settingsId = toPublishedId(settings?._id)
   const optimisticHeaderNavItems = useOptimistic<
     HeaderNavItem[] | null | undefined,
     SanityDocument<{_id: string; headerNavItems?: HeaderNavItem[] | null}>
   >(settings?.headerNavItems, (currentItems, action) => {
-    if (action.id !== settings?._id) {
+    if (toPublishedId(action.id) !== settingsId) {
       return currentItems
     }
 
@@ -81,7 +88,7 @@ export default function Header({settings}: {settings?: SiteSettings | null}) {
           ? [
               {
                 _key: item._key,
-                label: item.label,
+                label: stegaClean(item.label),
                 link: item.link as DereferencedLink,
               },
             ]
@@ -134,6 +141,7 @@ export default function Header({settings}: {settings?: SiteSettings | null}) {
             <div
               className="flex items-center gap-12 lg:gap-20"
               data-sanity={getVisualDataAttribute(visualEditing, 'headerNavItems')}
+              data-sanity-drag-group="settings-header-nav-items"
             >
               {resolvedNavItems.map((item, index) => (
                 <ResolvedLink
@@ -144,6 +152,7 @@ export default function Header({settings}: {settings?: SiteSettings | null}) {
                     visualEditing,
                     usingFallbackNav ? 'headerNavItems' : keyPath('headerNavItems', item._key || index),
                   )}
+                  data-sanity-drag-group="settings-header-nav-items"
                 >
                   {item.label}
                 </ResolvedLink>
@@ -191,13 +200,22 @@ export default function Header({settings}: {settings?: SiteSettings | null}) {
             mobileMenuOpen ? 'mt-6 max-h-80 opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          <nav className="flex flex-col gap-4 pb-4">
+          <nav
+            className="flex flex-col gap-4 pb-4"
+            data-sanity={getVisualDataAttribute(visualEditing, 'headerNavItems')}
+            data-sanity-drag-group="settings-header-nav-items"
+          >
             {resolvedNavItems.map((item, index) => (
               <ResolvedLink
                 key={`${item._key || item.label || index}-mobile`}
                 link={item.link || DEFAULT_NAV_ITEMS[0].link!}
                 className="font-display text-lg font-medium text-white transition-colors hover:text-white/80"
                 onClick={() => setMobileMenuOpen(false)}
+                data-sanity={getVisualDataAttribute(
+                  visualEditing,
+                  usingFallbackNav ? 'headerNavItems' : keyPath('headerNavItems', item._key || index),
+                )}
+                data-sanity-drag-group="settings-header-nav-items"
               >
                 {item.label}
               </ResolvedLink>

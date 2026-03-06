@@ -9,6 +9,7 @@ interface ResolvedLinkProps {
   className?: string
   onClick?: React.MouseEventHandler<HTMLAnchorElement>
   'data-sanity'?: string
+  'data-sanity-drag-group'?: string
 }
 
 export default function ResolvedLink({
@@ -17,6 +18,7 @@ export default function ResolvedLink({
   className,
   onClick,
   'data-sanity': dataSanity,
+  'data-sanity-drag-group': dataSanityDragGroup,
 }: ResolvedLinkProps) {
   // resolveLink() is used to determine the type of link and return the appropriate URL.
   const resolvedLink = linkResolver(link)
@@ -30,10 +32,20 @@ export default function ResolvedLink({
         className={className}
         onClick={onClick}
         data-sanity={dataSanity}
+        data-sanity-drag-group={dataSanityDragGroup}
       >
         {children}
       </Link>
     )
   }
-  return <>{children}</>
+
+  return (
+    <span
+      className={className}
+      data-sanity={dataSanity}
+      data-sanity-drag-group={dataSanityDragGroup}
+    >
+      {children}
+    </span>
+  )
 }

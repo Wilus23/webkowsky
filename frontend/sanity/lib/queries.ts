@@ -10,7 +10,10 @@ const resolvedLinkFields = /* groq */ `
 `
 
 export const settingsQuery = defineQuery(`
-  *[_type == "settings"][0]{
+  coalesce(
+    *[_id == "drafts.siteSettings"][0],
+    *[_id == "siteSettings"][0]
+  ){
     _id,
     _type,
     title,

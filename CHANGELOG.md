@@ -19,6 +19,22 @@ Preview deploys are versioned through Git tags and GitHub prereleases, not throu
 
 - _None yet_
 
+## [0.11.0] - 2026-03-06
+
+### Added
+
+- Added SVG preview thumbnails plus shared grid/list insert-menu views for homepage and page-builder sections in Studio.
+- Added a settings bootstrap fixture for the current global navigation and footer content.
+
+### Changed
+
+- Updated Studio homepage and page schemas to reuse the same page-builder insert-menu preview configuration.
+- Updated frontend settings fetching and link resolution to prefer draft settings data during editing and strip stega markers from rendered link values.
+
+### Fixed
+
+- Fixed header and footer Visual Editing behavior so optimistic updates keep working across draft and published settings IDs.
+- Fixed drag-and-drop bindings for header navigation, footer legal links, and footer link cloud lines in Visual Editing.
 ## [0.10.0] - 2026-03-04
 
 ### Added

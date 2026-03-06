@@ -1,0 +1,95 @@
+{
+  "_id": "siteSettings",
+  "_type": "settings",
+  "title": "Webkowsky",
+  "brandName": "Webkowsky",
+  "headerNavItems": [
+    {
+      "_key": "home",
+      "_type": "object",
+      "label": "Home",
+      "link": {
+        "_type": "link",
+        "linkType": "href",
+        "href": "/",
+        "openInNewTab": false
+      }
+    },
+    {
+      "_key": "about",
+      "_type": "object",
+      "label": "About",
+      "link": {
+        "_type": "link",
+        "linkType": "href",
+        "href": "/about",
+        "openInNewTab": false
+      }
+    },
+    {
+      "_key": "contact",
+      "_type": "object",
+      "label": "Contact",
+      "link": {
+        "_type": "link",
+        "linkType": "href",
+        "href": "/contact",
+        "openInNewTab": false
+      }
+    }
+  ],
+  "headerCta": {
+    "_type": "button",
+    "buttonText": "Contact us",
+    "link": {
+      "_type": "link",
+      "linkType": "href",
+      "href": "/contact",
+      "openInNewTab": false
+    }
+  },
+  "footerHeading": "Need help with a project?",
+  "footerHighlight": "Contact us.",
+  "footerCta": {
+    "_type": "button",
+    "buttonText": "Book a call",
+    "link": {
+      "_type": "link",
+      "linkType": "href",
+      "href": "/contact",
+      "openInNewTab": false
+    }
+  },
+  "footerCtaAvatarImages": [],
+  "footerDescription": "Crafting exceptional digital experiences to captivate users across screens. Elevating startups, Fortune companies, and beyond with unparalleled web design and UX mastery",
+  "footerLegalText": "(c) 2026 Webkowsky. All Rights Reserved.",
+  "footerLegalLinks": [
+    {
+      "_key": "privacy",
+      "_type": "object",
+      "label": "Privacy policy",
+      "link": {
+        "_type": "link",
+        "linkType": "href",
+        "href": "/privacy-policy",
+        "openInNewTab": false
+      }
+    },
+    {
+      "_key": "terms",
+      "_type": "object",
+      "label": "Terms",
+      "link": {
+        "_type": "link",
+        "linkType": "href",
+        "href": "/terms",
+        "openInNewTab": false
+      }
+    }
+  ],
+  "footerLinkCloudLines": [
+    "Company Home Capabilities Our Work Why Orizon Design Subscription Careers Blog Services UX Design Landing",
+    "Page Design Mobile App Design Design System & UI Kit Branding & Identity Web 3.0 Design & NFTs Services",
+    "Figma Design Experts Spatial Computing & XR Design Video Production, Explainer & Teasers Webflow Agency 3D Art & 3D Motion Design Your Brand"
+  ]
+}

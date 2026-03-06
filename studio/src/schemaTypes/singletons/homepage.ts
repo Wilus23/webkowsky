@@ -1,6 +1,6 @@
 import {HomeIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
-import {homeSectionMembers} from '../objects/pageBuilderSections'
+import {homeSectionMembers, pageBuilderInsertMenuViews} from '../objects/pageBuilderSections'
 
 export const homepage = defineType({
   name: 'homepage',
@@ -38,7 +38,7 @@ export const homepage = defineType({
       of: homeSectionMembers,
       options: {
         insertMenu: {
-          views: [{name: 'grid'}],
+          views: pageBuilderInsertMenuViews,
         },
       },
     }),

@@ -1,0 +1,11 @@
+<svg width="320" height="240" viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="240" rx="24" fill="#09111F"/>
+  <rect x="20" y="20" width="280" height="160" rx="18" fill="#111C31"/>
+  <rect x="36" y="42" width="92" height="8" rx="4" fill="#5A8BFF"/>
+  <rect x="36" y="62" width="180" height="12" rx="6" fill="#F3F6FF"/>
+  <rect x="36" y="82" width="144" height="10" rx="5" fill="#A9B7DA"/>
+  <rect x="36" y="116" width="112" height="44" rx="14" fill="#16233F"/>
+  <rect x="160" y="116" width="124" height="44" rx="14" fill="#16233F"/>
+  <text x="24" y="212" fill="#F3F6FF" font-family="Arial, sans-serif" font-size="16" font-weight="700">Section preview</text>
+  <text x="24" y="228" fill="#8FA0C8" font-family="Arial, sans-serif" font-size="11">Visual block thumbnail</text>
+</svg>

@@ -2,6 +2,7 @@
 
 import {SanityDocument} from 'next-sanity'
 import {useOptimistic} from 'next-sanity/hooks'
+import {stegaClean} from '@sanity/client/stega'
 
 import ResolvedLink from '@/app/components/ResolvedLink'
 import Image from '@/app/components/SanityImage'
@@ -19,6 +20,11 @@ type FooterLegalLink = {
   link?: DereferencedLink | null
 }
 
+function toPublishedId(id: string | undefined | null): string | undefined {
+  if (!id) return undefined
+  return id.startsWith('drafts.') ? id.slice('drafts.'.length) : id
+}
+
 function imageRef(value: unknown): string | undefined {
   if (!value || typeof value !== 'object') return undefined
   const maybeAsset = (value as {asset?: {_ref?: string}}).asset
@@ -34,7 +40,7 @@ function settingsVisualEditing(settings: SiteSettings | null): VisualEditingProp
   if (!settings?._id || !settings?._type) return undefined
 
   return {
-    id: settings._id,
+    id: toPublishedId(settings._id) || settings._id,
     type: settings._type,
     path: '',
   }
@@ -138,11 +144,12 @@ const DEFAULT_LINK_CLOUD_LINES = [
 
 export default function Footer({settings}: {settings?: SiteSettings | null}) {
   const visualEditing = settingsVisualEditing(settings || null)
+  const settingsId = toPublishedId(settings?._id)
   const optimisticFooterLegalLinks = useOptimistic<
     FooterLegalLink[] | null | undefined,
     SanityDocument<{_id: string; footerLegalLinks?: FooterLegalLink[] | null}>
   >(settings?.footerLegalLinks, (currentLinks, action) => {
-    if (action.id !== settings?._id) {
+    if (toPublishedId(action.id) !== settingsId) {
       return currentLinks
     }
 
@@ -160,7 +167,7 @@ export default function Footer({settings}: {settings?: SiteSettings | null}) {
     string[] | null | undefined,
     SanityDocument<{_id: string; footerLinkCloudLines?: string[] | null}>
   >(settings?.footerLinkCloudLines, (currentLines, action) => {
-    if (action.id !== settings?._id) {
+    if (toPublishedId(action.id) !== settingsId) {
       return currentLines
     }
 
@@ -174,7 +181,7 @@ export default function Footer({settings}: {settings?: SiteSettings | null}) {
     unknown[] | null | undefined,
     SanityDocument<{_id: string; footerCtaAvatarImages?: unknown[] | null}>
   >(settings?.footerCtaAvatarImages, (currentAvatars, action) => {
-    if (action.id !== settings?._id) {
+    if (toPublishedId(action.id) !== settingsId) {
       return currentAvatars
     }
 
@@ -202,7 +209,7 @@ export default function Footer({settings}: {settings?: SiteSettings | null}) {
         ? [
             {
               _key: item._key,
-              label: item.label,
+              label: stegaClean(item.label),
               link: item.link as DereferencedLink,
             },
           ]
@@ -303,13 +310,16 @@ export default function Footer({settings}: {settings?: SiteSettings | null}) {
                 </p>
               </div>
 
-              <div className="grid gap-3 font-display text-sm leading-[18.2px] text-white/95 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center sm:gap-8">
+              <div
+                className="grid gap-3 font-display text-sm leading-[18.2px] text-white/95 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center sm:gap-8"
+              >
                 <p data-sanity={getVisualDataAttribute(visualEditing, 'footerLegalText')}>
                   {footerLegalText}
                 </p>
                 <div
-                  className="contents"
+                  className="flex flex-wrap items-center gap-3 sm:col-span-2 sm:justify-end sm:gap-8"
                   data-sanity={getVisualDataAttribute(visualEditing, 'footerLegalLinks')}
+                  data-sanity-drag-group="settings-footer-legal-links"
                 >
                   {resolvedLegalLinks.map((item, index) => (
                     <ResolvedLink
@@ -322,6 +332,7 @@ export default function Footer({settings}: {settings?: SiteSettings | null}) {
                           ? 'footerLegalLinks'
                           : keyPath('footerLegalLinks', item._key || index),
                       )}
+                      data-sanity-drag-group="settings-footer-legal-links"
                     >
                       {item.label}
                     </ResolvedLink>
@@ -342,8 +353,9 @@ export default function Footer({settings}: {settings?: SiteSettings | null}) {
                     visualEditing,
                     footerLinkCloudLines.length ? `footerLinkCloudLines[${index}]` : 'footerLinkCloudLines',
                   )}
+                  data-sanity-drag-group="settings-footer-link-cloud-lines"
                 >
-                  {line}
+                  {stegaClean(line)}
                 </p>
               ))}
             </div>
