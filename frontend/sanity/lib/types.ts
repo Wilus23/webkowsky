@@ -9,10 +9,11 @@ export type ExtractPageBuilderType<T extends PageBuilderSection['_type']> = Extr
 // Represents a Link after GROQ dereferencing (page/post become slug strings)
 export type DereferencedLink = {
   _type: 'link'
-  linkType?: 'href' | 'page' | 'post' | null
+  linkType?: 'href' | 'page' | 'post' | 'caseStudy' | null
   href?: string | null
   page?: string | null
   post?: string | null
+  caseStudy?: string | null
   openInNewTab?: boolean | null
 }
 

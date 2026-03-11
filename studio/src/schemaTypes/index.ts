@@ -1,6 +1,7 @@
 import {person} from './documents/person'
 import {page} from './documents/page'
 import {post} from './documents/post'
+import {caseStudy} from './documents/caseStudy'
 import {homepage} from './singletons/homepage'
 import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
@@ -36,6 +37,7 @@ export const schemaTypes = [
   page,
   post,
   person,
+  caseStudy,
   // Objects
   button,
   blockContent,

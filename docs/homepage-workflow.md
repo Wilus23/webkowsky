@@ -91,7 +91,21 @@ Recommended Vercel variables:
 - If the singleton is missing in a dataset, bootstrap it with:
   - `npm exec --workspace=studio -- sanity documents create scripts/homepage-bootstrap.json --replace`
 
-## 7) Visual DnD 0.10 QA Checklist
+## 7) Section Thumbnail Workflow
+
+- Sanity insert menu thumbnails are generated from real frontend components, not hand-made illustrations.
+- Regenerate thumbnails with:
+  - `npm run generate:section-thumbnails`
+- Generated files are written to:
+  - `studio/static/page-builder-thumbnails/generated/`
+- Optional manual overrides can be dropped into:
+  - `studio/static/page-builder-thumbnails/overrides/`
+- Override naming convention:
+  - `<schemaType>.png`
+- After adding or changing an override, rerun `npm run generate:section-thumbnails` so the Studio manifest is refreshed.
+- After a successful generation run, the Studio manifest is updated automatically and `homepage.sections[]` plus `page.pageBuilder[]` will use the fresh previews.
+
+## 8) Visual DnD 0.10 QA Checklist
 
 Validate drag-and-drop in Sanity Presentation Tool (desktop pointer devices):
 

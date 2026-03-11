@@ -9,11 +9,11 @@ Preview deploys are versioned through Git tags and GitHub prereleases, not throu
 
 ### Added
 
-- _None yet_
+- Added CMS-backed `caseStudy` documents plus a new `/case-studies` listing and `/case-studies/[slug]` detail flow in the Next.js frontend.
 
 ### Changed
 
-- _None yet_
+- Extended shared Sanity link resolution, queries, and sitemap generation to support case study references and URLs.
 
 ### Fixed
 

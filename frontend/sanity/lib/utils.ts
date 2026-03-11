@@ -47,6 +47,10 @@ export function linkResolver(link: Link | DereferencedLink | undefined) {
       if (link?.post && typeof link.post === 'string') {
         return `/posts/${stegaClean(link.post)}`
       }
+    case 'caseStudy':
+      if (link?.caseStudy && typeof link.caseStudy === 'string') {
+        return `/case-studies/${stegaClean(link.caseStudy)}`
+      }
     default:
       return null
   }

@@ -1,4 +1,5 @@
 import {defineArrayMember} from 'sanity'
+import {pageBuilderThumbnailManifest} from './pageBuilderThumbnailManifest'
 
 const pageBuilderThumbnailTypes = new Set([
   'homeLegacyHeroSection',
@@ -21,8 +22,17 @@ const pageBuilderThumbnailTypes = new Set([
 ])
 
 export function getPageBuilderPreviewImageUrl(schemaTypeName: string) {
-  const thumbnailName = pageBuilderThumbnailTypes.has(schemaTypeName) ? schemaTypeName : 'default'
-  return `/static/page-builder-thumbnails/${thumbnailName}.svg`
+  if (!pageBuilderThumbnailTypes.has(schemaTypeName)) {
+    return '/static/page-builder-thumbnails/default.svg'
+  }
+
+  const overrideImage = pageBuilderThumbnailManifest.overrides[schemaTypeName]
+  if (overrideImage) return overrideImage
+
+  const generatedImage = pageBuilderThumbnailManifest.generated[schemaTypeName]
+  if (generatedImage) return generatedImage
+
+  return '/static/page-builder-thumbnails/default.svg'
 }
 
 export const pageBuilderInsertMenuViews = [

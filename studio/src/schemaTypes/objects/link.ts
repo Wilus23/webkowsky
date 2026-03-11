@@ -20,14 +20,15 @@ export const link = defineType({
       title: 'Link Type',
       type: 'string',
       initialValue: 'href',
-      options: {
-        list: [
-          {title: 'URL', value: 'href'},
-          {title: 'Page', value: 'page'},
-          {title: 'Post', value: 'post'},
-        ],
-        layout: 'radio',
-      },
+        options: {
+          list: [
+            {title: 'URL', value: 'href'},
+            {title: 'Page', value: 'page'},
+            {title: 'Post', value: 'post'},
+            {title: 'Case study', value: 'caseStudy'},
+          ],
+          layout: 'radio',
+        },
     }),
     defineField({
       name: 'href',
@@ -67,6 +68,21 @@ export const link = defineType({
           const parent = context.parent as Link
           if (parent?.linkType === 'post' && !value) {
             return 'Post reference is required when Link Type is Post'
+          }
+          return true
+        }),
+    }),
+    defineField({
+      name: 'caseStudy',
+      title: 'Case study',
+      type: 'reference',
+      to: [{type: 'caseStudy'}],
+      hidden: ({parent}) => parent?.linkType !== 'caseStudy',
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const parent = context.parent as Link
+          if (parent?.linkType === 'caseStudy' && !value) {
+            return 'Case study reference is required when Link Type is Case study'
           }
           return true
         }),

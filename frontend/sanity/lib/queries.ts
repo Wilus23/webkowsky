@@ -6,13 +6,14 @@ const resolvedLinkFields = /* groq */ `
   href,
   openInNewTab,
   "page": page->slug.current,
-  "post": post->slug.current
+  "post": post->slug.current,
+  "caseStudy": caseStudy->slug.current
 `
 
 export const settingsQuery = defineQuery(`
   coalesce(
-    *[_id == "drafts.siteSettings"][0],
-    *[_id == "siteSettings"][0]
+    *[_type == "settings" && _id == "drafts.siteSettings"][0],
+    *[_type == "settings" && _id == "siteSettings"][0]
   ){
     _id,
     _type,
@@ -69,7 +70,8 @@ const postFields = /* groq */ `
 const linkReference = /* groq */ `
   _type == "link" => {
     "page": page->slug.current,
-    "post": post->slug.current
+    "post": post->slug.current,
+    "caseStudy": caseStudy->slug.current
   }
 `
 
@@ -78,6 +80,14 @@ const linkFields = /* groq */ `
       ...,
       ${linkReference}
       }
+`
+
+const portableTextFields = /* groq */ `
+  ...,
+  markDefs[]{
+    ...,
+    ${linkReference}
+  }
 `
 
 const homepageLinkFields = resolvedLinkFields
@@ -330,11 +340,7 @@ export const getPageQuery = defineQuery(`
       },
       _type == "infoSection" => {
         content[]{
-          ...,
-          markDefs[]{
-            ...,
-            ${linkReference}
-          }
+          ${portableTextFields}
         }
       },
       ${homeSectionFields}
@@ -343,7 +349,7 @@ export const getPageQuery = defineQuery(`
 `)
 
 export const sitemapData = defineQuery(`
-  *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {
+  *[(_type == "page" || _type == "post" || _type == "caseStudy") && defined(slug.current)] | order(_type asc) {
     "slug": slug.current,
     _type,
     _updatedAt,
@@ -365,12 +371,8 @@ export const morePostsQuery = defineQuery(`
 export const postQuery = defineQuery(`
   *[_type == "post" && slug.current == $slug] [0] {
     content[]{
-    ...,
-    markDefs[]{
-      ...,
-      ${linkReference}
-    }
-  },
+      ${portableTextFields}
+    },
     ${postFields}
   }
 `)
@@ -381,6 +383,55 @@ export const postPagesSlugs = defineQuery(`
 `)
 
 export const pagesSlugs = defineQuery(`
-  *[_type == "page" && defined(slug.current)]
+  *[_type == "page" && defined(slug.current) && slug.current != "case-studies"]
+  {"slug": slug.current}
+`)
+
+const caseStudyFields = /* groq */ `
+  _id,
+  _type,
+  "status": select(_originalId in path("drafts.**") => "draft", "published"),
+  title,
+  "slug": slug.current,
+  clientName,
+  excerpt,
+  industry,
+  services,
+  featured,
+  coverImage,
+  "publishedAt": coalesce(publishedAt, _updatedAt),
+  results[]{
+    _key,
+    label,
+    value
+  }
+`
+
+export const allCaseStudiesQuery = defineQuery(`
+  *[_type == "caseStudy" && defined(slug.current)] | order(featured desc, publishedAt desc, _updatedAt desc) {
+    ${caseStudyFields}
+  }
+`)
+
+export const caseStudyQuery = defineQuery(`
+  *[_type == "caseStudy" && slug.current == $slug][0]{
+    ${caseStudyFields},
+    overview[]{
+      ${portableTextFields}
+    },
+    challenge[]{
+      ${portableTextFields}
+    },
+    solution[]{
+      ${portableTextFields}
+    },
+    outcome[]{
+      ${portableTextFields}
+    }
+  }
+`)
+
+export const caseStudiesSlugs = defineQuery(`
+  *[_type == "caseStudy" && defined(slug.current)]
   {"slug": slug.current}
 `)

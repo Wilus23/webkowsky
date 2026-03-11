@@ -360,12 +360,20 @@ export type PostReference = {
   [internalGroqTypeReferenceTo]?: 'post'
 }
 
+export type CaseStudyReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'caseStudy'
+}
+
 export type Link = {
   _type: 'link'
-  linkType?: 'href' | 'page' | 'post'
+  linkType?: 'href' | 'page' | 'post' | 'caseStudy'
   href?: string
   page?: PageReference
   post?: PostReference
+  caseStudy?: CaseStudyReference
   openInNewTab?: boolean
 }
 
@@ -451,6 +459,61 @@ export type Button = {
   link?: Link
 }
 
+export type CaseStudy = {
+  _id: string
+  _type: 'caseStudy'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
+  clientName: string
+  excerpt: string
+  industry?: string
+  services?: Array<string>
+  featured?: boolean
+  publishedAt?: string
+  coverImage: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  results?: Array<{
+    value: string
+    label: string
+    _key: string
+  }>
+  overview: BlockContent
+  challenge?: BlockContent
+  solution?: BlockContent
+  outcome?: BlockContent
+}
+
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop'
+  top: number
+  bottom: number
+  left: number
+  right: number
+}
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot'
+  x: number
+  y: number
+  height: number
+  width: number
+}
+
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
+}
+
 export type Settings = {
   _id: string
   _type: 'settings'
@@ -515,22 +578,6 @@ export type Settings = {
     _key: string
   }>
   footerLinkCloudLines?: Array<string>
-}
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top: number
-  bottom: number
-  left: number
-  right: number
-}
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x: number
-  y: number
-  height: number
-  width: number
 }
 
 export type Page = {
@@ -643,12 +690,6 @@ export type Person = {
     alt?: string
     _type: 'image'
   }
-}
-
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
 }
 
 export type Homepage = {
@@ -971,20 +1012,22 @@ export type AllSanitySchemaTypes =
   | HomeSeo
   | PageReference
   | PostReference
+  | CaseStudyReference
   | Link
   | CallToAction
   | InfoSection
   | BlockContentTextOnly
   | BlockContent
   | Button
-  | Settings
+  | CaseStudy
   | SanityImageCrop
   | SanityImageHotspot
+  | Slug
+  | Settings
   | Page
   | PersonReference
   | Post
   | Person
-  | Slug
   | Homepage
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
@@ -1012,107 +1055,213 @@ export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: sanity/lib/queries.ts
 // Variable: settingsQuery
-// Query: *[_type == "settings"][0]{    _id,    _type,    title,    brandName,    description,    ogImage,    headerNavItems[]{      _key,      label,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current      }    },    headerCta{      buttonText,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current      }    },    footerHeading,    footerHighlight,    footerCta{      buttonText,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current      }    },    footerCtaAvatarImages,    footerDescription,    footerLegalText,    footerLegalLinks[]{      _key,      label,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current      }    },    footerLinkCloudLines  }
-export type SettingsQueryResult = {
-  _id: string
-  _type: 'settings'
-  title: string
-  brandName: string | null
-  description: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal'
-    listItem?: never
-    markDefs?: Array<{
-      linkType?: 'href' | 'page' | 'post'
-      href?: string
-      page?: PageReference
-      post?: PostReference
-      openInNewTab?: boolean
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }> | null
-  ogImage: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    metadataBase?: string
-    _type: 'image'
-  } | null
-  headerNavItems: Array<{
-    _key: string
-    label: string
-    link: {
-      _type: 'link'
-      linkType: 'href' | 'page' | 'post' | null
-      href: string | null
-      openInNewTab: boolean | null
-      page: string | null
-      post: string | null
-    } | null
-  }> | null
-  headerCta: {
-    buttonText: string | null
-    link: {
-      _type: 'link'
-      linkType: 'href' | 'page' | 'post' | null
-      href: string | null
-      openInNewTab: boolean | null
-      page: string | null
-      post: string | null
-    } | null
-  } | null
-  footerHeading: string | null
-  footerHighlight: string | null
-  footerCta: {
-    buttonText: string | null
-    link: {
-      _type: 'link'
-      linkType: 'href' | 'page' | 'post' | null
-      href: string | null
-      openInNewTab: boolean | null
-      page: string | null
-      post: string | null
-    } | null
-  } | null
-  footerCtaAvatarImages: Array<{
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
-    _key: string
-  }> | null
-  footerDescription: string | null
-  footerLegalText: string | null
-  footerLegalLinks: Array<{
-    _key: string
-    label: string
-    link: {
-      _type: 'link'
-      linkType: 'href' | 'page' | 'post' | null
-      href: string | null
-      openInNewTab: boolean | null
-      page: string | null
-      post: string | null
-    } | null
-  }> | null
-  footerLinkCloudLines: Array<string> | null
-} | null
+// Query: coalesce(    *[_type == "settings" && _id == "drafts.siteSettings"][0],    *[_type == "settings" && _id == "siteSettings"][0]  ){    _id,    _type,    title,    brandName,    description,    ogImage,    headerNavItems[]{      _key,      label,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current      }    },    headerCta{      buttonText,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current      }    },    footerHeading,    footerHighlight,    footerCta{      buttonText,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current      }    },    footerCtaAvatarImages,    footerDescription,    footerLegalText,    footerLegalLinks[]{      _key,      label,      link{          _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current      }    },    footerLinkCloudLines  }
+export type SettingsQueryResult =
+  | {
+      _id: 'drafts.siteSettings'
+      _type: 'settings'
+      title: string
+      brandName: string | null
+      description: Array<{
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: 'span'
+          _key: string
+        }>
+        style?: 'normal'
+        listItem?: never
+        markDefs?: Array<{
+          linkType?: 'href' | 'page' | 'post'
+          href?: string
+          page?: PageReference
+          post?: PostReference
+          openInNewTab?: boolean
+          _type: 'link'
+          _key: string
+        }>
+        level?: number
+        _type: 'block'
+        _key: string
+      }> | null
+      ogImage: {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        metadataBase?: string
+        _type: 'image'
+      } | null
+      headerNavItems: Array<{
+        _key: string
+        label: string
+        link: {
+          _type: 'link'
+          linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
+          href: string | null
+          openInNewTab: boolean | null
+          page: string | null
+          post: string | null
+          caseStudy: string | null
+        } | null
+      }> | null
+      headerCta: {
+        buttonText: string | null
+        link: {
+          _type: 'link'
+          linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
+          href: string | null
+          openInNewTab: boolean | null
+          page: string | null
+          post: string | null
+          caseStudy: string | null
+        } | null
+      } | null
+      footerHeading: string | null
+      footerHighlight: string | null
+      footerCta: {
+        buttonText: string | null
+        link: {
+          _type: 'link'
+          linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
+          href: string | null
+          openInNewTab: boolean | null
+          page: string | null
+          post: string | null
+          caseStudy: string | null
+        } | null
+      } | null
+      footerCtaAvatarImages: Array<{
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        _type: 'image'
+        _key: string
+      }> | null
+      footerDescription: string | null
+      footerLegalText: string | null
+      footerLegalLinks: Array<{
+        _key: string
+        label: string
+        link: {
+          _type: 'link'
+          linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
+          href: string | null
+          openInNewTab: boolean | null
+          page: string | null
+          post: string | null
+          caseStudy: string | null
+        } | null
+      }> | null
+      footerLinkCloudLines: Array<string> | null
+    }
+  | {
+      _id: 'siteSettings'
+      _type: 'settings'
+      title: string
+      brandName: string | null
+      description: Array<{
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: 'span'
+          _key: string
+        }>
+        style?: 'normal'
+        listItem?: never
+        markDefs?: Array<{
+          linkType?: 'href' | 'page' | 'post'
+          href?: string
+          page?: PageReference
+          post?: PostReference
+          openInNewTab?: boolean
+          _type: 'link'
+          _key: string
+        }>
+        level?: number
+        _type: 'block'
+        _key: string
+      }> | null
+      ogImage: {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        metadataBase?: string
+        _type: 'image'
+      } | null
+      headerNavItems: Array<{
+        _key: string
+        label: string
+        link: {
+          _type: 'link'
+          linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
+          href: string | null
+          openInNewTab: boolean | null
+          page: string | null
+          post: string | null
+          caseStudy: string | null
+        } | null
+      }> | null
+      headerCta: {
+        buttonText: string | null
+        link: {
+          _type: 'link'
+          linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
+          href: string | null
+          openInNewTab: boolean | null
+          page: string | null
+          post: string | null
+          caseStudy: string | null
+        } | null
+      } | null
+      footerHeading: string | null
+      footerHighlight: string | null
+      footerCta: {
+        buttonText: string | null
+        link: {
+          _type: 'link'
+          linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
+          href: string | null
+          openInNewTab: boolean | null
+          page: string | null
+          post: string | null
+          caseStudy: string | null
+        } | null
+      } | null
+      footerCtaAvatarImages: Array<{
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        _type: 'image'
+        _key: string
+      }> | null
+      footerDescription: string | null
+      footerLegalText: string | null
+      footerLegalLinks: Array<{
+        _key: string
+        label: string
+        link: {
+          _type: 'link'
+          linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
+          href: string | null
+          openInNewTab: boolean | null
+          page: string | null
+          post: string | null
+          caseStudy: string | null
+        } | null
+      }> | null
+      footerLinkCloudLines: Array<string> | null
+    }
+  | null
 
 // Source: sanity/lib/queries.ts
 // Variable: homepageQuery
-// Query: *[_type == "homepage" && _id == "homepage"][0]{    _id,    _type,    title,    locale,    seo{      title,      description,      ogImage    },    "sections": sections[]{        _key,  _type,  _type == "homeHeroSection" => {    eyebrow,    heading,    subheading,    badges,    primaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    },    secondaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    }  },  _type == "homeLogosSection" => {    heading,    logos[]{      _key,      name,      logo,      link    }  },  _type == "homeCaseStudiesSection" => {    heading,    subheading,    items[]{      _key,      title,      summary,      image,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }      }    }  },  _type == "homeProblemSection" => {    heading,    description,    problems  },  _type == "homeOfferSection" => {    heading,    subheading,    offers[]{      _key,      name,      description,      priceNote,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }      }    }  },  _type == "homeUseCasesSection" => {    heading,    useCases[]{      _key,      label,      heading,      description,      bullets,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }      }    }  },  _type == "homeRoiSection" => {    heading,    description,    embedUrl,    button{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    }  },  _type == "homeFaqSection" => {    heading,    items[]{      _key,      question,      answer    }  },  _type == "homeContactSection" => {    heading,    description,    email,    button{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    }  },  _type == "homeLegacyHeroSection" => {    titleLinePrimary,    titleLineSecondary,    titleLineTertiary,    description,    ctaButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    },    avatarImages,    cards[]{      _key,      label,      image    }  },  _type == "homeLegacyLogoBarSection" => {    logos[]{      _key,      name,      logo,      link    }  },  _type == "homeLegacyTestimonialSection" => {    labelPrefix,    labelHighlight,    quote,    personName,    personRole,    companyName,    companySubmark,    avatarImage,    cardBackgroundImage,    playIcon,    brandWordmark,    brandSeparator,    brandSubmark,    stats[]{      _key,      value,      suffix,      label    }  },  _type == "homeLegacyWorkSection" => {    labelPrefix,    labelSuffix,    mockupImage,    cards[]{      _key,      company,      description,      image,      badge    }  },  _type == "homeLegacyOfferSection" => {    title,    subtitlePrefix,    subtitleHighlight,    categories[]{      _key,      name,      activeFeature,      inactiveFeatures,      image    },    description,    image,    primaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    },    secondaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    }  },  _type == "homeLegacyPricingSection" => {    subtitlePrefix,    subtitleHighlight,    defaultPlanTitle,    plans[]{      _key,      title,      price,      features[]{        _key,        text,        active      },      description,      image,      primaryButton{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }      },      secondaryButton{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }      }    }  }    }  }
+// Query: *[_type == "homepage" && _id == "homepage"][0]{    _id,    _type,    title,    locale,    seo{      title,      description,      ogImage    },    "sections": sections[]{        _key,  _type,  _type == "homeHeroSection" => {    eyebrow,    heading,    subheading,    badges,    primaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    },    secondaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    }  },  _type == "homeLogosSection" => {    heading,    logos[]{      _key,      name,      logo,      link    }  },  _type == "homeCaseStudiesSection" => {    heading,    subheading,    items[]{      _key,      title,      summary,      image,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }      }    }  },  _type == "homeProblemSection" => {    heading,    description,    problems  },  _type == "homeOfferSection" => {    heading,    subheading,    offers[]{      _key,      name,      description,      priceNote,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }      }    }  },  _type == "homeUseCasesSection" => {    heading,    useCases[]{      _key,      label,      heading,      description,      bullets,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }      }    }  },  _type == "homeRoiSection" => {    heading,    description,    embedUrl,    button{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    }  },  _type == "homeFaqSection" => {    heading,    items[]{      _key,      question,      answer    }  },  _type == "homeContactSection" => {    heading,    description,    email,    button{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    }  },  _type == "homeLegacyHeroSection" => {    titleLinePrimary,    titleLineSecondary,    titleLineTertiary,    description,    ctaButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    },    avatarImages,    cards[]{      _key,      label,      image    }  },  _type == "homeLegacyLogoBarSection" => {    logos[]{      _key,      name,      logo,      link    }  },  _type == "homeLegacyTestimonialSection" => {    labelPrefix,    labelHighlight,    quote,    personName,    personRole,    companyName,    companySubmark,    avatarImage,    cardBackgroundImage,    playIcon,    brandWordmark,    brandSeparator,    brandSubmark,    stats[]{      _key,      value,      suffix,      label    }  },  _type == "homeLegacyWorkSection" => {    labelPrefix,    labelSuffix,    mockupImage,    cards[]{      _key,      company,      description,      image,      badge    }  },  _type == "homeLegacyOfferSection" => {    title,    subtitlePrefix,    subtitleHighlight,    categories[]{      _key,      name,      activeFeature,      inactiveFeatures,      image    },    description,    image,    primaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    },    secondaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    }  },  _type == "homeLegacyPricingSection" => {    subtitlePrefix,    subtitleHighlight,    defaultPlanTitle,    plans[]{      _key,      title,      price,      features[]{        _key,        text,        active      },      description,      image,      primaryButton{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }      },      secondaryButton{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }      }    }  }    }  }
 export type HomepageQueryResult = {
   _id: 'homepage'
   _type: 'homepage'
@@ -1144,11 +1293,12 @@ export type HomepageQueryResult = {
             buttonText: string | null
             link: {
               _type: 'link'
-              linkType: 'href' | 'page' | 'post' | null
+              linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
               href: string | null
               openInNewTab: boolean | null
               page: string | null
               post: string | null
+              caseStudy: string | null
             } | null
           } | null
         }>
@@ -1163,11 +1313,12 @@ export type HomepageQueryResult = {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
       }
@@ -1192,22 +1343,24 @@ export type HomepageQueryResult = {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
         secondaryButton: {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
       }
@@ -1222,11 +1375,12 @@ export type HomepageQueryResult = {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
         avatarImages: Array<{
@@ -1278,22 +1432,24 @@ export type HomepageQueryResult = {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
         secondaryButton: {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
       }
@@ -1318,22 +1474,24 @@ export type HomepageQueryResult = {
             buttonText: string | null
             link: {
               _type: 'link'
-              linkType: 'href' | 'page' | 'post' | null
+              linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
               href: string | null
               openInNewTab: boolean | null
               page: string | null
               post: string | null
+              caseStudy: string | null
             } | null
           } | null
           secondaryButton: {
             buttonText: string | null
             link: {
               _type: 'link'
-              linkType: 'href' | 'page' | 'post' | null
+              linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
               href: string | null
               openInNewTab: boolean | null
               page: string | null
               post: string | null
+              caseStudy: string | null
             } | null
           } | null
         }>
@@ -1442,11 +1600,12 @@ export type HomepageQueryResult = {
             buttonText: string | null
             link: {
               _type: 'link'
-              linkType: 'href' | 'page' | 'post' | null
+              linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
               href: string | null
               openInNewTab: boolean | null
               page: string | null
               post: string | null
+              caseStudy: string | null
             } | null
           } | null
         }>
@@ -1468,11 +1627,12 @@ export type HomepageQueryResult = {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
       }
@@ -1490,11 +1650,12 @@ export type HomepageQueryResult = {
             buttonText: string | null
             link: {
               _type: 'link'
-              linkType: 'href' | 'page' | 'post' | null
+              linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
               href: string | null
               openInNewTab: boolean | null
               page: string | null
               post: string | null
+              caseStudy: string | null
             } | null
           } | null
         }>
@@ -1521,7 +1682,7 @@ export type HomepageSeoQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: getPageQuery
-// Query: *[_type == 'page' && slug.current == $slug][0]{    _id,    _type,    name,    slug,    heading,    subheading,    "pageBuilder": pageBuilder[]{      _key,      _type,      ...,      _type == "callToAction" => {        ...,        button {          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      }        }      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }          }        }      },        _key,  _type,  _type == "homeHeroSection" => {    eyebrow,    heading,    subheading,    badges,    primaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    },    secondaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    }  },  _type == "homeLogosSection" => {    heading,    logos[]{      _key,      name,      logo,      link    }  },  _type == "homeCaseStudiesSection" => {    heading,    subheading,    items[]{      _key,      title,      summary,      image,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }      }    }  },  _type == "homeProblemSection" => {    heading,    description,    problems  },  _type == "homeOfferSection" => {    heading,    subheading,    offers[]{      _key,      name,      description,      priceNote,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }      }    }  },  _type == "homeUseCasesSection" => {    heading,    useCases[]{      _key,      label,      heading,      description,      bullets,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }      }    }  },  _type == "homeRoiSection" => {    heading,    description,    embedUrl,    button{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    }  },  _type == "homeFaqSection" => {    heading,    items[]{      _key,      question,      answer    }  },  _type == "homeContactSection" => {    heading,    description,    email,    button{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    }  },  _type == "homeLegacyHeroSection" => {    titleLinePrimary,    titleLineSecondary,    titleLineTertiary,    description,    ctaButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    },    avatarImages,    cards[]{      _key,      label,      image    }  },  _type == "homeLegacyLogoBarSection" => {    logos[]{      _key,      name,      logo,      link    }  },  _type == "homeLegacyTestimonialSection" => {    labelPrefix,    labelHighlight,    quote,    personName,    personRole,    companyName,    companySubmark,    avatarImage,    cardBackgroundImage,    playIcon,    brandWordmark,    brandSeparator,    brandSubmark,    stats[]{      _key,      value,      suffix,      label    }  },  _type == "homeLegacyWorkSection" => {    labelPrefix,    labelSuffix,    mockupImage,    cards[]{      _key,      company,      description,      image,      badge    }  },  _type == "homeLegacyOfferSection" => {    title,    subtitlePrefix,    subtitleHighlight,    categories[]{      _key,      name,      activeFeature,      inactiveFeatures,      image    },    description,    image,    primaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    },    secondaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }    }  },  _type == "homeLegacyPricingSection" => {    subtitlePrefix,    subtitleHighlight,    defaultPlanTitle,    plans[]{      _key,      title,      price,      features[]{        _key,        text,        active      },      description,      image,      primaryButton{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }      },      secondaryButton{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current  }      }    }  }    },  }
+// Query: *[_type == 'page' && slug.current == $slug][0]{    _id,    _type,    name,    slug,    heading,    subheading,    "pageBuilder": pageBuilder[]{      _key,      _type,      ...,      _type == "callToAction" => {        ...,        button {          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current,    "caseStudy": caseStudy->slug.current  }      }        }      },      _type == "infoSection" => {        content[]{            ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->slug.current,    "post": post->slug.current,    "caseStudy": caseStudy->slug.current  }  }        }      },        _key,  _type,  _type == "homeHeroSection" => {    eyebrow,    heading,    subheading,    badges,    primaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    },    secondaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    }  },  _type == "homeLogosSection" => {    heading,    logos[]{      _key,      name,      logo,      link    }  },  _type == "homeCaseStudiesSection" => {    heading,    subheading,    items[]{      _key,      title,      summary,      image,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }      }    }  },  _type == "homeProblemSection" => {    heading,    description,    problems  },  _type == "homeOfferSection" => {    heading,    subheading,    offers[]{      _key,      name,      description,      priceNote,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }      }    }  },  _type == "homeUseCasesSection" => {    heading,    useCases[]{      _key,      label,      heading,      description,      bullets,      button{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }      }    }  },  _type == "homeRoiSection" => {    heading,    description,    embedUrl,    button{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    }  },  _type == "homeFaqSection" => {    heading,    items[]{      _key,      question,      answer    }  },  _type == "homeContactSection" => {    heading,    description,    email,    button{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    }  },  _type == "homeLegacyHeroSection" => {    titleLinePrimary,    titleLineSecondary,    titleLineTertiary,    description,    ctaButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    },    avatarImages,    cards[]{      _key,      label,      image    }  },  _type == "homeLegacyLogoBarSection" => {    logos[]{      _key,      name,      logo,      link    }  },  _type == "homeLegacyTestimonialSection" => {    labelPrefix,    labelHighlight,    quote,    personName,    personRole,    companyName,    companySubmark,    avatarImage,    cardBackgroundImage,    playIcon,    brandWordmark,    brandSeparator,    brandSubmark,    stats[]{      _key,      value,      suffix,      label    }  },  _type == "homeLegacyWorkSection" => {    labelPrefix,    labelSuffix,    mockupImage,    cards[]{      _key,      company,      description,      image,      badge    }  },  _type == "homeLegacyOfferSection" => {    title,    subtitlePrefix,    subtitleHighlight,    categories[]{      _key,      name,      activeFeature,      inactiveFeatures,      image    },    description,    image,    primaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    },    secondaryButton{        buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }    }  },  _type == "homeLegacyPricingSection" => {    subtitlePrefix,    subtitleHighlight,    defaultPlanTitle,    plans[]{      _key,      title,      price,      features[]{        _key,        text,        active      },      description,      image,      primaryButton{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }      },      secondaryButton{          buttonText,  link{      _type,  linkType,  href,  openInNewTab,  "page": page->slug.current,  "post": post->slug.current,  "caseStudy": caseStudy->slug.current  }      }    }  }    },  }
 export type GetPageQueryResult = {
   _id: string
   _type: 'page'
@@ -1541,10 +1702,11 @@ export type GetPageQueryResult = {
           buttonText?: string
           link: {
             _type: 'link'
-            linkType?: 'href' | 'page' | 'post'
+            linkType?: 'caseStudy' | 'href' | 'page' | 'post'
             href?: string
             page: string | null
             post: string | null
+            caseStudy: string | null
             openInNewTab?: boolean
           } | null
         } | null
@@ -1572,11 +1734,12 @@ export type GetPageQueryResult = {
             buttonText: string | null
             link: {
               _type: 'link'
-              linkType: 'href' | 'page' | 'post' | null
+              linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
               href: string | null
               openInNewTab: boolean | null
               page: string | null
               post: string | null
+              caseStudy: string | null
             } | null
           } | null
         }>
@@ -1591,11 +1754,12 @@ export type GetPageQueryResult = {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
       }
@@ -1620,22 +1784,24 @@ export type GetPageQueryResult = {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
         secondaryButton: {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
       }
@@ -1650,11 +1816,12 @@ export type GetPageQueryResult = {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
         avatarImages: Array<{
@@ -1706,22 +1873,24 @@ export type GetPageQueryResult = {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
         secondaryButton: {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
       }
@@ -1746,22 +1915,24 @@ export type GetPageQueryResult = {
             buttonText: string | null
             link: {
               _type: 'link'
-              linkType: 'href' | 'page' | 'post' | null
+              linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
               href: string | null
               openInNewTab: boolean | null
               page: string | null
               post: string | null
+              caseStudy: string | null
             } | null
           } | null
           secondaryButton: {
             buttonText: string | null
             link: {
               _type: 'link'
-              linkType: 'href' | 'page' | 'post' | null
+              linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
               href: string | null
               openInNewTab: boolean | null
               page: string | null
               post: string | null
+              caseStudy: string | null
             } | null
           } | null
         }>
@@ -1870,11 +2041,12 @@ export type GetPageQueryResult = {
             buttonText: string | null
             link: {
               _type: 'link'
-              linkType: 'href' | 'page' | 'post' | null
+              linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
               href: string | null
               openInNewTab: boolean | null
               page: string | null
               post: string | null
+              caseStudy: string | null
             } | null
           } | null
         }>
@@ -1895,11 +2067,12 @@ export type GetPageQueryResult = {
           buttonText: string | null
           link: {
             _type: 'link'
-            linkType: 'href' | 'page' | 'post' | null
+            linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
             href: string | null
             openInNewTab: boolean | null
             page: string | null
             post: string | null
+            caseStudy: string | null
           } | null
         } | null
         embedUrl: string | null
@@ -1918,11 +2091,12 @@ export type GetPageQueryResult = {
             buttonText: string | null
             link: {
               _type: 'link'
-              linkType: 'href' | 'page' | 'post' | null
+              linkType: 'caseStudy' | 'href' | 'page' | 'post' | null
               href: string | null
               openInNewTab: boolean | null
               page: string | null
               post: string | null
+              caseStudy: string | null
             } | null
           } | null
         }>
@@ -1950,6 +2124,7 @@ export type GetPageQueryResult = {
                 openInNewTab?: boolean
                 _type: 'link'
                 _key: string
+                caseStudy: null
               }> | null
               level?: number
               _type: 'block'
@@ -1971,8 +2146,13 @@ export type GetPageQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: sitemapData
-// Query: *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
+// Query: *[(_type == "page" || _type == "post" || _type == "caseStudy") && defined(slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
 export type SitemapDataResult = Array<
+  | {
+      slug: string
+      _type: 'caseStudy'
+      _updatedAt: string
+    }
   | {
       slug: string
       _type: 'page'
@@ -2051,7 +2231,7 @@ export type MorePostsQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: postQuery
-// Query: *[_type == "post" && slug.current == $slug] [0] {    content[]{    ...,    markDefs[]{      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }    }  },      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
+// Query: *[_type == "post" && slug.current == $slug] [0] {    content[]{        ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->slug.current,    "post": post->slug.current,    "caseStudy": caseStudy->slug.current  }  }    },      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
 export type PostQueryResult = {
   content: Array<
     | {
@@ -2071,6 +2251,7 @@ export type PostQueryResult = {
           openInNewTab?: boolean
           _type: 'link'
           _key: string
+          caseStudy: null
         }> | null
         level?: number
         _type: 'block'
@@ -2123,8 +2304,211 @@ export type PostPagesSlugsResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: pagesSlugs
-// Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
+// Query: *[_type == "page" && defined(slug.current) && slug.current != "case-studies"]  {"slug": slug.current}
 export type PagesSlugsResult = Array<{
+  slug: string
+}>
+
+// Source: sanity/lib/queries.ts
+// Variable: allCaseStudiesQuery
+// Query: *[_type == "caseStudy" && defined(slug.current)] | order(featured desc, publishedAt desc, _updatedAt desc) {      _id,  _type,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  title,  "slug": slug.current,  clientName,  excerpt,  industry,  services,  featured,  coverImage,  "publishedAt": coalesce(publishedAt, _updatedAt),  results[]{    _key,    label,    value  }  }
+export type AllCaseStudiesQueryResult = Array<{
+  _id: string
+  _type: 'caseStudy'
+  status: 'draft' | 'published'
+  title: string
+  slug: string
+  clientName: string
+  excerpt: string
+  industry: string | null
+  services: Array<string> | null
+  featured: boolean | null
+  coverImage: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  publishedAt: string
+  results: Array<{
+    _key: string
+    label: string
+    value: string
+  }> | null
+}>
+
+// Source: sanity/lib/queries.ts
+// Variable: caseStudyQuery
+// Query: *[_type == "caseStudy" && slug.current == $slug][0]{      _id,  _type,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  title,  "slug": slug.current,  clientName,  excerpt,  industry,  services,  featured,  coverImage,  "publishedAt": coalesce(publishedAt, _updatedAt),  results[]{    _key,    label,    value  },    overview[]{        ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->slug.current,    "post": post->slug.current,    "caseStudy": caseStudy->slug.current  }  }    },    challenge[]{        ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->slug.current,    "post": post->slug.current,    "caseStudy": caseStudy->slug.current  }  }    },    solution[]{        ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->slug.current,    "post": post->slug.current,    "caseStudy": caseStudy->slug.current  }  }    },    outcome[]{        ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->slug.current,    "post": post->slug.current,    "caseStudy": caseStudy->slug.current  }  }    }  }
+export type CaseStudyQueryResult = {
+  _id: string
+  _type: 'caseStudy'
+  status: 'draft' | 'published'
+  title: string
+  slug: string
+  clientName: string
+  excerpt: string
+  industry: string | null
+  services: Array<string> | null
+  featured: boolean | null
+  coverImage: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  publishedAt: string
+  results: Array<{
+    _key: string
+    label: string
+    value: string
+  }> | null
+  overview: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: 'span'
+          _key: string
+        }>
+        style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+        listItem?: 'bullet' | 'number'
+        markDefs: Array<{
+          linkType?: 'href' | 'page' | 'post'
+          href?: string
+          page: string | null
+          post: string | null
+          openInNewTab?: boolean
+          _type: 'link'
+          _key: string
+          caseStudy: null
+        }> | null
+        level?: number
+        _type: 'block'
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        _type: 'image'
+        _key: string
+        markDefs: null
+      }
+  >
+  challenge: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: 'span'
+          _key: string
+        }>
+        style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+        listItem?: 'bullet' | 'number'
+        markDefs: Array<{
+          linkType?: 'href' | 'page' | 'post'
+          href?: string
+          page: string | null
+          post: string | null
+          openInNewTab?: boolean
+          _type: 'link'
+          _key: string
+          caseStudy: null
+        }> | null
+        level?: number
+        _type: 'block'
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        _type: 'image'
+        _key: string
+        markDefs: null
+      }
+  > | null
+  solution: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: 'span'
+          _key: string
+        }>
+        style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+        listItem?: 'bullet' | 'number'
+        markDefs: Array<{
+          linkType?: 'href' | 'page' | 'post'
+          href?: string
+          page: string | null
+          post: string | null
+          openInNewTab?: boolean
+          _type: 'link'
+          _key: string
+          caseStudy: null
+        }> | null
+        level?: number
+        _type: 'block'
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        _type: 'image'
+        _key: string
+        markDefs: null
+      }
+  > | null
+  outcome: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: 'span'
+          _key: string
+        }>
+        style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+        listItem?: 'bullet' | 'number'
+        markDefs: Array<{
+          linkType?: 'href' | 'page' | 'post'
+          href?: string
+          page: string | null
+          post: string | null
+          openInNewTab?: boolean
+          _type: 'link'
+          _key: string
+          caseStudy: null
+        }> | null
+        level?: number
+        _type: 'block'
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        _type: 'image'
+        _key: string
+        markDefs: null
+      }
+  > | null
+} | null
+
+// Source: sanity/lib/queries.ts
+// Variable: caseStudiesSlugs
+// Query: *[_type == "caseStudy" && defined(slug.current)]  {"slug": slug.current}
+export type CaseStudiesSlugsResult = Array<{
   slug: string
 }>
 
@@ -2132,15 +2516,18 @@ export type PagesSlugsResult = Array<{
 import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
-    '\n  *[_type == "settings"][0]{\n    _id,\n    _type,\n    title,\n    brandName,\n    description,\n    ogImage,\n    headerNavItems[]{\n      _key,\n      label,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n      }\n    },\n    headerCta{\n      buttonText,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n      }\n    },\n    footerHeading,\n    footerHighlight,\n    footerCta{\n      buttonText,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n      }\n    },\n    footerCtaAvatarImages,\n    footerDescription,\n    footerLegalText,\n    footerLegalLinks[]{\n      _key,\n      label,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n      }\n    },\n    footerLinkCloudLines\n  }\n': SettingsQueryResult
-    '\n  *[_type == "homepage" && _id == "homepage"][0]{\n    _id,\n    _type,\n    title,\n    locale,\n    seo{\n      title,\n      description,\n      ogImage\n    },\n    "sections": sections[]{\n      \n  _key,\n  _type,\n  _type == "homeHeroSection" => {\n    eyebrow,\n    heading,\n    subheading,\n    badges,\n    primaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    },\n    secondaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLogosSection" => {\n    heading,\n    logos[]{\n      _key,\n      name,\n      logo,\n      link\n    }\n  },\n  _type == "homeCaseStudiesSection" => {\n    heading,\n    subheading,\n    items[]{\n      _key,\n      title,\n      summary,\n      image,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeProblemSection" => {\n    heading,\n    description,\n    problems\n  },\n  _type == "homeOfferSection" => {\n    heading,\n    subheading,\n    offers[]{\n      _key,\n      name,\n      description,\n      priceNote,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeUseCasesSection" => {\n    heading,\n    useCases[]{\n      _key,\n      label,\n      heading,\n      description,\n      bullets,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeRoiSection" => {\n    heading,\n    description,\n    embedUrl,\n    button{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeFaqSection" => {\n    heading,\n    items[]{\n      _key,\n      question,\n      answer\n    }\n  },\n  _type == "homeContactSection" => {\n    heading,\n    description,\n    email,\n    button{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLegacyHeroSection" => {\n    titleLinePrimary,\n    titleLineSecondary,\n    titleLineTertiary,\n    description,\n    ctaButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    },\n    avatarImages,\n    cards[]{\n      _key,\n      label,\n      image\n    }\n  },\n  _type == "homeLegacyLogoBarSection" => {\n    logos[]{\n      _key,\n      name,\n      logo,\n      link\n    }\n  },\n  _type == "homeLegacyTestimonialSection" => {\n    labelPrefix,\n    labelHighlight,\n    quote,\n    personName,\n    personRole,\n    companyName,\n    companySubmark,\n    avatarImage,\n    cardBackgroundImage,\n    playIcon,\n    brandWordmark,\n    brandSeparator,\n    brandSubmark,\n    stats[]{\n      _key,\n      value,\n      suffix,\n      label\n    }\n  },\n  _type == "homeLegacyWorkSection" => {\n    labelPrefix,\n    labelSuffix,\n    mockupImage,\n    cards[]{\n      _key,\n      company,\n      description,\n      image,\n      badge\n    }\n  },\n  _type == "homeLegacyOfferSection" => {\n    title,\n    subtitlePrefix,\n    subtitleHighlight,\n    categories[]{\n      _key,\n      name,\n      activeFeature,\n      inactiveFeatures,\n      image\n    },\n    description,\n    image,\n    primaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    },\n    secondaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLegacyPricingSection" => {\n    subtitlePrefix,\n    subtitleHighlight,\n    defaultPlanTitle,\n    plans[]{\n      _key,\n      title,\n      price,\n      features[]{\n        _key,\n        text,\n        active\n      },\n      description,\n      image,\n      primaryButton{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n      },\n      secondaryButton{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n      }\n    }\n  }\n\n    }\n  }\n': HomepageQueryResult
+    '\n  coalesce(\n    *[_type == "settings" && _id == "drafts.siteSettings"][0],\n    *[_type == "settings" && _id == "siteSettings"][0]\n  ){\n    _id,\n    _type,\n    title,\n    brandName,\n    description,\n    ogImage,\n    headerNavItems[]{\n      _key,\n      label,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n      }\n    },\n    headerCta{\n      buttonText,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n      }\n    },\n    footerHeading,\n    footerHighlight,\n    footerCta{\n      buttonText,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n      }\n    },\n    footerCtaAvatarImages,\n    footerDescription,\n    footerLegalText,\n    footerLegalLinks[]{\n      _key,\n      label,\n      link{\n        \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n      }\n    },\n    footerLinkCloudLines\n  }\n': SettingsQueryResult
+    '\n  *[_type == "homepage" && _id == "homepage"][0]{\n    _id,\n    _type,\n    title,\n    locale,\n    seo{\n      title,\n      description,\n      ogImage\n    },\n    "sections": sections[]{\n      \n  _key,\n  _type,\n  _type == "homeHeroSection" => {\n    eyebrow,\n    heading,\n    subheading,\n    badges,\n    primaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    },\n    secondaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLogosSection" => {\n    heading,\n    logos[]{\n      _key,\n      name,\n      logo,\n      link\n    }\n  },\n  _type == "homeCaseStudiesSection" => {\n    heading,\n    subheading,\n    items[]{\n      _key,\n      title,\n      summary,\n      image,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeProblemSection" => {\n    heading,\n    description,\n    problems\n  },\n  _type == "homeOfferSection" => {\n    heading,\n    subheading,\n    offers[]{\n      _key,\n      name,\n      description,\n      priceNote,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeUseCasesSection" => {\n    heading,\n    useCases[]{\n      _key,\n      label,\n      heading,\n      description,\n      bullets,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeRoiSection" => {\n    heading,\n    description,\n    embedUrl,\n    button{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeFaqSection" => {\n    heading,\n    items[]{\n      _key,\n      question,\n      answer\n    }\n  },\n  _type == "homeContactSection" => {\n    heading,\n    description,\n    email,\n    button{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLegacyHeroSection" => {\n    titleLinePrimary,\n    titleLineSecondary,\n    titleLineTertiary,\n    description,\n    ctaButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    },\n    avatarImages,\n    cards[]{\n      _key,\n      label,\n      image\n    }\n  },\n  _type == "homeLegacyLogoBarSection" => {\n    logos[]{\n      _key,\n      name,\n      logo,\n      link\n    }\n  },\n  _type == "homeLegacyTestimonialSection" => {\n    labelPrefix,\n    labelHighlight,\n    quote,\n    personName,\n    personRole,\n    companyName,\n    companySubmark,\n    avatarImage,\n    cardBackgroundImage,\n    playIcon,\n    brandWordmark,\n    brandSeparator,\n    brandSubmark,\n    stats[]{\n      _key,\n      value,\n      suffix,\n      label\n    }\n  },\n  _type == "homeLegacyWorkSection" => {\n    labelPrefix,\n    labelSuffix,\n    mockupImage,\n    cards[]{\n      _key,\n      company,\n      description,\n      image,\n      badge\n    }\n  },\n  _type == "homeLegacyOfferSection" => {\n    title,\n    subtitlePrefix,\n    subtitleHighlight,\n    categories[]{\n      _key,\n      name,\n      activeFeature,\n      inactiveFeatures,\n      image\n    },\n    description,\n    image,\n    primaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    },\n    secondaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLegacyPricingSection" => {\n    subtitlePrefix,\n    subtitleHighlight,\n    defaultPlanTitle,\n    plans[]{\n      _key,\n      title,\n      price,\n      features[]{\n        _key,\n        text,\n        active\n      },\n      description,\n      image,\n      primaryButton{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n      },\n      secondaryButton{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n      }\n    }\n  }\n\n    }\n  }\n': HomepageQueryResult
     '\n  *[_type == "homepage" && _id == "homepage"][0]{\n    seo{\n      title,\n      description,\n      ogImage\n    }\n  }\n': HomepageSeoQueryResult
-    '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      _key,\n      _type,\n      ...,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        }\n      },\n      \n  _key,\n  _type,\n  _type == "homeHeroSection" => {\n    eyebrow,\n    heading,\n    subheading,\n    badges,\n    primaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    },\n    secondaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLogosSection" => {\n    heading,\n    logos[]{\n      _key,\n      name,\n      logo,\n      link\n    }\n  },\n  _type == "homeCaseStudiesSection" => {\n    heading,\n    subheading,\n    items[]{\n      _key,\n      title,\n      summary,\n      image,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeProblemSection" => {\n    heading,\n    description,\n    problems\n  },\n  _type == "homeOfferSection" => {\n    heading,\n    subheading,\n    offers[]{\n      _key,\n      name,\n      description,\n      priceNote,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeUseCasesSection" => {\n    heading,\n    useCases[]{\n      _key,\n      label,\n      heading,\n      description,\n      bullets,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeRoiSection" => {\n    heading,\n    description,\n    embedUrl,\n    button{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeFaqSection" => {\n    heading,\n    items[]{\n      _key,\n      question,\n      answer\n    }\n  },\n  _type == "homeContactSection" => {\n    heading,\n    description,\n    email,\n    button{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLegacyHeroSection" => {\n    titleLinePrimary,\n    titleLineSecondary,\n    titleLineTertiary,\n    description,\n    ctaButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    },\n    avatarImages,\n    cards[]{\n      _key,\n      label,\n      image\n    }\n  },\n  _type == "homeLegacyLogoBarSection" => {\n    logos[]{\n      _key,\n      name,\n      logo,\n      link\n    }\n  },\n  _type == "homeLegacyTestimonialSection" => {\n    labelPrefix,\n    labelHighlight,\n    quote,\n    personName,\n    personRole,\n    companyName,\n    companySubmark,\n    avatarImage,\n    cardBackgroundImage,\n    playIcon,\n    brandWordmark,\n    brandSeparator,\n    brandSubmark,\n    stats[]{\n      _key,\n      value,\n      suffix,\n      label\n    }\n  },\n  _type == "homeLegacyWorkSection" => {\n    labelPrefix,\n    labelSuffix,\n    mockupImage,\n    cards[]{\n      _key,\n      company,\n      description,\n      image,\n      badge\n    }\n  },\n  _type == "homeLegacyOfferSection" => {\n    title,\n    subtitlePrefix,\n    subtitleHighlight,\n    categories[]{\n      _key,\n      name,\n      activeFeature,\n      inactiveFeatures,\n      image\n    },\n    description,\n    image,\n    primaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    },\n    secondaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLegacyPricingSection" => {\n    subtitlePrefix,\n    subtitleHighlight,\n    defaultPlanTitle,\n    plans[]{\n      _key,\n      title,\n      price,\n      features[]{\n        _key,\n        text,\n        active\n      },\n      description,\n      image,\n      primaryButton{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n      },\n      secondaryButton{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current\n\n  }\n\n      }\n    }\n  }\n\n    },\n  }\n': GetPageQueryResult
-    '\n  *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
+    '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      _key,\n      _type,\n      ...,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current,\n    "caseStudy": caseStudy->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        content[]{\n          \n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current,\n    "caseStudy": caseStudy->slug.current\n  }\n\n  }\n\n        }\n      },\n      \n  _key,\n  _type,\n  _type == "homeHeroSection" => {\n    eyebrow,\n    heading,\n    subheading,\n    badges,\n    primaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    },\n    secondaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLogosSection" => {\n    heading,\n    logos[]{\n      _key,\n      name,\n      logo,\n      link\n    }\n  },\n  _type == "homeCaseStudiesSection" => {\n    heading,\n    subheading,\n    items[]{\n      _key,\n      title,\n      summary,\n      image,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeProblemSection" => {\n    heading,\n    description,\n    problems\n  },\n  _type == "homeOfferSection" => {\n    heading,\n    subheading,\n    offers[]{\n      _key,\n      name,\n      description,\n      priceNote,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeUseCasesSection" => {\n    heading,\n    useCases[]{\n      _key,\n      label,\n      heading,\n      description,\n      bullets,\n      button{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n      }\n    }\n  },\n  _type == "homeRoiSection" => {\n    heading,\n    description,\n    embedUrl,\n    button{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeFaqSection" => {\n    heading,\n    items[]{\n      _key,\n      question,\n      answer\n    }\n  },\n  _type == "homeContactSection" => {\n    heading,\n    description,\n    email,\n    button{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLegacyHeroSection" => {\n    titleLinePrimary,\n    titleLineSecondary,\n    titleLineTertiary,\n    description,\n    ctaButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    },\n    avatarImages,\n    cards[]{\n      _key,\n      label,\n      image\n    }\n  },\n  _type == "homeLegacyLogoBarSection" => {\n    logos[]{\n      _key,\n      name,\n      logo,\n      link\n    }\n  },\n  _type == "homeLegacyTestimonialSection" => {\n    labelPrefix,\n    labelHighlight,\n    quote,\n    personName,\n    personRole,\n    companyName,\n    companySubmark,\n    avatarImage,\n    cardBackgroundImage,\n    playIcon,\n    brandWordmark,\n    brandSeparator,\n    brandSubmark,\n    stats[]{\n      _key,\n      value,\n      suffix,\n      label\n    }\n  },\n  _type == "homeLegacyWorkSection" => {\n    labelPrefix,\n    labelSuffix,\n    mockupImage,\n    cards[]{\n      _key,\n      company,\n      description,\n      image,\n      badge\n    }\n  },\n  _type == "homeLegacyOfferSection" => {\n    title,\n    subtitlePrefix,\n    subtitleHighlight,\n    categories[]{\n      _key,\n      name,\n      activeFeature,\n      inactiveFeatures,\n      image\n    },\n    description,\n    image,\n    primaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    },\n    secondaryButton{\n      \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n    }\n  },\n  _type == "homeLegacyPricingSection" => {\n    subtitlePrefix,\n    subtitleHighlight,\n    defaultPlanTitle,\n    plans[]{\n      _key,\n      title,\n      price,\n      features[]{\n        _key,\n        text,\n        active\n      },\n      description,\n      image,\n      primaryButton{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n      },\n      secondaryButton{\n        \n  buttonText,\n  link{\n    \n  _type,\n  linkType,\n  href,\n  openInNewTab,\n  "page": page->slug.current,\n  "post": post->slug.current,\n  "caseStudy": caseStudy->slug.current\n\n  }\n\n      }\n    }\n  }\n\n    },\n  }\n': GetPageQueryResult
+    '\n  *[(_type == "page" || _type == "post" || _type == "caseStudy") && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
     '\n  *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': AllPostsQueryResult
     '\n  *[_type == "post" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': MorePostsQueryResult
-    '\n  *[_type == "post" && slug.current == $slug] [0] {\n    content[]{\n    ...,\n    markDefs[]{\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n    }\n  },\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': PostQueryResult
+    '\n  *[_type == "post" && slug.current == $slug] [0] {\n    content[]{\n      \n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current,\n    "caseStudy": caseStudy->slug.current\n  }\n\n  }\n\n    },\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': PostQueryResult
     '\n  *[_type == "post" && defined(slug.current)]\n  {"slug": slug.current}\n': PostPagesSlugsResult
-    '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
+    '\n  *[_type == "page" && defined(slug.current) && slug.current != "case-studies"]\n  {"slug": slug.current}\n': PagesSlugsResult
+    '\n  *[_type == "caseStudy" && defined(slug.current)] | order(featured desc, publishedAt desc, _updatedAt desc) {\n    \n  _id,\n  _type,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  title,\n  "slug": slug.current,\n  clientName,\n  excerpt,\n  industry,\n  services,\n  featured,\n  coverImage,\n  "publishedAt": coalesce(publishedAt, _updatedAt),\n  results[]{\n    _key,\n    label,\n    value\n  }\n\n  }\n': AllCaseStudiesQueryResult
+    '\n  *[_type == "caseStudy" && slug.current == $slug][0]{\n    \n  _id,\n  _type,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  title,\n  "slug": slug.current,\n  clientName,\n  excerpt,\n  industry,\n  services,\n  featured,\n  coverImage,\n  "publishedAt": coalesce(publishedAt, _updatedAt),\n  results[]{\n    _key,\n    label,\n    value\n  }\n,\n    overview[]{\n      \n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current,\n    "caseStudy": caseStudy->slug.current\n  }\n\n  }\n\n    },\n    challenge[]{\n      \n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current,\n    "caseStudy": caseStudy->slug.current\n  }\n\n  }\n\n    },\n    solution[]{\n      \n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current,\n    "caseStudy": caseStudy->slug.current\n  }\n\n  }\n\n    },\n    outcome[]{\n      \n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current,\n    "caseStudy": caseStudy->slug.current\n  }\n\n  }\n\n    }\n  }\n': CaseStudyQueryResult
+    '\n  *[_type == "caseStudy" && defined(slug.current)]\n  {"slug": slug.current}\n': CaseStudiesSlugsResult
   }
 }

@@ -27,7 +27,12 @@ export async function generateMetadata(): Promise<Metadata> {
   ])
 
   const title = homepageSeoData?.seo?.title || settings?.title || demo.title
-  const description = homepageSeoData?.seo?.description || toPlainText(settings?.description || demo.description)
+  const settingsDescription = settings?.description || demo.description
+  const description =
+    homepageSeoData?.seo?.description ||
+    (typeof settingsDescription === 'string'
+      ? settingsDescription
+      : toPlainText(settingsDescription))
   const ogImage = resolveOpenGraphImage(homepageSeoData?.seo?.ogImage)
 
   return {

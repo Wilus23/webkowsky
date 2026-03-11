@@ -22,6 +22,8 @@ yarn-error.log*
 
 # vercel
 .vercel
+/frontend/.next-section-thumbnails/
+.sanity-config/
 
 # typescript
 *.tsbuildinfo

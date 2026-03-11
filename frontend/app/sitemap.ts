@@ -47,6 +47,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency = 'never'
           url = `${domain}/posts/${p.slug}`
           break
+        case 'caseStudy':
+          priority = 0.7
+          changeFrequency = 'monthly'
+          url = `${domain}/case-studies/${p.slug}`
+          break
+        default:
+          continue
       }
       sitemap.push({
         lastModified: p._updatedAt || new Date(),
@@ -56,6 +63,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
     }
   }
+
+  sitemap.push({
+    url: `${domain}/case-studies`,
+    lastModified: new Date(),
+    priority: 0.8,
+    changeFrequency: 'monthly',
+  })
 
   return sitemap
 }
