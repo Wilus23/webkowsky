@@ -14,6 +14,7 @@ Preview deploys are versioned through Git tags and GitHub prereleases, not throu
 ### Changed
 
 - Extended shared Sanity link resolution, queries, and sitemap generation to support case study references and URLs.
+- Documented the simplified repository branch workflow around `main`, `staging`, and short-lived `feature/*` and `fix/*` branches.
 
 ### Fixed
 

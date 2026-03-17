@@ -27,6 +27,22 @@ to version every deploy in a consistent way.
   - `package.json`
   - `CHANGELOG.md`
 
+## Branch Workflow
+
+- The canonical long-lived branches are:
+  - `main` for production-ready code and stable releases,
+  - `staging` for shared preview, integration, and pre-production QA.
+- Use short-lived task branches only:
+  - `feature/<task-name>` for new work, visual updates, and non-breaking improvements,
+  - `fix/<task-name>` for bug fixes.
+- Do not create permanent personal branches.
+- Do not use branch-per-section as a standing workflow.
+- Start every task branch from `staging` and merge it back into `staging` through a pull request.
+- Merge from `staging` into `main` only when the integrated batch is approved for release.
+- Stable tags `vX.Y.Z` must be created from `main`.
+- Preview tags `vX.Y.Z-preview.N` should be created from `staging` after the preview commit already exists.
+- During branch migration work, a legacy `test` branch may temporarily mirror `staging` until GitHub/Vercel settings are updated, but `staging` is the source of truth.
+
 ## Agent Operating Rules
 
 - Inspect the repo first, then edit.

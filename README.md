@@ -75,6 +75,18 @@ git push -u origin main
 For homepage implementation workflow (Figma -> Next.js -> Sanity), see:
 
 - `docs/homepage-workflow.md`
+- `docs/collaboration-workflow.md`
+
+## Git Workflow
+
+This repo uses a small branching model for collaboration:
+
+- `main` = production
+- `staging` = shared preview and integration
+- `feature/<task-name>` = normal work
+- `fix/<task-name>` = bug fixes
+
+Pull the latest `staging`, create a short-lived task branch from it, and merge back into `staging` through GitHub pull requests. Use Sanity staging content updates for copy, images, SEO, and section order when no code change is needed.
 
 ## Sanity Studio Deployment (separate from Vercel)
 
